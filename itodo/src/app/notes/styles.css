@@ -26,7 +26,11 @@
  background-color: transparent !important;
  border: none !important;
  justify-content: center !important;
- margin-top: 5px;
+ width: 100%;
+ top: 2px;
+ flex-wrap: nowrap;
+ overflow-x: auto;
+ position: absolute;
 }
 
 .DraftEditor-editorContainer{
@@ -42,15 +46,14 @@
 .inputTitle{
     position: absolute;
     background: transparent;
-    font-size: 22px;
+    font-size: 21px;
     z-index: 3;
-    top: 175px;
+    top: 78px;
     width: 68%;
     padding: 10px 0px;
     outline: none;
 }
 
 .editorClassName{
-    margin-top: 75px;
-
+    margin-top: 110px;
 }

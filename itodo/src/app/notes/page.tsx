@@ -14,12 +14,12 @@ import Task from "../Components/tasksComponents/Task";
 import NoDataPlaceholder from "../Components/NoDataPlaceholder";
 import { Input } from "antd";
 const Editor = dynamic(
-  () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
+  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
   { ssr: false }
-)
+);
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { EditorState } from 'draft-js';
-import dynamic from 'next/dynamic'
+import { EditorState } from "draft-js";
+import dynamic from "next/dynamic";
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -56,9 +56,7 @@ const page = () => {
   const [fastSpin, setFastSpin] = useState(false);
   const [editorFocused, setEditorFocused] = React.useState(false);
 
-  const [editorState, setEditorState] = useState(
-   EditorState.createEmpty()
-  );
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   const editor = React.useRef<typeof Editor | null>(null);
 
@@ -94,7 +92,7 @@ const page = () => {
 
   return (
     <Home>
-      <div className="row p-0 w-100 m-auto">
+      <div className="row p-0 w-100 m-auto" style={{ flexWrap: "nowrap" }}>
         <FastLoader isLoading={fastSpin} />
 
         <div className="asideNotes p-2 mr-3 cardContainer">
@@ -118,7 +116,7 @@ const page = () => {
           >
             <div
               className="col-4 row align-content-center align-items-end"
-              style={{ lineHeight: "9px" }}
+              style={{ lineHeight: "9px", flexWrap: "nowrap" }}
             >
               5 Notas
             </div>
@@ -146,7 +144,7 @@ const page = () => {
           </div>
         </div>
 
-        <div className="asideNotes content p-3">
+        <div className="asideNotes content p-3" style={{ minWidth: "555px" }}>
           <Row
             className="justify-content-between align-content-center align-items-center"
             style={{ color: "#989898" }}
@@ -164,29 +162,35 @@ const page = () => {
               Compartir
             </button>
 
-            <div className="col-12 mt-3">
-            <input type="text" className="inputTitle" title="title"
-            placeholder="Ingresa un titulo"
-            />
-            <Editor
-      editorState={editorState}
-      toolbarClassName={editorFocused ? "toolbarClassName" : "toolbarClassName toolbarHidden"}
-      wrapperClassName="wrapperClassName"
-      editorClassName="editorClassName"
-      onEditorStateChange={(e) => {
-        console.log(e);
-        setEditorState(e);
-      }}
-      onFocus={() => setEditorFocused(true)}
-      onBlur={() => setEditorFocused(false)}
-      placeholder="Ingresa el contenido de la nota"
-    />
+            <div className="col-12 mt-3 relative">
+              <Editor
+                editorState={editorState}
+                toolbarClassName={
+                  editorFocused
+                    ? "toolbarClassName"
+                    : "toolbarClassName toolbarHidden"
+                }
+                wrapperClassName="wrapperClassName"
+                editorClassName="editorClassName"
+                onEditorStateChange={(e) => {
+                  console.log(e);
+                  setEditorState(e);
+                }}
+                onFocus={() => setEditorFocused(true)}
+                onBlur={() => setEditorFocused(false)}
+                placeholder="Ingresa el contenido de la nota"
+              />
+              <input
+                type="text"
+                className="inputTitle"
+                title="title"
+                placeholder="Ingresa un titulo"
+              />
             </div>
-            
+
             {/* <div className="noteTitle">Modificaciones tab Incidencias</div> */}
             {/* <div className="noteContent">{description}</div> */}
           </Row>
-
         </div>
       </div>
     </Home>
