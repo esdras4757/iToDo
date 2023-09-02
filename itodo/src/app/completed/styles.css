@@ -1,0 +1,136 @@
+.listMyDayContainer{
+    width: 100%;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.listMyDay{
+    padding: 5px 0px;
+    width: 80%;
+    min-height: 60px;
+    background-color: rgba(29, 19, 2, 0.609);
+    border-radius: 10px;
+    color: #eee;
+    margin-bottom: 5px;
+}
+
+.contList span{
+    font-size: 14px;
+    color: #ccc;
+}
+
+.titleTask{
+    font-size: 17px;
+}
+
+.dot{
+    font-size: 5px;
+    color: #aaaaaa82;
+    margin-right: 15px;
+    margin-left: 15px;
+    text-align: center;
+}
+
+.addButton{
+    background-color: rgba(67, 67, 67, 0.721);
+    width: 115px;
+    padding: 9px;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.title{
+    color: #ddd;
+    font-weight: bold;
+    text-shadow: 1px 2px 5px rgb(46, 46, 46);
+    font-size: 40px;
+    padding: 5px 0;
+    border-radius: 7px;
+}
+
+.bg-bg-mainContent{
+    background-color: rgb(39, 39, 39) !important;
+    color: white !important;
+}
+
+.anticon-close, .ant-drawer-title{
+    color: rgb(222, 222, 222) !important;
+}
+
+.ant-form-item-row label{
+    color: rgb(218, 218, 218) !important;
+}
+
+.ant-picker-input, input{
+    color: rgb(211, 211, 211) !important;
+}
+
+#initAt::placeholder{
+    color: rgba(218, 218, 218, 0.438);
+}
+
+.inputAddList input::placeholder, .ant-picker-suffix{
+    color: rgba(218, 218, 218, 0.438) !important;
+}
+
+.inputAddList{
+    background-color: transparent !important;
+    color: white;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #dfe6ea;
+    height: 20;
+  }
+  
+  .inputAddList::placeholder{
+    color: rgba(255, 255, 255, 0.438);
+  }
+
+.addFile{
+    cursor: pointer;
+    bottom: 25px;
+    left: 10%;
+    right: 10%;
+    background-color: rgb(52, 52, 52) !important;
+    color: rgb(211, 211, 211);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.addNote{
+    cursor: pointer;
+    margin-top: 15px;
+    background-color: rgb(52, 52, 52) !important;
+    color: rgb(211, 211, 211);
+    border-radius: 8px;
+}
+
+
+.btnAddTask{
+    background-color: rgb(52, 52, 52) !important;
+    border-radius: 8px !important;
+    font-size: 1px;
+}
+.btnAddTask p{
+    font-size: 13px;
+
+}
+.ant-picker-ok button{
+    background-color: rgb(62, 89, 224);
+    margin-left: 10px;
+}
+
+.ant-picker-clear{
+    background-color: transparent !important;
+}
+
+.subtitle {
+    background: #0000008c;
+    width: max-content;
+    border-radius: 8px;
+    padding: 3px 11px;
+}

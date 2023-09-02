@@ -1,0 +1,35 @@
+.listMyDayContainer{
+    width: 100%;
+    margin: 0px auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.listMyDay{
+    padding: 10px;
+    width: 80%;
+    background-color: rgba(29, 19, 2, 0.609);
+    border-radius: 10px;
+    color: #eee;
+    margin-bottom: 5px;
+}
+
+.contList span{
+    font-size: 14px;
+    color: #ccc;
+}
+
+.titleTask{
+    font-size: 17px;
+}
+
+.dot{
+    font-size: 5px;
+    color: #aaaaaa82;
+    margin-right: 15px;
+    margin-left: 15px;
+    text-align: center;
+}

@@ -1,0 +1,56 @@
+.asideNotes{
+    background-color: #262626;
+    height: calc(100vh - 200px);
+    border-radius: 10px;
+}
+
+.cardNote{
+    width: 95%;
+    border: 3px solid #575757;
+    height: 265px;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+.cardContainer{
+    overflow:hidden auto;
+    width: 290px;
+    margin-right: 14px;
+}
+
+.content{
+    width: calc(100% - 305px);
+}
+
+.toolbarClassName{
+ background-color: transparent !important;
+ border: none !important;
+ justify-content: center !important;
+ margin-top: 5px;
+}
+
+.DraftEditor-editorContainer{
+    height: calc(100vh - 410px) !important;
+}
+
+.toolbarHidden {
+   opacity: 0.5; 
+   pointer-events: none;
+  }
+  
+
+.inputTitle{
+    position: absolute;
+    background: transparent;
+    font-size: 22px;
+    z-index: 3;
+    top: 175px;
+    width: 68%;
+    padding: 10px 0px;
+    outline: none;
+}
+
+.editorClassName{
+    margin-top: 75px;
+
+}
