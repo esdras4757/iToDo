@@ -1,5 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+console.log(apiUrl)
+
 interface Credentials {
     identifier: string;
     pass: string;
@@ -19,7 +23,7 @@ interface Credentials {
   
   export const loginApi = createApi({
     reducerPath: "loginApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/user/" }),
+    baseQuery: fetchBaseQuery({ baseUrl: apiUrl+"/api/user/" }),
     endpoints: (builder) => ({
       login: builder.mutation<UserResponse, Credentials>({
         query: (credentials) => ({

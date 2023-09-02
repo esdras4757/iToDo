@@ -1,5 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+
 interface dataQuery {
   title: string;
   idStatus: string | Number;
