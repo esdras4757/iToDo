@@ -42,7 +42,7 @@ const SignIn: React.FC = () => {
           sessionStorage.setItem("user", data.id);
           router.replace("/myDay");
           dispatch(saveUser(data));
-          openNotification("success", "Bienvenido" + data.nombre);
+          openNotification("success", "Bienvenido" + ' ' + data.nombre);
           // console.log(user.userInfo);
         }
       })

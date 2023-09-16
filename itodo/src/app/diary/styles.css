@@ -1,0 +1,37 @@
+.fc-event{
+    cursor: pointer;
+}
+
+.formEvent label{
+    margin-bottom: 5px;
+}
+
+.formEvent button {
+    padding: 8px 12px;
+}
+
+.fc-daygrid-body, .fc-scrollgrid-sync-table, .fc-col-header  {
+    width: 100% !important;
+    transition: all 0.5s;
+}
+
+.fc-view-harness *{
+    transition: all 0.5s;
+}
+
+
+.ant-picker-ok button{
+    background-color: #0958d9;
+}
+.ant-picker{
+    height: 30px !important;
+}
+
+
+/* .ant-color-picker-trigger,.ant-color-picker-color-block{
+    width: 100% !important;
+} */
+.fc-popover{
+    border: none !important;
+    background-color: #3a3a3a !important;
+}

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/"; // ajusta esto a tu base URL real
+const BASE_URL = "http://192.168.16.139:5000/"; // ajusta esto a tu base URL real
 
 const apiConstants = {
   GET_ALL_TASK: BASE_URL + "api/task",
@@ -10,6 +10,20 @@ const apiConstants = {
   GET_IMPORTANT_BY_ID_USER: BASE_URL + "api/task/getImportantByIdUser",
   GET_COMPLETED_BY_ID_USER: BASE_URL + "api/task/getCompletedByIdUser",
   GET_PENDING_BY_ID_USER: BASE_URL + "api/task/getPendingByIdUser",
+
+  //notes
+
+  GET_ALL_NOTES_BY_USER_ID : BASE_URL + "api/note/getAllByIdUser",
+  POST_ADD_NOTE : BASE_URL + "api/note/add",
+  PUT_UPDATE_NOTE_BY_ID : BASE_URL + "api/note/update",
+  DELETE_NOTE_BY_ID : BASE_URL + "api/note/delete",
+
+  //utils
+  POST_SEND_EMAIL : BASE_URL + "api/utils/sendEmail",
+  GET_ALL_EVENTS_BY_USER_ID : BASE_URL + "api/utils/getAllEventsByIdUser",
+
+  // Events
+  POST_ADD_EVENT : BASE_URL + "api/event/add",
 };
 
 export default apiConstants;

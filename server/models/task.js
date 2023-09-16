@@ -9,7 +9,7 @@ const taskSchema = new mongoose.Schema({
     description:{required:false,type:String},
     reminder:{required:false,type:String},
     initAt:{required:false,type:String},
-    finishAt:{required:false,type:String},
+    endAt:{required:false,type:String},
     fileId:{required:false,type:String},
     note:{required: false,type:String},
     userId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required: true},

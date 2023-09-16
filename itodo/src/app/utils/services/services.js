@@ -32,3 +32,36 @@ export const getCompletedByIdUser = (id)=>{
 export const getPendingByIdUser = (id)=>{
     return axios.get(apiConstants.GET_PENDING_BY_ID_USER + '/' + id)
 }
+
+export const getAllNotesByIdUser = (id)=>{
+    return axios.get(apiConstants.GET_ALL_NOTES_BY_USER_ID + '/' + id)
+}
+
+export const addNote = (id, data)=>{
+    return axios.post(apiConstants.POST_ADD_NOTE, data)
+}   
+
+export const updateNoteById = (id, data)=>{
+    return axios.put(apiConstants.PUT_UPDATE_NOTE_BY_ID + '/' + id, data)
+}
+
+export const deleteNoteById = (id)=>{
+    return axios.delete(apiConstants.DELETE_NOTE_BY_ID + '/' + id)
+}
+
+export const postSendEmail = (data)=>{
+    return axios.post(apiConstants.POST_SEND_EMAIL, data)
+}
+
+export const getAllEventsByIdUser = (id)=>{
+    return axios.get(apiConstants.GET_ALL_EVENTS_BY_USER_ID + '/' + id)
+}
+
+export const addEvent = (data)=>{
+    return axios.post(apiConstants.POST_ADD_EVENT, data)
+}
+
+
+
+
+

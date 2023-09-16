@@ -24,9 +24,12 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Loader from "@/app/Components/Loader";
 import { updateTaskById } from "@/app/utils/services/services";
+import customParseFormat from "dayjs/plugin/customParseFormat"; // Notar cómo se importa el plugin aquí
+
 // Establece la configuración regional en español
 // moment.locale("es");
 dayjs.locale("es");
+dayjs.extend(customParseFormat);
 interface taskDAata {
   _id: string;
   title: string;
@@ -38,7 +41,7 @@ interface taskDAata {
   description: string;
   reminder: string;
   initAt: string;
-  finishAt: string;
+  endAt: string;
   categoryId: string | null;
   file: string;
   fileURL: string;
@@ -57,17 +60,6 @@ interface propsInterface {
   setFastSpin:(value:boolean)=>void
 }
 
-interface dataQuery {
-  title: string;
-  idStatus: string | Number;
-  description?: string;
-  reminder?: string;
-  initAt?: string;
-  finishAt?: string;
-  file?: any;
-  note?: string;
-  userId: string;
-}
 
 interface dataToAddNote {
   title: string;
@@ -135,7 +127,7 @@ const ModalEditTask = (props: propsInterface) => {
     if (taskData) {
       const {
         description,
-        finishAt,
+        endAt,
         initAt,
         isCompleted,
         note,
@@ -154,20 +146,20 @@ const ModalEditTask = (props: propsInterface) => {
         description: description,
         reminder: reminder,
         userId: userId,
-        initDate: initAt != "" ? dayjs(initAt) : dayjs(),
-        endDate: finishAt != "" ? dayjs(finishAt) : dayjs(),
-        initHour: initAt != "" ? dayjs(initAt) : dayjs(),
-        endHour: finishAt != "" ? dayjs(finishAt) : dayjs(),
+        initDate: initAt != "" ? dayjs(initAt,'DD/MM/YYYY HH:mm') : dayjs(),
+        endDate: endAt != "" ? dayjs(endAt,'DD/MM/YYYY HH:mm') : dayjs(),
+        initHour: initAt != "" ? dayjs(initAt,'DD/MM/YYYY HH:mm') : dayjs(),
+        endHour: endAt != "" ? dayjs(endAt,'DD/MM/YYYY HH:mm') : dayjs(),
         file: file,
         categoryId: categoryId,
         note: note,
         fileURL,
         isRemainder: reminder !== "" ? true : false,
-        isAgend: initAt !== "" || finishAt !== "" ? true : false,
+        isAgend: initAt !== "" || endAt !== "" ? true : false,
       });
 
      setReminder(reminder !== "" && true);
-    setAgenda(initAt != "" || finishAt != "" && true);
+    setAgenda(initAt != "" || endAt != "" && true);
      setRemainderSelect(null);
     }
   }, [taskData]);
@@ -208,7 +200,7 @@ const ModalEditTask = (props: propsInterface) => {
   useEffect(() => {
     if (dateRemainder && timeRemainder) {
       const date =
-        dateRemainder.format("YYYY-MM-DD") + " " + timeRemainder.format("h:mm");
+        dateRemainder.format("DD/MM/YYYY") + " " + timeRemainder.format("h:mm");
       fillData("reminder", date);
     }
   }, [dateRemainder, timeRemainder]);
@@ -248,15 +240,15 @@ const ModalEditTask = (props: propsInterface) => {
       formData.append(
         "initAt",
         data.isAgend
-          ? data.initDate.format("YYYY-MM-DD") +
+          ? data.initDate.format("DD/MM/YYYY") +
               " " +
               data.initHour.format("h:mm")
           : ""
       );
       formData.append(
-        "finishAt",
+        "endAt",
         data.isAgend
-          ? data.endDate.format("YYYY-MM-DD") +
+          ? data.endDate.format("DD/MM/YYYY") +
               " " +
               data.endHour.format("h:mm")
           : ""
@@ -332,6 +324,9 @@ const ModalEditTask = (props: propsInterface) => {
         onClose={handleCancel}
         className="bg-bg-mainContent"
         open={visible}
+        onClick={e=>{
+          e.stopPropagation();
+        }}
       >
         {taskError ? (
           <div>Error al cargar los datos. Por favor, inténtalo de nuevo.</div>
@@ -434,12 +429,12 @@ const ModalEditTask = (props: propsInterface) => {
                           style={{ marginBottom: 15 }}
                           options={[
                             {
-                              value: moment().format("YYYY-MM-DD h:mm"),
+                              value: moment().format("DD/MM/YYYY h:mm"),
                               label: (
                                 <div>
                                   Hoy{" "}
                                   <span className="text-primary ml-2">
-                                    ({moment().format("ddd-YYYY-MM-DD h:mm")})
+                                    ({moment().format("ddd-DD/MM/YYYY h:mm")})
                                   </span>
                                 </div>
                               ),
@@ -447,7 +442,7 @@ const ModalEditTask = (props: propsInterface) => {
                             {
                               value: moment()
                                 .add(1, "day")
-                                .format("YYYY-MM-DD h:mm"),
+                                .format("DD/MM/YYYY h:mm"),
                               label: (
                                 <div>
                                   Mañana{" "}
@@ -455,7 +450,7 @@ const ModalEditTask = (props: propsInterface) => {
                                     (
                                     {moment()
                                       .add(1, "day")
-                                      .format("ddd-YYYY-MM-DD h:mm")}
+                                      .format("ddd-DD/MM/YYYY h:mm")}
                                     )
                                   </span>
                                 </div>
@@ -464,7 +459,7 @@ const ModalEditTask = (props: propsInterface) => {
                             {
                               value: moment()
                                 .add(1, "week")
-                                .format("YYYY-MM-DD h:mm"),
+                                .format("DD/MM/YYYY h:mm"),
                               label: (
                                 <div>
                                   Siguiente semana{" "}
@@ -472,7 +467,7 @@ const ModalEditTask = (props: propsInterface) => {
                                     (
                                     {moment()
                                       .add(1, "week")
-                                      .format("ddd-YYYY-MM-DD h:mm")}
+                                      .format("ddd-DD/MM/YYYY h:mm")}
                                     )
                                   </span>
                                 </div>
@@ -481,7 +476,7 @@ const ModalEditTask = (props: propsInterface) => {
                             {
                               value: moment()
                                 .add(1, "month")
-                                .format("YYYY-MM-DD h:mm"),
+                                .format("DD/MM/YYYY h:mm"),
                               label: (
                                 <div>
                                   Siguiente mes{" "}
@@ -489,7 +484,7 @@ const ModalEditTask = (props: propsInterface) => {
                                     (
                                     {moment()
                                       .add(1, "month")
-                                      .format("ddd-YYYY-MM-DD h:mm")}
+                                      .format("ddd-DD/MM/YYYY h:mm")}
                                     )
                                   </span>
                                 </div>
@@ -512,7 +507,7 @@ const ModalEditTask = (props: propsInterface) => {
                           <Row className="justify-content-center">
                             <DatePicker
                               className="inputAddList col-5 justify-content-center mr-3"
-                              format="YYYY-MM-DD"
+                              format="DD/MM/YYYY"
                               value={dateRemainder}
                               defaultValue={dayjs()}
                               onChange={(e) => {
@@ -560,7 +555,7 @@ const ModalEditTask = (props: propsInterface) => {
                       >
                         <DatePicker
                           className="inputAddList justify-content-center mr-3"
-                          format="YYYY-MM-DD"
+                          format="DD/MM/YYYY"
                           value={data.initDate}
                           defaultValue={dayjs()}
                           onChange={(e) => {
@@ -589,7 +584,7 @@ const ModalEditTask = (props: propsInterface) => {
                         <DatePicker
                           defaultValue={dayjs()}
                           className="inputAddList mr-3"
-                          format="YYYY-MM-DD"
+                          format="DD/MM/YYYY"
                           value={data.endDate}
                           onChange={(e) => {
                             if (e) {

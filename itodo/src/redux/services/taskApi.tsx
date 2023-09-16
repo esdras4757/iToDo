@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const apiUrl = process.env.REACT_APP_API_URL || 'http://192.168.16.139:5000';
 
 
 interface dataQuery {
@@ -9,7 +9,7 @@ interface dataQuery {
   description?: string;
   reminder?: string;
   initAt?: string;
-  finishAt?: string;
+  endAt?: string;
   file?: any;
   note?: string;
   userId: string;
@@ -21,7 +21,7 @@ interface dataResponseadd {
   description?: string;
   reminder?: string;
   initAt?: string;
-  finishAt?: string;
+  endAt?: string;
   fileId?: string;
   noteId?: string;
   userId: string;

@@ -8,7 +8,7 @@ import Loader from "../Components/Loader";
 import "./styles.css";
 import { Col, Row } from "react-bootstrap";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
 
   return (
@@ -107,4 +107,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

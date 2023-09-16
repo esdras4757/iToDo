@@ -27,7 +27,7 @@ interface taskDAata {
   description: string;
   reminder: string;
   initAt: string;
-  finishAt: string;
+  endAt: string;
   file: string;
   note: string;
   originalFileName: string;
@@ -35,7 +35,7 @@ interface taskDAata {
   userId: string;
 }
 
-const page = () => {
+const Page = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null);
   const [loaderAllTask, setLoaderAllTask] = useState(false);
@@ -128,4 +128,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

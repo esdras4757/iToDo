@@ -33,7 +33,7 @@ interface taskDAata {
   description: string;
   reminder: string;
   initAt: string;
-  finishAt: string;
+  endAt: string;
   file: string;
   note: string;
   originalFileName: string;

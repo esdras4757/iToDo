@@ -44,7 +44,7 @@ interface taskDAata {
   reminder: string;
   categoryId?:string | null;
   initAt: string;
-  finishAt: string;
+  endAt: string;
   fileId: string;
   note: string;
   userId: string;
@@ -147,7 +147,7 @@ const [key, setKey] = useState(0)
   useEffect(() => {
     if (dateRemainder && timeRemainder) {
       const date =
-        dateRemainder.format("YYYY-MM-DD") + " " + timeRemainder.format("h:mm");
+        dateRemainder.format("DD/MM/YYYY") + " " + timeRemainder.format("h:mm");
       fillData("reminder", date);
     }
   }, [dateRemainder, timeRemainder]);
@@ -181,15 +181,15 @@ const [key, setKey] = useState(0)
       formData.append(
         "initAt",
         data.isAgend
-          ? data.initDate.format("YYYY-MM-DD") +
+          ? data.initDate.format("DD/MM/YYYY") +
               " " +
               data.initHour.format("h:mm")
           : ""
       );
       formData.append(
-        "finishAt",
+        "endAt",
         data.isAgend
-          ? data.endDate.format("YYYY-MM-DD") +
+          ? data.endDate.format("DD/MM/YYYY") +
               " " +
               data.endHour.format("h:mm")
           : ""
@@ -343,18 +343,18 @@ const [key, setKey] = useState(0)
                   style={{ marginBottom: 15 }}
                   options={[
                     {
-                      value: moment().format("YYYY-MM-DD h:mm"),
+                      value: moment().format("DD/MM/YYYY h:mm"),
                       label: (
                         <div>
                           Hoy{" "}
                           <span className="text-primary ml-2">
-                            ({moment().format("ddd-YYYY-MM-DD h:mm")})
+                            ({moment().format("ddd-DD/MM/YYYY h:mm")})
                           </span>
                         </div>
                       ),
                     },
                     {
-                      value: moment().add(1, "day").format("YYYY-MM-DD h:mm"),
+                      value: moment().add(1, "day").format("DD/MM/YYYY h:mm"),
                       label: (
                         <div>
                           Mañana{" "}
@@ -362,14 +362,14 @@ const [key, setKey] = useState(0)
                             (
                             {moment()
                               .add(1, "day")
-                              .format("ddd-YYYY-MM-DD h:mm")}
+                              .format("ddd-DD/MM/YYYY h:mm")}
                             )
                           </span>
                         </div>
                       ),
                     },
                     {
-                      value: moment().add(1, "week").format("YYYY-MM-DD h:mm"),
+                      value: moment().add(1, "week").format("DD/MM/YYYY h:mm"),
                       label: (
                         <div>
                           Siguiente semana{" "}
@@ -377,14 +377,14 @@ const [key, setKey] = useState(0)
                             (
                             {moment()
                               .add(1, "week")
-                              .format("ddd-YYYY-MM-DD h:mm")}
+                              .format("ddd-DD/MM/YYYY h:mm")}
                             )
                           </span>
                         </div>
                       ),
                     },
                     {
-                      value: moment().add(1, "month").format("YYYY-MM-DD h:mm"),
+                      value: moment().add(1, "month").format("DD/MM/YYYY h:mm"),
                       label: (
                         <div>
                           Siguiente mes{" "}
@@ -392,7 +392,7 @@ const [key, setKey] = useState(0)
                             (
                             {moment()
                               .add(1, "month")
-                              .format("ddd-YYYY-MM-DD h:mm")}
+                              .format("ddd-DD/MM/YYYY h:mm")}
                             )
                           </span>
                         </div>
@@ -413,7 +413,7 @@ const [key, setKey] = useState(0)
                     <DatePicker
                     key={key}
                       className="inputAddList col-5 justify-content-center mr-3"
-                      format="YYYY-MM-DD"
+                      format="DD/MM/YYYY"
                       value={dateRemainder}
                       defaultValue={dayjs()}
                       onChange={(e) => {
@@ -461,7 +461,7 @@ const [key, setKey] = useState(0)
                 <DatePicker
                 key={key}
                   className="inputAddList justify-content-center mr-3"
-                  format="YYYY-MM-DD"
+                  format="DD/MM/YYYY"
                   value={data.initDate}
                   defaultValue={dayjs()}
                   onChange={(e) => {
@@ -488,7 +488,7 @@ const [key, setKey] = useState(0)
                 key={key}
                   defaultValue={dayjs()}
                   className="inputAddList mr-3"
-                  format="YYYY-MM-DD"
+                  format="DD/MM/YYYY"
                   value={data.endDate}
                   onChange={(e) => {
                     if (e) {

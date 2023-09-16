@@ -1,8 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-
-console.log(apiUrl)
+const apiUrl = process.env.CODESPACE_NAME || 'http://192.168.16.139:5000';
 
 interface Credentials {
     identifier: string;
@@ -11,6 +9,8 @@ interface Credentials {
   interface CredentialsByid {
     id: string;
   }
+
+
   
   interface UserResponse {
     id: string;

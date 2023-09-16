@@ -261,10 +261,11 @@ const Dashboard = (props: DashboarProps) => {
               <i className="fas fa-bookmark fs-5 text-warning mr-3" />
               <span className="dashboardClose">Recordatorios</span>
             </a>
-            <a href="#" className="block py-1 text-gray-500 hover:underline">
-              <i className="fas fa-calendar fs-5 text-primary mr-3" />
+            <Link className="col-12" replace href="/diary">
+            <i className="fas fa-calendar fs-5 text-primary mr-3" />
               <span className="dashboardClose">Agenda</span>
-            </a>
+            </Link>
+            <br />
             <a href="#" className="block py-1 text-gray-500 hover:underline">
               <i className="fas fa-chalkboard-user fs-5 text-info mr-3" />
               <span className="dashboardClose">Seguimiento</span>

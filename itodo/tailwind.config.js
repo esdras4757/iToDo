@@ -15,7 +15,8 @@ module.exports = {
       colors:{
         main: '#1a1a1a',
         mainContainers: '#262626',
-        bgMainButtons:'#2468eb'
+        bgMainButtons:'#2468eb',
+        secondary2: '#bbb',
       }
     },
   },

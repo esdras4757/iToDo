@@ -161,7 +161,7 @@ export default function Home({ children }: { children: ReactNode }) {
           style={{
             backgroundSize: "cover", // Asegúrate de que la imagen cubra todo el contenedor
             backgroundPosition: "center", // Centra la imagen en el contenedor
-            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), url(${bgimg})`,
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url(${bgimg})`,
           }}
         >
           <Row className="w-100 justify-center m-auto align-items-center">

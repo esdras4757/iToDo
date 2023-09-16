@@ -30,7 +30,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
       reminder,
       isImportant,
       initAt,
-      finishAt,
+      endAt,
       note,
       userId,
       categoryId
@@ -43,7 +43,7 @@ router.post("/add", upload.single("file"), async (req, res) => {
       reminder,
       initAt,
       isCompleted:false,
-      finishAt,
+      endAt,
       note,
       userId,
       fileId: req.file && req.file.id,
@@ -60,13 +60,10 @@ router.post("/add", upload.single("file"), async (req, res) => {
     const task = new Task(addData);
     await task.save();
 
-    // Después de guardar, haremos una nueva consulta para poblar y obtener el objeto.
     const populatedTask = await Task.findById(task._id).populate('categoryId', 'name');
 
-    // Convertir el documento Mongoose a un objeto regular de JavaScript
     const taskObject = populatedTask.toObject();
 
-    // Ahora, puedes agregar la propiedad categoryName al objeto
     taskObject.categoryName = populatedTask.categoryId ? populatedTask.categoryId.name : null;
 
     res.send(taskObject);
@@ -85,7 +82,7 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
     description,
     reminder,
     initAt,
-    finishAt,
+    endAt,
     note,
     userId,
     categoryId,
@@ -101,7 +98,7 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
     description,
     reminder,
     initAt,
-    finishAt,
+    endAt,
     note,
     userId,
     fileId: req.file && req.file.id,
@@ -231,7 +228,6 @@ router.get("/getCompletedByIdUser/:id",async (req,res)=>{
    console.error(error);
    res.json({ message: 'Ha ocurrido un error, inténtalo de nuevo o verifica tu conexión a internet' });
  }
-
 })
 
 router.get("/getPendingByIdUser/:id",async (req,res)=>{

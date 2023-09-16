@@ -28,13 +28,11 @@
  justify-content: center !important;
  width: 100%;
  top: 2px;
- flex-wrap: nowrap;
- overflow-x: auto;
  position: absolute;
 }
 
 .DraftEditor-editorContainer{
-    height: calc(100vh - 410px) !important;
+    height: calc(100vh - 482px) !important;
 }
 
 .toolbarHidden {
@@ -46,14 +44,61 @@
 .inputTitle{
     position: absolute;
     background: transparent;
-    font-size: 21px;
+    font-size: 25px;
+    color: white;
     z-index: 3;
     top: 78px;
-    width: 68%;
-    padding: 10px 0px;
+    width: 96.6%;
+    padding: 8px 0px;
+    padding-bottom: 1px;
     outline: none;
+    border-bottom: 2px solid #4b4b4b;
+    margin: auto;
 }
 
 .editorClassName{
-    margin-top: 110px;
+    margin-top: 120px;
+}
+
+.borderLight{
+    border-right: 2px solid #4b4b4b;
+}
+
+.footerNote{
+    position: absolute;
+    bottom: -62px;
+    width: 96.6%;
+    margin: auto;
+    height: 35px;
+}
+
+.ant-picker-ok button{
+background-color: #2b80ef;
+}
+
+#popNote{
+    height: 100px;
+}
+
+#popShare{
+    height: 167px;
+    
+}
+
+#popShare{
+    background-color: #363636f0 !important;
+    color: white;
+}
+
+#popNoteEvent{
+    height: 240px;
+}
+
+.shareButton{
+    background-color: #1572a4e3 !important;
+    color: white;
+}
+
+.addEventNote button{
+    font-size: 14px
 }
