@@ -7,7 +7,8 @@ const noteSchema = mongoose.Schema({
     isImportant:{type:Boolean, required:false},
     initAt:{type:String, required:false},
     endAt:{type:String, required:false},
-    userId:{type:String, required:true}
+    userId:{type:String, required:true},
+    color:{type:String, required:false}
 }, {
     timestamps: true  // Habilita la creación de los campos 'createdAt' y 'updatedAt'
   })

@@ -103,6 +103,7 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
     userId,
     fileId: req.file && req.file.id,
     originalFileName: req.file && req.file.originalname,
+    color:req.body.color
   };
   
 

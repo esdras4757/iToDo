@@ -43,6 +43,7 @@ router.put("/update/:id", async (req, res) => {
         initAt: req.body.initAt,
         endAt: req.body.endAt,
         isImportant: req.body.isImportant,
+        color:req.body.color
       },
       { new: true }
     );

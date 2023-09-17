@@ -41,6 +41,7 @@ router.post("/sendEmail", async (req, res) => {
 
 
 router.get('/getAllEventsByIdUser/:id', async (req, res) => {
+
   try {
     const taskReminders = (await Task.find({ userId: req.params.id }, ['initAt', 'endAt', 'title', '_id', 'reminder','type','note','color','description']))
   .filter(task => (task.initAt !== null && task.initAt !== '') || (task.endAt !== null && task.endAt !== ''));
@@ -50,9 +51,6 @@ router.get('/getAllEventsByIdUser/:id', async (req, res) => {
 
   const EventReminders = (await Event.find({ userId: req.params.id }, ['initAt', 'endAt', 'title', '_id', 'reminder','type','note','color','description']))
   .filter(event => (event.initAt !== null && event.initAt !== '') || (event.endAt !== null && event.endAt !== ''));
-
-  
-    console.log(noteReminders, req.params.id)
 
     const allReminders = taskReminders.map(task => ({
       type: 'task',
@@ -95,6 +93,42 @@ router.get('/getAllEventsByIdUser/:id', async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+router.patch('/updateEventById/:id', async (req, res) => {
+  const id = req.params.id;
+  const camposParaEditar = req.body;
+
+  try {
+    // Intenta actualizar en Notas
+    let resultado = await Note.findByIdAndUpdate({ _id: id }, camposParaEditar, { new: true });
+
+    
+    if (resultado) {
+      return res.json( {...resultado.toObject(),type:'note'} );
+    }
+
+    // Intenta actualizar en Tareas
+    resultado = await Task.findByIdAndUpdate(id, camposParaEditar, { new: true });
+    
+    if (resultado) {
+      return res.json({...resultado.toObject(),type:'task'} );
+    }
+
+    // Intenta actualizar en Eventos
+    resultado = await Event.findByIdAndUpdate(id, camposParaEditar, { new: true });
+    
+    if (resultado) {
+      return res.json({...resultado.toObject(),type:'event'});
+    }
+
+    // Si no se encontró el ID en ninguna colección
+    return res.status(404).json({ message: 'ID no encontrado en ninguna colección' });
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: 'Error al editar', error });
   }
 });
 

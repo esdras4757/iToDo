@@ -107,7 +107,7 @@ const SignIn: React.FC = () => {
     >
       <form className="formLogin" onSubmit={handleSubmit}>
         <Row
-          className="justify-content-center align-content-center align-items-center"
+          className="justify-content-center align-content-center align-items-center text-white"
           style={{ height: "100vh" }}
         >
           <div className="w-44 mb-5">

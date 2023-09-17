@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.16.139:5000/"; // ajusta esto a tu base URL real
+const BASE_URL = "https://cuddly-garbanzo-r6g6pq5x4j42x4j5-5000.app.github.dev/"; // ajusta esto a tu base URL real
 
 const apiConstants = {
   GET_ALL_TASK: BASE_URL + "api/task",
@@ -24,6 +24,7 @@ const apiConstants = {
 
   // Events
   POST_ADD_EVENT : BASE_URL + "api/event/add",
+  PATCH_UPDATE_EVENT_BY_ID: BASE_URL + "api/utils/updateEventById"
 };
 
 export default apiConstants;

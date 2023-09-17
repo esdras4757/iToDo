@@ -61,6 +61,9 @@ export const addEvent = (data)=>{
     return axios.post(apiConstants.POST_ADD_EVENT, data)
 }
 
+export const updateEventById = (id, data)=>{
+    return axios.patch(apiConstants.PATCH_UPDATE_EVENT_BY_ID + "/" + id, data)
+}
 
 
 

@@ -15,7 +15,7 @@ import NoDataPlaceholder from "../Components/NoDataPlaceholder";
 import { DatePicker, Input, Popover, TimePicker } from "antd";
 import draftToHtml from "draftjs-to-html";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import { addEvent, getAllEventsByIdUser } from "../utils/services/services";
+import { addEvent, getAllEventsByIdUser, updateEventById } from "../utils/services/services";
 import "dayjs/locale/es";
 import customParseFormat from "dayjs/plugin/customParseFormat"; // Notar cómo se importa el plugin aquí
 
@@ -37,7 +37,7 @@ import dayjs, { Dayjs } from "dayjs";
 import "react-calendar/dist/Calendar.css";
 import FullCalendar from "@fullcalendar/react";
 import CalendarApi from "@fullcalendar/react";
-import { ColorPicker } from 'antd';
+import { ColorPicker } from "antd";
 
 dayjs.extend(customParseFormat);
 let timer: NodeJS.Timeout | null = null;
@@ -58,7 +58,7 @@ interface EventData {
   type: string;
   description: string;
   color: string;
-  note:string| null
+  note: string | null;
 }
 
 const initValues: EventData = {
@@ -70,7 +70,7 @@ const initValues: EventData = {
   type: "",
   description: "",
   color: "#ccc",
-  note:""
+  note: "",
 };
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -78,7 +78,7 @@ dayjs.locale("es");
 const Page = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [allEventData, setAllEventData] = useState<EventData[] | null>(null);
-  const [eventFormat, setEventFormat] = useState <any>(null);
+  const [eventFormat, setEventFormat] = useState<any>(null);
 
   const [loaderAllEvent, setLoaderAllEvent] = useState(false);
   const [errorAllEvent, setErrorAllEvent] = useState(false);
@@ -90,7 +90,7 @@ const Page = () => {
   const [title, setTitle] = useState<null | string>(null);
   const [values, setValues] = useState(initValues);
   const [editMode, setEditMode] = useState(false);
-  const [errors, setErrors] = useState(false)
+  const [errors, setErrors] = useState(false);
 
   const calendarRef = useRef<any>(null);
   useEffect(() => {
@@ -100,9 +100,9 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
-    if(allEventData && isNil(allEventData)==false){
-      const events =allEventData.map((item: EventData) => {
-        return{
+    if (allEventData && isNil(allEventData) == false) {
+      const events = allEventData.map((item: EventData) => {
+        return {
           id: item.id,
           title: item.title,
           start:
@@ -113,13 +113,15 @@ const Page = () => {
             isNil(item.endAt) == false && item.endAt != ""
               ? dayjs(item.endAt, "DD/MM/YYYY HH:mm").toDate()
               : null,
-          color:item.color?item.color:
-                item.type == "task" ? "blue" : 
-                item.type == "note" && "#8e8f3d",
+          color: item.color
+            ? item.color
+            : item.type == "task"
+            ? "blue"
+            : item.type == "note" && "#8e8f3d",
           description: item.description,
           type: item.type,
-          reminder:item.reminder,
-          note:item.note
+          reminder: item.reminder,
+          note: item.note,
         };
       });
 
@@ -137,12 +139,9 @@ const Page = () => {
       setIdUser(id);
     }
 
-
-
     try {
       const response = await getAllEventsByIdUser(id);
       if (response.data && response.data.length > 0) {
-        
         // console.log(events);
         setAllEventData(response.data);
       }
@@ -155,56 +154,118 @@ const Page = () => {
   };
 
   const AddEvent = async () => {
-   
-
-    if (isNil(values.title)===true || values.title.trim()==='' || 
-      isNil(values.initAt)===true || values.initAt==='' ||
-      isNil(values.endAt)===true || values.endAt===''
-      ) {
-        setErrors(true)
-      return 
+    if (
+      isNil(values.title) === true ||
+      values.title.trim() === "" ||
+      isNil(values.initAt) === true ||
+      values.initAt === "" ||
+      isNil(values.endAt) === true ||
+      values.endAt === ""
+    ) {
+      setErrors(true);
+      return;
     }
-    setErrors(false)
+    setErrors(false);
     setFastSpin(true);
     try {
       console.log(values);
-      const data={
-        userId:idUser,
-        title:values.title,
-        description:values.description,
-        initAt:values.initAt,
-        endAt:values.endAt,
-        color:values.color,
-        reminder:values.reminder,
-        note:values.note,
-        type:'event'
-      }
+      const data = {
+        userId: idUser,
+        title: values.title,
+        description: values.description,
+        initAt: values.initAt,
+        endAt: values.endAt,
+        color: values.color,
+        reminder: values.reminder,
+        note: values.note,
+        type: "event",
+      };
 
-      const response = await addEvent(data)
-      if (isNil(response)===false && isNil(response.data)===false) {
-        console.log('aaaaaaaaaaaaaaaaa')
-        ShowHidePanel()
-        setAllEventData((prev)=>{
+      const response = await addEvent(data);
+      if (isNil(response) === false && isNil(response.data) === false) {
+        console.log("aaaaaaaaaaaaaaaaa");
+        ShowHidePanel();
+        setAllEventData((prev) => {
           if (!prev) {
-            return prev
+            return prev;
           }
-          return[...prev,response.data]
-        })
+          return [...prev, response.data];
+        });
         const calendarApi = calendarRef.current.getApi();
-      calendarApi.render();
+        calendarApi.render();
       }
-    } catch (error:any) {
-       openNotification("error", error.message);
-    }
-    finally{
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
       setFastSpin(false);
-    
     }
   };
 
-  const updateEvent=()=>{
+  const updateEvent = async () => {
+    if (
+      isNil(values.title) === true ||
+      values.title.trim() === "" ||
+      isNil(values.initAt) === true ||
+      values.initAt === "" ||
+      isNil(values.endAt) === true ||
+      values.endAt === ""
+    ) {
+      setErrors(true);
+      return;
+    }
+    setErrors(false);
+    setFastSpin(true);
+    try {
+      console.log(values);
+      const data = {
+        userId: idUser,
+        title: values.title,
+        description: values.description,
+        initAt: values.initAt,
+        endAt: values.endAt,
+        color: values.color,
+        reminder: values.reminder,
+        note: values.note,
+        type: "event",
+      };
 
-  }
+      const response = await updateEventById(values.id,data);
+      if (isNil(response) === false && isNil(response.data) === false) {
+        ShowHidePanel();
+        setAllEventData((prev) => {
+          if (!prev || isEmpty(prev)) {
+            return prev;
+          }
+           const newEvent = prev.map((event)=>{
+            if(event.id === response.data._id){
+              const data = {
+                id:response.data._id,
+                userId: response.data.userId,
+                title: response.data.title,
+                description: response.data.description,
+                initAt: response.data.initAt,
+                endAt: response.data.endAt,
+                color: response.data.color,
+                reminder: response.data.reminder,
+                note: response.data.note,
+                type: response.data.type,
+              }
+              event=data
+            }
+            return event
+
+          })
+          return newEvent
+        });
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.render();
+      }
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setFastSpin(false);
+    }
+  };
 
   const ShowHidePanel = (type: "toggle" | "add" | "remove" = "toggle") => {
     const detailPanel = document.querySelector(".detailPanel");
@@ -239,10 +300,9 @@ const Page = () => {
           <button
             onClick={() => {
               ShowHidePanel("remove");
-              setValues(initValues)
+              setValues(initValues);
               setEditMode(false);
             }}
-
             className="btn btn-primary absolute top-0"
             style={{ left: "43%" }}
           >
@@ -255,27 +315,31 @@ const Page = () => {
             height={"calc(100vh - 260px)"}
             plugins={[dayGridPlugin]}
             initialView="dayGridMonth"
-            displayEventTime={false} 
-            dayMaxEventRows={4} 
-            moreLinkContent={()=>{
-              return 'Ver más'
+            displayEventTime={false}
+            dayMaxEventRows={4}
+            moreLinkContent={() => {
+              return "Ver más";
             }}
             eventClick={(e) => {
               ShowHidePanel("remove");
               setEditMode(true);
-              console.log(e)
-              
+              console.log(e);
+
               setValues({
                 id: e.event.id,
                 title: e.event.title,
-                initAt: e.event.start?dayjs(e.event.start).format('DD/MM/YYYY HH:mm'):'',
-                endAt: e.event.end?dayjs(e.event.end).format('DD/MM/YYYY HH:mm'):'',
+                initAt: e.event.start
+                  ? dayjs(e.event.start).format("DD/MM/YYYY HH:mm")
+                  : "",
+                endAt: e.event.end
+                  ? dayjs(e.event.end).format("DD/MM/YYYY HH:mm")
+                  : "",
                 reminder: e.event.extendedProps.reminder,
                 type: e.event.extendedProps.type,
                 description: e.event.extendedProps.description,
                 color: e.event.backgroundColor,
-                note:e.event.extendedProps.note
-              })
+                note: e.event.extendedProps.note,
+              });
             }}
             selectable={true}
             events={eventFormat ?? []}
@@ -283,7 +347,7 @@ const Page = () => {
         </div>
         <div className="col-3 detailPanel d-none">
           <div
-            className="bg-mainContainers relative row align-content-start px-2 justify-content-center"
+            className="bg-mainContainers text-white relative row align-content-start px-2 justify-content-center"
             style={{ height: "calc(100vh - 260px)", overflow: "auto" }}
           >
             <div className="col-12 text-center mt-5 fs-5 align-content-start">
@@ -411,35 +475,35 @@ const Page = () => {
               <div className="col-12">
                 <label>Notas</label> <br />
                 <input
-                  value={values.note??''}
+                  value={values.note ?? ""}
                   type="text"
                   className="inputAddList col-12"
                   placeholder={""}
                   onChange={(e) => {
                     updateValues(e.target.value, "note");
-                  
                   }}
                 />
               </div>
 
               <div className="col-auto m-auto text-center">
                 <label>Color</label> <br />
-                <ColorPicker 
-                className="m-auto"
-                size={'middle'}
-                value={values.color}
-                onChange={(color) => {
-                  // console.log(color)
-                  updateValues(color.toHexString(), "color");
-                  
-                }}
+                <ColorPicker
+                  className="m-auto"
+                  size={"middle"}
+                  value={values.color}
+                  onChange={(color) => {
+                    // console.log(color)
+                    updateValues(color.toHexString(), "color");
+                  }}
                 />
               </div>
-              
+
               <div className="col-12 mb-3 m-auto row justify-content-between">
-              {errors&&<span className=" text-danger mb-2 text-center p-1 m-0 alert alert-danger">
-                *Campos requeridos
-              </span>}
+                {errors && (
+                  <span className=" text-danger mb-2 text-center p-1 m-0 alert alert-danger">
+                    *Campos requeridos
+                  </span>
+                )}
                 <button
                   onClick={(e) => {
                     ShowHidePanel();
@@ -451,11 +515,10 @@ const Page = () => {
                 </button>
                 <button
                   onClick={(e) => {
-                    editMode
-                      ? updateEvent()
-                      : AddEvent();
+                    editMode ? updateEvent() : AddEvent();
                   }}
-                 className="col-auto btn btn-primary">
+                  className="col-auto btn btn-primary"
+                >
                   <i
                     className={`fa-solid pr-1 ${
                       editMode ? "fa-save" : "fa-paper-plane"

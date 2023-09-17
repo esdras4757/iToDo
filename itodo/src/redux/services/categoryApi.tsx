@@ -33,7 +33,7 @@ interface dataResponseByIdUser {
 
 export const categoryApi = createApi({
   reducerPath: "categoryApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/api/category/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "https://cuddly-garbanzo-r6g6pq5x4j42x4j5-5000.app.github.dev/api/category/" }),
   endpoints: (builder) => ({
     addCategoryByIdUser: builder.mutation<dataResponseAdd, dataQuery>({
       query: (dataQuery) => ({

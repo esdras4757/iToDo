@@ -1,0 +1,26 @@
+.anticon {
+    font-size: 20px !important;
+}
+
+.ant-card-meta-title{
+    font-size: 20px !important;
+}
+
+.ant-card-meta-description{
+    font-size: 17px !important;
+
+}
+
+.ant-avatar{
+    height: 65px;
+    width: 65px;
+}
+
+.title{
+    color: #ddd;
+    font-weight: bold;
+    text-shadow: 1px 2px 5px rgb(46, 46, 46);
+    font-size: 40px;
+    padding: 5px 0;
+    border-radius: 7px;
+}

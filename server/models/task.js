@@ -15,6 +15,7 @@ const taskSchema = new mongoose.Schema({
     userId:{type:mongoose.Schema.Types.ObjectId,ref:'User',required: true},
     categoryId:{type:mongoose.Schema.Types.ObjectId,ref:'Category',required: false},
     originalFileName:{required:false,type:String},
+    color:{type:String, required:false}
 })
 
 module.exports = mongoose.model('Task',taskSchema);
