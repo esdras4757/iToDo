@@ -1,6 +1,6 @@
 "use client";
 import Calendar from "react-calendar";
-import { ReactNode, useEffect, useRef, useState, KeyboardEvent } from "react";
+import { ReactNode, useEffect, useRef, useState, } from "react";
 import { isNil, isEmpty, debounce } from "lodash";
 import Home from "../main/main";
 import React from "react";
@@ -15,7 +15,7 @@ import NoDataPlaceholder from "../Components/NoDataPlaceholder";
 import { Avatar, Card, DatePicker, Input, Popover, Skeleton, TimePicker } from "antd";
 import draftToHtml from "draftjs-to-html";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import { addEvent, getAllEventsByIdUser, updateEventById } from "../utils/services/services";
+import { getAllRemindersByIdUser } from "../utils/services/services";
 import "dayjs/locale/es";
 import customParseFormat from "dayjs/plugin/customParseFormat"; // Notar cómo se importa el plugin aquí
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
@@ -51,7 +51,7 @@ interface status {
   isInProgress: boolean;
 }
 
-interface EventData {
+interface ReminderData {
   id: string;
   title: string;
   initAt: string | null;
@@ -63,7 +63,7 @@ interface EventData {
   note: string | null;
 }
 
-const initValues: EventData = {
+const initValues: ReminderData = {
   id: "",
   title: "",
   initAt: null,
@@ -79,11 +79,11 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 dayjs.locale("es");
 const Page = () => {
   const [visible, setVisible] = useState<boolean>(false);
-  const [allEventData, setAllEventData] = useState<EventData[] | null>(null);
-  const [eventFormat, setEventFormat] = useState<any>(null);
+  const [allReminderData, setAllReminderData] = useState<ReminderData[] | null>(null);
+  const [eventFormat, setReminderFormat] = useState<any>(null);
 
-  const [loaderAllEvent, setLoaderAllEvent] = useState(false);
-  const [errorAllEvent, setErrorAllEvent] = useState(false);
+  const [loaderAllReminder, setLoaderAllReminder] = useState(false);
+  const [errorAllReminder, setErrorAllReminder] = useState(false);
   const [fastSpin, setFastSpin] = useState(false);
   const [idUser, setIdUser] = useState("");
   const [title, setTitle] = useState<null | string>(null);
@@ -94,13 +94,13 @@ const Page = () => {
   const calendarRef = useRef<any>(null);
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
-      getAllEventByUser();
+      getAllReminderByUser();
     }
   }, []);
 
   useEffect(() => {
-    if (allEventData && isNil(allEventData) == false) {
-      const events = allEventData.map((item: EventData) => {
+    if (allReminderData && isNil(allReminderData) == false) {
+      const events = allReminderData.map((item: ReminderData) => {
         return {
           id: item.id,
           title: item.title,
@@ -124,14 +124,14 @@ const Page = () => {
         };
       });
 
-      setEventFormat(events);
+      setReminderFormat(events);
     }
-  }, [allEventData]);
+  }, [allReminderData]);
 
-  const getAllEventByUser = async () => {
-    setErrorAllEvent(false);
-    setAllEventData(null);
-    setLoaderAllEvent(true);
+  const getAllReminderByUser = async () => {
+    setErrorAllReminder(false);
+    setAllReminderData(null);
+    setLoaderAllReminder(true);
     const id = sessionStorage.getItem("user");
 
     if (id) {
@@ -139,132 +139,132 @@ const Page = () => {
     }
 
     try {
-      const response = await getAllEventsByIdUser(id);
+      const response = await getAllRemindersByIdUser(id);
       if (response.data && response.data.length > 0) {
-        // console.log(events);
-        setAllEventData(response.data);
+        console.log(response.data);
+        setAllReminderData(response.data);
       }
     } catch (error: any) {
-      setErrorAllEvent(true);
+      setErrorAllReminder(true);
       openNotification("error", error.message);
     } finally {
-      setLoaderAllEvent(false);
+      setLoaderAllReminder(false);
     }
   };
 
-  const AddEvent = async () => {
-    if (
-      isNil(values.title) === true ||
-      values.title.trim() === "" ||
-      isNil(values.initAt) === true ||
-      values.initAt === "" ||
-      isNil(values.endAt) === true ||
-      values.endAt === ""
-    ) {
-      setErrors(true);
-      return;
-    }
-    setErrors(false);
-    setFastSpin(true);
-    try {
-      console.log(values);
-      const data = {
-        userId: idUser,
-        title: values.title,
-        description: values.description,
-        initAt: values.initAt,
-        endAt: values.endAt,
-        color: values.color,
-        reminder: values.reminder,
-        note: values.note,
-        type: "event",
-      };
+  // const AddReminder= async () => {
+  //   if (
+  //     isNil(values.title) === true ||
+  //     values.title.trim() === "" ||
+  //     isNil(values.initAt) === true ||
+  //     values.initAt === "" ||
+  //     isNil(values.endAt) === true ||
+  //     values.endAt === ""
+  //   ) {
+  //     setErrors(true);
+  //     return;
+  //   }
+  //   setErrors(false);
+  //   setFastSpin(true);
+  //   try {
+  //     console.log(values);
+  //     const data = {
+  //       userId: idUser,
+  //       title: values.title,
+  //       description: values.description,
+  //       initAt: values.initAt,
+  //       endAt: values.endAt,
+  //       color: values.color,
+  //       reminder: values.reminder,
+  //       note: values.note,
+  //       type: "event",
+  //     };
 
-      const response = await addEvent(data);
-      if (isNil(response) === false && isNil(response.data) === false) {
-        console.log("aaaaaaaaaaaaaaaaa");
-        ShowHidePanel();
-        setAllEventData((prev) => {
-          if (!prev) {
-            return prev;
-          }
-          return [...prev, response.data];
-        });
-        const calendarApi = calendarRef.current.getApi();
-        calendarApi.render();
-      }
-    } catch (error: any) {
-      openNotification("error", error.message);
-    } finally {
-      setFastSpin(false);
-    }
-  };
+  //     const response = await addReminder(data);
+  //     if (isNil(response) === false && isNil(response.data) === false) {
+  //       console.log("aaaaaaaaaaaaaaaaa");
+  //       ShowHidePanel();
+  //       setAllReminderData((prev) => {
+  //         if (!prev) {
+  //           return prev;
+  //         }
+  //         return [...prev, response.data];
+  //       });
+  //       const calendarApi = calendarRef.current.getApi();
+  //       calendarApi.render();
+  //     }
+  //   } catch (error: any) {
+  //     openNotification("error", error.message);
+  //   } finally {
+  //     setFastSpin(false);
+  //   }
+  // };
 
-  const updateEvent = async () => {
-    if (
-      isNil(values.title) === true ||
-      values.title.trim() === "" ||
-      isNil(values.initAt) === true ||
-      values.initAt === "" ||
-      isNil(values.endAt) === true ||
-      values.endAt === ""
-    ) {
-      setErrors(true);
-      return;
-    }
-    setErrors(false);
-    setFastSpin(true);
-    try {
-      console.log(values);
-      const data = {
-        userId: idUser,
-        title: values.title,
-        description: values.description,
-        initAt: values.initAt,
-        endAt: values.endAt,
-        color: values.color,
-        reminder: values.reminder,
-        note: values.note,
-        type: "event",
-      };
+  // const updateReminder = async () => {
+  //   if (
+  //     isNil(values.title) === true ||
+  //     values.title.trim() === "" ||
+  //     isNil(values.initAt) === true ||
+  //     values.initAt === "" ||
+  //     isNil(values.endAt) === true ||
+  //     values.endAt === ""
+  //   ) {
+  //     setErrors(true);
+  //     return;
+  //   }
+  //   setErrors(false);
+  //   setFastSpin(true);
+  //   try {
+  //     console.log(values);
+  //     const data = {
+  //       userId: idUser,
+  //       title: values.title,
+  //       description: values.description,
+  //       initAt: values.initAt,
+  //       endAt: values.endAt,
+  //       color: values.color,
+  //       reminder: values.reminder,
+  //       note: values.note,
+  //       type: "event",
+  //     };
 
-      const response = await updateEventById(values.id,data);
-      if (isNil(response) === false && isNil(response.data) === false) {
-        ShowHidePanel();
-        setAllEventData((prev) => {
-          if (!prev || isEmpty(prev)) {
-            return prev;
-          }
-           const newEvent = prev.map((event)=>{
-            if(event.id === response.data._id){
-              const data = {
-                id:response.data._id,
-                userId: response.data.userId,
-                title: response.data.title,
-                description: response.data.description,
-                initAt: response.data.initAt,
-                endAt: response.data.endAt,
-                color: response.data.color,
-                reminder: response.data.reminder,
-                note: response.data.note,
-                type: response.data.type,
-              }
-              event=data
-            }
-            return event
+  //     const response = await updateReminderById(values.id,data);
+  //     if (isNil(response) === false && isNil(response.data) === false) {
+  //       ShowHidePanel();
+  //       setAllReminderData((prev) => {
+  //         if (!prev || isEmpty(prev)) {
+  //           return prev;
+  //         }
+  //          const newReminder = prev.map((event)=>{
+  //           if(event.id === response.data._id){
+  //             const data = {
+  //               id:response.data._id,
+  //               userId: response.data.userId,
+  //               title: response.data.title,
+  //               description: response.data.description,
+  //               initAt: response.data.initAt,
+  //               endAt: response.data.endAt,
+  //               color: response.data.color,
+  //               reminder: response.data.reminder,
+  //               note: response.data.note,
+  //               type: response.data.type,
+  //             }
+  //             event=data
+  //           }
+  //           return event
 
-          })
-          return newEvent
-        });
-        const calendarApi = calendarRef.current.getApi();
-        calendarApi.render();
-      }
-    } catch (error: any) {
-      openNotification("error", error.message);
-    } finally {
-      setFastSpin(false);
-    }
-  };
+  //         })
+  //         return newReminder
+  //       });
+  //       const calendarApi = calendarRef.current.getApi();
+  //       calendarApi.render();
+  //     }
+  //   } catch (error: any) {
+  //     openNotification("error", error.message);
+  //   } finally {
+  //     setFastSpin(false);
+  //   }
+  // };
 
   const ShowHidePanel = (type: "toggle" | "add" | "remove" = "toggle") => {
     const detailPanel = document.querySelector(".detailPanel");
@@ -277,8 +277,8 @@ const Page = () => {
     }
   };
 
-  const updateValues = <K extends keyof EventData>(
-    value: EventData[K],
+  const updateValues = <K extends keyof ReminderData>(
+    value: ReminderData[K],
     name: K
   ) => {
     setValues((prev) => {
@@ -295,7 +295,7 @@ const Page = () => {
       <div className="row align-content-end align-items-end  gap-3 justify-content-between p-5 w-100 m-auto">
         <FastLoader isLoading={fastSpin} />
         <h1 className="col-12 text-center mb-2 flex align-items-center justify-content-center title bold">
-            <i className="fas fa-bell text-primary mr-3" /> Recordatorios
+            <i className="fas fa-bell text-warning mr-3" /> Recordatorios
             </h1>
         <Card
         style={{ width: 340, marginTop: 16 }}

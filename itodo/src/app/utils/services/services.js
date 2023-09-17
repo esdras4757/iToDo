@@ -65,6 +65,11 @@ export const updateEventById = (id, data)=>{
     return axios.patch(apiConstants.PATCH_UPDATE_EVENT_BY_ID + "/" + id, data)
 }
 
+export const getAllRemindersByIdUser = (id)=>{
+    return axios.get(apiConstants.GET_ALL_REMINDERS_BY_ID_USER+ '/' + id)
+}
+
+
 
 
 

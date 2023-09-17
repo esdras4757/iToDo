@@ -24,7 +24,10 @@ const apiConstants = {
 
   // Events
   POST_ADD_EVENT : BASE_URL + "api/event/add",
-  PATCH_UPDATE_EVENT_BY_ID: BASE_URL + "api/utils/updateEventById"
+  PATCH_UPDATE_EVENT_BY_ID: BASE_URL + "api/utils/updateEventById",
+
+  //reminders 
+  GET_ALL_REMINDERS_BY_ID_USER : BASE_URL + "api/utils/allRemindersByIdUser",
 };
 
 export default apiConstants;

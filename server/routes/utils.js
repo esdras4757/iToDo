@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const Note = require("../models/notes.js");
 const Task = require("../models/task.js");
 const Event = require("../models/event.js");
+const { error } = require("console");
 
 router.post("/sendEmail", async (req, res) => {
   const { to, title, userid,content } = req.body;
@@ -131,6 +132,16 @@ router.patch('/updateEventById/:id', async (req, res) => {
     return res.status(500).json({ message: 'Error al editar', error });
   }
 });
+
+
+router.get('/allRemaindersByIdUser/:id', async (req,res)=>{
+  try {
+    const notesCoinciences= await Note.find({idUser:req.params.id},['reminder','_id','idUser','description'])
+    console.log(notesCoinciences)
+  } catch (error) {
+    res.status(500).json({error:error.message})
+  }
+})
 
 
 module.exports = router;
