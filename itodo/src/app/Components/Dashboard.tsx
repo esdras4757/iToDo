@@ -13,6 +13,10 @@ import { useGetCategoryByIdUserQuery } from "@/redux/services/categoryApi";
 import IconSelector from "./IconSelector";
 import { useUpdateCategoryMutation } from "@/redux/services/categoryApi";
 import { addCategories } from "@/redux/features/categorySlice";
+import { isEmpty, isNil } from "lodash";
+import { deleteCategoryById } from "../utils/services/services";
+import FastLoader from "./FastLoader";
+import { useRouter } from "next/navigation";
 interface User {
   id: string;
   nombre: string;
@@ -34,7 +38,6 @@ interface dataResponseByIdUser {
     idUser: string;
     name: string;
     styles: string;
-    idList: string;
   }[];
 }
 
@@ -43,7 +46,6 @@ interface Category {
   idUser: string;
   name: string;
   styles: string;
-  idList: string;
 }
 
 const Dashboard = (props: DashboarProps) => {
@@ -54,7 +56,7 @@ const Dashboard = (props: DashboarProps) => {
   });
   const [isEditcustomList, setIsEditcustomList] = useState(false);
   const [editingId, setEditingId] = useState<null | string>(null); // nuevo estado
-
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const [addCategoryByIdUser, { isLoading: isLoadingAddCategory }] =
     useAddCategoryByIdUserMutation();
@@ -63,6 +65,7 @@ const Dashboard = (props: DashboarProps) => {
   const response = useGetCategoryByIdUserQuery(userInfo?.id || "", {
     skip: !userInfo?.id,
   });
+  const [fastSpin, setFastSpin] = useState(false);
   const [categoryData, setCategoryData] = useState<Category[] | null>(null);
   let categoryLoading = false;
   let categoryError: any = false;
@@ -75,12 +78,14 @@ const Dashboard = (props: DashboarProps) => {
       setCategoryData(response.data ?? null);
       categoryLoading = response.isLoading;
       categoryError = response.error;
+
+      console.log("allll", response.data);
     }
   }, [response]);
 
-  useEffect(()=>{
-    dispatch(addCategories(categoryData))
-  },[categoryData])
+  useEffect(() => {
+    dispatch(addCategories(categoryData));
+  }, [categoryData]);
 
   useEffect(() => {
     if (userInfo?.id) {
@@ -89,8 +94,9 @@ const Dashboard = (props: DashboarProps) => {
   }, [userInfo]);
 
   useEffect(() => {
-    setSize({ width: isOpen ? 298 : 50, height: "auto" });
+    setSize({ width: isOpen ? 298 : 40, height: "auto" });
   }, [isOpen]);
+
   const [nameCategory, setNameCategory] = useState("");
 
   const addCategory = () => {
@@ -148,7 +154,7 @@ const Dashboard = (props: DashboarProps) => {
       .then((data) => {
         setCategoryData((CatDat) => {
           const updatedCatData = CatDat?.map((item) => {
-            if (item.idList === idCategory) {
+            if (item.id === idCategory) {
               return data;
             } else {
               return item;
@@ -164,9 +170,33 @@ const Dashboard = (props: DashboarProps) => {
       });
   };
 
-  const editList = (idList: string) => {};
-
-  const deleteList = (idList: string) => {};
+  const deleteList = async (id: string) => {
+    setFastSpin(true);
+    if (isNil(id) === true || id.trim() === "") {
+      return;
+    }
+    try {
+      const response = await deleteCategoryById(id, {});
+      if (isNil(response) == false && isNil(response.data) == false) {
+        setCategoryData((prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return prev.filter((category) => {
+            console.log(response.data, category.id);
+            return category.id != response.data._id;
+          });
+        });
+      }
+    } catch (error: any) {
+      openNotification(
+        "error",
+        error.message || "ah ocurrido un error intentalo de nuevo"
+      );
+    } finally {
+      setFastSpin(false);
+    }
+  };
 
   const handleIconSelection = (iconKey: string, iconColor: string) => {
     const stylesIcon = { class: `fa-solid fa-${iconKey}`, color: iconColor };
@@ -180,10 +210,11 @@ const Dashboard = (props: DashboarProps) => {
         console.log(ref.style.width, ref.style.height);
         setSize({ width: Number.parseFloat(ref.style.width), height: "auto" });
       }}
-      minWidth={isOpen ? "240px" : "65px"}
-      maxWidth={isOpen ? "240px" : "3vw"}
+      minWidth={isOpen ? "240px" : "60px"}
+      maxWidth={isOpen ? "240px" : "2vw"}
       className={`flex flex-col px-1 overflow-hidden transition-all duration-200 ease-in-out bg-mainContainers`}
     >
+      <FastLoader isLoading={fastSpin} />
       <div
         className={`w-all flex ${
           size.width > 20 ? "justify-center" : "justify-center"
@@ -219,66 +250,150 @@ const Dashboard = (props: DashboarProps) => {
       </div>
 
       <div>
-        <div style={{ height: "90vh", overflowY: "auto", overflowX: "hidden" }}>
+        <div style={{ height: "82vh", overflowY: "auto", overflowX: "hidden" }}>
           <nav className="pt-2 pb-4">
-            <section className="pb-1 mb-2" style={{borderBottom:'1px solid #4b4b4b'}}>
-              <Link replace href="/task">
+            <section
+              className="pb-1 mb-2"
+              style={{ borderBottom: "1px solid #4b4b4b" }}
+            >
+              <Link
+                className="col-12 d-block"
+                style={
+                  window.location.pathname.includes("task")
+                    ? { background: "#393939" }
+                    : {}
+                }
+                replace
+                href="/task"
+              >
                 <i className="fas fa-list-check fs-5 text-primary mr-3" />
                 <span className="dashboardClose">Tareas</span>
               </Link>
-              <br />
-              <Link replace href="/notes">
-              <i className="fas fa-note-sticky fs-5 text-warning mr-3" />
+
+              <Link
+                style={
+                  window.location.pathname.includes("note")
+                    ? { background: "#393939" }
+                    : {}
+                }
+                className="col-12 d-block"
+                replace
+                href="/note"
+              >
+                <i className="fas fa-note-sticky fs-5 text-warning mr-3" />
                 <span className="dashboardClose">Notas</span>
               </Link>
-              <br />
             </section>
-            <Link replace href="/myDay">
+            <Link
+              style={
+                window.location.pathname.includes("myDay")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/myDay"
+            >
               <i className="fas fa-sun text-primary fs-5 mr-3" />
               <span className="dashboardClose">Mi día</span>
             </Link>
-            <br />
-            <Link className="col-12" replace href="/important">
-            <i className="fas fa-star fs-5 text-warning mr-3" />
+
+            <Link
+              style={
+                window.location.pathname.includes("important")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/important"
+            >
+              <i className="fas fa-star fs-5 text-warning mr-3" />
               <span className="dashboardClose">Importantes</span>
             </Link>
-            <br />
-            <Link className="col-12" replace href="/completed">
+
+            <Link
+              style={
+                window.location.pathname.includes("completed")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/completed"
+            >
               <i className="fas fa-circle-check fs-5 text-success mr-3" />
               <span className="dashboardClose">Completadas</span>
             </Link>
-            <br />
-            <Link className="col-12" replace href="/pending">
-            <i className="fas fa-clock text-danger fs-5 mr-3" />
+
+            <Link
+              style={
+                window.location.pathname.includes("pending")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/pending"
+            >
+              <i className="fas fa-clock text-danger fs-5 mr-3" />
               <span className="dashboardClose">Pendientes</span>
             </Link>
-            <br />
-            <a href="#" className="block py-1 text-gray-500 hover:underline">
-              <i className="fas fa-bars-progress text-info fs-5 mr-3" />
-              <span className="dashboardClose">En curso</span>
-            </a>
-            <Link className="col-12" replace href="/reminder">
-            <i className="fas fa-bookmark fs-5 text-warning mr-3" />
+
+            <Link
+              style={
+                window.location.pathname.includes("reminder")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/reminder"
+            >
+              <i className="fas fa-bookmark fs-5 text-warning mr-3" />
               <span className="dashboardClose">Recordatorios</span>
             </Link>
-            <br />
-            <Link className="col-12" replace href="/diary">
-            <i className="fas fa-calendar fs-5 text-primary mr-3" />
+
+            <Link
+              style={
+                window.location.pathname.includes("inProgress")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/inProgress"
+            >
+              <i className="fas fa-bars-progress text-info fs-5 mr-3" />
+              <span className="dashboardClose">En curso</span>
+            </Link>
+
+            <Link
+              style={
+                window.location.pathname.includes("diary")
+                  ? { background: "#393939" }
+                  : {}
+              }
+              className="col-12 d-block"
+              replace
+              href="/diary"
+            >
+              <i className="fas fa-calendar fs-5 text-primary mr-3" />
               <span className="dashboardClose">Agenda</span>
             </Link>
-            <br />
-            <a href="#" className="block py-1 text-gray-500 hover:underline">
+
+            {/* <a href="#" className="block py-1 text-gray-500 hover:underline">
               <i className="fas fa-chalkboard-user fs-5 text-info mr-3" />
               <span className="dashboardClose">Seguimiento</span>
-            </a>
+            </a> */}
           </nav>
 
-          <nav className="block text-gray-500 mb-4">
-            <Row className="w-100 justify-between align-items-center align-content-center mb-2">
-              <h2 className="col-8 text-white text-start fs-6 pl-5">
+          <nav className="block text-gray-500">
+            <Row className="w-100 m-auto justify-between align-items-center align-content-center mb-2">
+              <h2 className="col-auto text-white text-start fs-6 pl-5">
                 <span className="dashboardClose">Mis listas</span>
               </h2>
-              <i className="col-4 dashboardClose fas fa-list text-end p-0 text-primary" />
+              <i className="col-4 dashboardClose fas fa-list text-end p-0 text-primary mr-2" />
             </Row>
 
             {!categoryData && !categoryError && categoryLoading && (
@@ -289,11 +404,22 @@ const Dashboard = (props: DashboarProps) => {
               !categoryError &&
               !categoryLoading &&
               categoryData.map((element: any, key) => {
+                const pathName = window.location.pathname;
+                const pathNameArr = pathName.split("/").includes(element.id);
                 return (
-                  <span key={element.idList}>
-                    <a href="#" className="block listUser py-1 text-gray-500 ">
-                      <Row>
-                        {editingId === element.idList ? (
+                  <span
+                    key={element.id}
+                    onClick={() => {
+                      router.replace(`/category/${element.id}`);
+                    }}
+                  >
+                    <a
+                      style={pathNameArr ? { background: "#393939" } : {}}
+                      href="#"
+                      className="block listUser py-1 text-gray-500 "
+                    >
+                      <Row className="relative">
+                        {editingId === element.id ? (
                           <>
                             <div className="col-2 mr-2 align-items-center">
                               <IconSelector
@@ -303,14 +429,11 @@ const Dashboard = (props: DashboarProps) => {
                             </div>
                             <Input
                               placeholder="Nombre"
-                              className="col-6 inputAddList bg-none h-25"
+                              className="col-5 inputAddList bg-none h-25"
                               defaultValue={element.name}
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") {
-                                  updateCategoryfn(
-                                    element.idList,
-                                    element.styles
-                                  );
+                                  updateCategoryfn(element.id, element.styles);
                                 }
                               }}
                               onChange={(e) => {
@@ -334,49 +457,51 @@ const Dashboard = (props: DashboarProps) => {
                                 }}
                               />
                             </div>
-                            <p className="col-6 dashboardClose">
+                            <p className="col-6 dashboardClose m-0">
                               {element.name}
                             </p>
                           </>
                         )}
-                        <span
-                          style={{ display: "inline-flex", fontSize: 14 }}
-                          className="col-2 align-items-center justify-items-end"
-                        >
-                          <i
-                            onClick={() => {
-                              editingId !== element.idList
-                                ? setEditingId(element.idList)
-                                : setEditingId(" ");
+                        {isOpen === true && (
+                          <span
+                            style={{ display: "inline-flex", fontSize: 14 }}
+                            className="col-auto absolute top-3 right-4 align-items-center justify-items-end m-0 p-0"
+                          >
+                            <i
+                              onClick={() => {
+                                editingId !== element.id
+                                  ? setEditingId(element.id)
+                                  : setEditingId(" ");
 
-                              setNameCategoryToUpdate(element.name);
-                            }}
-                            className={`fas d-none ${
-                              editingId !== element.idList
-                                ? "fa-pen-to-square text-primary"
-                                : "fa-xmark text-danger"
-                            } text-end ml-2 mr-1 ${
-                              isOpen ? "ocult" : "dashboardClose"
-                            } `}
-                          />
-                          {editingId !== element.idList ? (
-                            <i
-                              onClick={(e) => deleteList(element.idList)}
-                              className={`fas d-none fa-trash text-end  text-danger ml-2 mr-1 ${
+                                setNameCategoryToUpdate(element.name);
+                              }}
+                              className={`fas  ${
+                                editingId !== element.id
+                                  ? "fa-pen-to-square text-primary"
+                                  : "fa-xmark text-danger"
+                              } text-end ml-2 mr-1 ${
                                 isOpen ? "ocult" : "dashboardClose"
                               } `}
                             />
-                          ) : (
-                            <i
-                              onClick={(e) =>
-                                updateCategoryfn(element.idList, element.styles)
-                              }
-                              className={`fas d-none fa-check text-end  text-success ml-2 mr-1 ${
-                                isOpen ? "ocult" : "dashboardClose"
-                              } `}
-                            />
-                          )}
-                        </span>
+                            {editingId !== element.id ? (
+                              <i
+                                onClick={(e) => deleteList(element.id)}
+                                className={`fas  fa-trash text-end  text-danger ml-2 mr-1 ${
+                                  isOpen ? "ocult" : "dashboardClose"
+                                } `}
+                              />
+                            ) : (
+                              <i
+                                onClick={(e) =>
+                                  updateCategoryfn(element.id, element.styles)
+                                }
+                                className={`fas  fa-check text-end  text-success ml-2 mr-1 ${
+                                  isOpen ? "ocult" : "dashboardClose"
+                                } `}
+                              />
+                            )}
+                          </span>
+                        )}
                       </Row>
                     </a>
                   </span>
@@ -386,14 +511,14 @@ const Dashboard = (props: DashboarProps) => {
             {isEditcustomList && (
               <Spin spinning={isLoadingAddCategory}>
                 <a className="block py-1 text-gray-500">
-                  <Row className="justify-between w-100 align-items-center align-content-center">
-                    <div className="col-1">
+                  <Row className="justify-left w-100 align-items-center align-content-center">
+                    <div className="col-auto pr-1">
                       <IconSelector onIconClick={handleIconSelection} />
                     </div>
                     <Input
                       placeholder="Nombre"
                       value={nameCategory}
-                      className="col-9 inputAddList bg-none h-25"
+                      className="col-7 inputAddList bg-none h-25"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           addCategory();
@@ -403,6 +528,18 @@ const Dashboard = (props: DashboarProps) => {
                         setNameCategory(e.target.value);
                       }}
                     />
+
+                    <i
+                      onClick={(e) => {
+                        setIsEditcustomList(!isEditcustomList);
+                        setNameCategory("");
+                      }}
+                      className="fas col-auto fa-xmark text-danger ml-2 mr-2 p-0 "
+                    ></i>
+                    <i
+                      onClick={(e) => addCategory()}
+                      className="fas col-auto fa-check text-success m-0 p-0 "
+                    ></i>
                   </Row>
                 </a>
               </Spin>
@@ -422,12 +559,12 @@ const Dashboard = (props: DashboarProps) => {
                   <i className="fa-solid fa-arrow-left mr-1"></i>
                 )}
 
-                <p className="dashboardClose" style={{ fontSize: 13 }}>
+                <p className="dashboardClose m-0" style={{ fontSize: 13 }}>
                   Agregar lista
                 </p>
               </div>
 
-              <i className="fas dashboardClose fa-pen-to-square text-end text-primar ml-2 mr-1"></i>
+              {/* <i className="fas dashboardClose fa-pen-to-square text-end text-primar ml-2 mr-1"></i> */}
             </div>
           </nav>
         </div>

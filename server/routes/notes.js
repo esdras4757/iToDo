@@ -1,5 +1,6 @@
 const Note = require("../models/notes");
 const router = require("express").Router();
+const mongoose = require('mongoose');
 
 router.get("/getAllByIdUser/:id", async (req, res) => {
   try {
@@ -9,6 +10,21 @@ router.get("/getAllByIdUser/:id", async (req, res) => {
     res.json(note);
   } catch (err) {
     res.json({ message: err });
+  }
+});
+
+router.get("/getByIdCategory/:id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send({ message: 'Invalid categoryId' });
+    }
+
+    const note = await Note.find({ categoryId: req.params.id }).sort({
+      createdAt: -1,
+    });
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ message: 'ah ocurrido un error' });
   }
 });
 

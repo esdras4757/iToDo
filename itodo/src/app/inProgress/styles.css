@@ -134,3 +134,8 @@
     border-radius: 8px;
     padding: 3px 11px;
 }
+
+.card-container-progress{
+    background-color: rgb(23, 23, 23);
+    border-radius: 15px;
+}

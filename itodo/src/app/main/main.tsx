@@ -23,9 +23,7 @@ import { RootState } from "../../redux/store";
 import { useGetByidMutation } from "@/redux/services/loginApi";
 import openNotification from "../utils/notify";
 import FastLoader from "../Components/FastLoader";
-
-const AREmojiHello = "images/AREmojiHello.png";
-
+const AREmojiHello = "../images/AREmojiHello.png";
 interface User {
   id: string;
   nombre: string;
@@ -37,11 +35,9 @@ interface User {
 
 const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000; // Milisegundos en un día
 const currentTime = Date.now();
-
+console.log(new Date(),'currentTime')
 const defaultImage =
   "https://images.unsplash.com/photo-1528184039930-bd03972bd974?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb";
-
-// localStorage.setItem('user','true')
 
 export default function Home({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -66,7 +62,7 @@ export default function Home({ children }: { children: ReactNode }) {
       }
     )
       .then((response) => {
-       return response.json();
+        return response.json();
       })
       .catch((error) => console.error("Hubo un error:", error));
   };
@@ -86,10 +82,10 @@ export default function Home({ children }: { children: ReactNode }) {
 
     if (shouldQuery) {
       getBg().then((imageData) => {
-        console.log(imageData)
+        console.log(imageData);
         if (imageData?.links?.download) {
           localStorage.setItem("BgImg", imageData.links.download);
-          setBgimg(imageData.links.download)
+          setBgimg(imageData.links.download);
         }
         localStorage.setItem(LAST_QUERY_TIMESTAMP, String(currentTime));
       });
@@ -149,7 +145,7 @@ export default function Home({ children }: { children: ReactNode }) {
   return (
     <main className="h-screen w-screen overflow-hidden flex">
       <Dashboard isOpen={isOpen} setIsOpen={setIsOpen} userInfo={userInfo} />
-      <section className="w-full">
+      <section className="w-full overflow-hidden">
         <Header
           userName={"Esdras Lara"}
           isOpen={isOpen}
@@ -157,7 +153,7 @@ export default function Home({ children }: { children: ReactNode }) {
           userInfo={userInfo}
         />
         <main
-          className="w-full h-full relative"
+          className="w-100 h-full relative overflow-hidden"
           style={{
             backgroundSize: "cover", // Asegúrate de que la imagen cubra todo el contenedor
             backgroundPosition: "center", // Centra la imagen en el contenedor
@@ -165,7 +161,9 @@ export default function Home({ children }: { children: ReactNode }) {
           }}
         >
           <Row className="w-100 justify-center m-auto align-items-center">
-            <div className="p-3 row justify-content-center align-content-center align-items-center">{children}</div>
+            <div className="p-3 row justify-content-center align-content-center align-items-center">
+              {children}
+            </div>
           </Row>
 
           <Row
@@ -176,7 +174,7 @@ export default function Home({ children }: { children: ReactNode }) {
               className="bg-main p-0"
               alt="Remy Sharp"
               src={AREmojiHello}
-              sx={{ width: 70, height: 70 }}
+              sx={{ width: 75, height: 75 }}
               onClick={(e) => handleClick()}
             />
             <div className="col-7">

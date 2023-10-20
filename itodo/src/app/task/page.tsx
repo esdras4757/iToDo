@@ -17,7 +17,7 @@ import { getTaskById } from "../utils/services/services";
 import Task from "../Components/tasksComponents/Task";
 import NoDataPlaceholder from "../Components/NoDataPlaceholder";
 import { deleteTaskById } from "../utils/services/services";
-
+import { useSearchParams } from 'next/navigation'
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -44,6 +44,7 @@ interface taskDAata {
   originalFileName: string;
   categoryId: string;
   userId: string;
+  priority:string
 }
 
 const Page = () => {
@@ -52,6 +53,20 @@ const Page = () => {
   const [loaderAllTask, setLoaderAllTask] = useState(false);
   const [errorAllTask, setErrorAllTask] = useState(false);
   const [fastSpin, setFastSpin] = useState(false);
+  const [idOpenTask, setIdOpenTask ] = useState('')
+  const searchParams = useSearchParams()
+  const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false);
+  const [taskData, setTaskData] = useState<taskDAata | null>(null);
+  const [taskLoader, setTaskLoader] = useState(false);
+  const [taskError, settaskError] = useState(false);
+
+  useEffect(() => {
+    let search = searchParams.get('id')
+    if (search) {
+      setIdOpenTask(search)
+    }
+  }, [])
+
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
       getAllTaskByUser();
@@ -59,8 +74,30 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
+    if(idOpenTask && idOpenTask != ''){
+      setIsModalEditVisible(true);
+     getTaskByIdFn(idOpenTask);
+    }
+   }, [idOpenTask])
+
+  useEffect(() => {
     console.log(allTaskData);
   }, [allTaskData]);
+
+  const getTaskByIdFn = async (idTask: string) => {
+    setTaskData(null);
+    setTaskLoader(true);
+    settaskError(false);
+    try {
+      const response = await getTaskById(idTask);
+      console.log(response.data);
+      setTaskData(response.data);
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setTaskLoader(false);
+    }
+  };
 
   const getAllTaskByUser = async () => {
     setErrorAllTask(false);
@@ -78,12 +115,14 @@ const Page = () => {
     }
   };
 
+
+
   return (
     <Home>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
-          <Row className="align-content-center mb-3" style={{ width: "82%" }}>
+          <Row className="align-content-center mb-3" style={{ width: "93%" }}>
             <div className="col-3"></div>
             <h1 className="col-6 text-center title bold">Tareas</h1>
             <Row className="col-3 p-0 cursor-pointer justify-end text-center align-content-center align-item-center">
@@ -115,9 +154,17 @@ const Page = () => {
                   overflowY: "auto",
                 }}
               >
-                {allTaskData.map((item: any) => {
+                {allTaskData.map((item: any,index) => {
                   return (
                     <Task
+                    taskData={taskData}
+                    taskLoader={taskLoader}
+                    taskError={taskError}
+                    getTaskByIdFn={getTaskByIdFn}
+                     isModalEditVisible={isModalEditVisible}
+                     setIsModalEditVisible={setIsModalEditVisible}
+                      idOpenTask={idOpenTask}
+                      key={index}
                       item={item}
                       getAllTaskDataFn={getAllTaskByUser}
                       setFastSpin={setFastSpin}
@@ -134,6 +181,9 @@ const Page = () => {
         visible={visible}
         setVisible={setVisible}
         setAllTaskData={setAllTaskData}
+        actionProps={
+          {isImportant:false}
+        }
       />
     </Home>
   );

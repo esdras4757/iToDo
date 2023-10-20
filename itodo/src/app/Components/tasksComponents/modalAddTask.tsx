@@ -30,6 +30,7 @@ interface propsInterface {
   visible: boolean;
   setVisible: (value: boolean) => void;
   setAllTaskData:(value: any) => void
+  actionProps?:{isImportant:boolean,isMyDay?:boolean}
 }
 
 interface taskDAata {
@@ -66,6 +67,7 @@ interface dataToAddNote {
   note: string | null;
   isAgend: boolean;
   isRemainder: boolean;
+  priority:string
 }
 const initData: dataToAddNote = {
   title: "",
@@ -81,10 +83,11 @@ const initData: dataToAddNote = {
   note: null,
   isRemainder: false,
   isAgend: false,
+  priority:'Baja'
 };
 
 const ModalAddTask = (props: propsInterface) => {
-  const { visible, setVisible,setAllTaskData } = props;
+  const { visible, setVisible,setAllTaskData,actionProps } = props;
 
   const [reminder, setReminder] = useState(false);
   const [agenda, setAgenda] = useState(false);
@@ -157,7 +160,7 @@ const [key, setKey] = useState(0)
       console.log(categories.categories)
       const catalog= categories.categories.map((item:any)=>{
         return {
-          value:item.idList,
+          value:item.id,
           label:item.name
         }
       })
@@ -175,7 +178,8 @@ const [key, setKey] = useState(0)
 
       const formData = new FormData();
       formData.append("title", data.title);
-      formData.append("isImportant",'true');
+      formData.append("isImportant",actionProps&&actionProps.isImportant==true?'true':'false');
+      formData.append("myDay",actionProps&&actionProps.isMyDay==true?moment().format('DD/MM/YYYY'):'');
       formData.append("description", data.description ?? "");
       formData.append("reminder", data.isRemainder ? data.reminder ?? "" : "");
       formData.append(
@@ -197,9 +201,8 @@ const [key, setKey] = useState(0)
       formData.append("categoryId", data.categoryId??'');
       formData.append("file", file); // Asegúrate de que 'file' contenga el archivo que deseas cargar
       formData.append("note", data.note ?? "");
+      formData.append("priority", data.priority ?? "");
       formData.append("userId", userId); // Suponiendo que userId es la variable que contiene el ID de usuario
-    
-      console.log(formData);
 
       axios
         .post("http://localhost:5000/api/task/add", formData, {
@@ -284,6 +287,34 @@ const [key, setKey] = useState(0)
           </Form.Item>
 
           <Form.Item
+            label="Prioridad"
+            style={{ color: "white", width: "100%", marginBottom: 30 }}
+          >
+            <Select
+            key={key}
+              className="inputAddList"
+              showSearch
+              placeholder="Selecciona la prioridad de la tarea"
+              value={data.priority}
+              onChange={(value) => {
+                fillData("priority", value);
+              }}
+              style={{ marginBottom: 15 }}
+              options={[
+                {value:'Baja',
+                  label:'Baja'
+                },
+                {value:'Media',
+                  label:'Media'
+                },
+                {value:'Alta',
+                  label:'Alta'
+                }
+              ]}
+            ></Select>
+          </Form.Item>
+
+          <Form.Item
             label="Asignar a"
             style={{ color: "white", width: "100%", marginBottom: 30 }}
           >
@@ -331,7 +362,7 @@ const [key, setKey] = useState(0)
                 <Select
                 key={key}
                   className="inputAddList"
-                  placeholder="ingresa una fecha *"
+                  placeholder="ingresa una fecha*"
                   onChange={(value) => {
                     fillData("reminder", value);
                     setRemainderSelect(value);
@@ -342,17 +373,17 @@ const [key, setKey] = useState(0)
                   }}
                   style={{ marginBottom: 15 }}
                   options={[
-                    {
-                      value: moment().format("DD/MM/YYYY h:mm"),
-                      label: (
-                        <div>
-                          Hoy{" "}
-                          <span className="text-primary ml-2">
-                            ({moment().format("ddd-DD/MM/YYYY h:mm")})
-                          </span>
-                        </div>
-                      ),
-                    },
+                    // {
+                    //   value: moment().format("DD/MM/YYYY h:mm"),
+                    //   label: (
+                    //     <div>
+                    //       Hoy{" "}
+                    //       <span className="text-primary ml-2">
+                    //         ({moment().format("ddd-DD/MM/YYYY h:mm")})
+                    //       </span>
+                    //     </div>
+                    //   ),
+                    // },
                     {
                       value: moment().add(1, "day").format("DD/MM/YYYY h:mm"),
                       label: (
@@ -573,7 +604,7 @@ const [key, setKey] = useState(0)
             onClick={() => handleCancel()}
           >
             <i className="fa-solid fa-xmark fs-6 m-1"></i>
-            <p>Cancelar</p>
+            <p className="m-0">Cancelar</p>
           </Button>
 
           <Button
@@ -582,7 +613,7 @@ const [key, setKey] = useState(0)
             className="btnAddTask col-5  mt-5 row px-0"
           >
             <i className="fa-solid fa-paper-plane fs-6 m-1"></i>
-            <p>Agregar</p>
+            <p className="m-0">Agregar</p>
           </Button>
         </Row>
         </Spin>

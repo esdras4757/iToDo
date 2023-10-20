@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 interface dataQuery {
   name: string;
   idUser: string;
@@ -17,7 +17,6 @@ interface dataResponseAdd {
     idUser: string;
     name: string;
     styles: string;
-    idList:string;
 }
 
 // interface dataQueryByIdUser {
@@ -28,12 +27,11 @@ interface dataResponseByIdUser {
     idUser: string;
     name: string;
     styles:string;
-    idList:string;
   }
 
 export const categoryApi = createApi({
   reducerPath: "categoryApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://cuddly-garbanzo-r6g6pq5x4j42x4j5-5000.app.github.dev/api/category/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: `${apiUrl}/api/category/` }),
   endpoints: (builder) => ({
     addCategoryByIdUser: builder.mutation<dataResponseAdd, dataQuery>({
       query: (dataQuery) => ({

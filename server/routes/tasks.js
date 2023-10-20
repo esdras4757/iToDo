@@ -3,6 +3,8 @@ const Task = require("../models/task");
 const router = express.Router();
 const multer = require("multer");
 const path = require('path');
+const mongoose = require('mongoose');
+const moment = require("moment-timezone");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -19,6 +21,52 @@ const storage = multer.diskStorage({
     },
 });
 
+const getTaskSatus = (task)=>{
+  return task.isCompleted===true?'Completada':
+  moment().isSameOrAfter(moment(task.initAt, 'DD/MM/YYYY HH:mm')) && 
+  moment().isBefore(moment(task.endAt, 'DD/MM/YYYY HH:mm'))?
+  'En curso': 
+  moment().isBefore(moment(task.initAt, 'DD/MM/YYYY HH:mm')) && 
+  moment().isBefore(moment(task.endAt, 'DD/MM/YYYY HH:mm'))?
+  'pendiente'
+  :'No completada'
+}
+const getStyletSatus = (status)=>{
+ switch (status) {
+  case 'Completada':
+    return 'blue'
+    break;
+    case 'En curso':
+      return '#0093c7'
+    break;
+    case 'pendiente':
+      return 'grey'
+    break;
+    case 'No completada':
+      return 'red'
+    break;
+  default:
+    break;
+ }
+}
+
+const getStyletPriority = (priority)=>{
+  switch (priority) {
+   case 'Baja':
+     return 'green'
+     break;
+     case 'Media':
+       return 'orange'
+     break;
+     case 'Alta':
+       return 'red'
+     break;
+   default:
+     break;
+  }
+ }
+
+
 const upload = multer({ storage: storage });
 
 router.post("/add", upload.single("file"), async (req, res) => {
@@ -33,7 +81,9 @@ router.post("/add", upload.single("file"), async (req, res) => {
       endAt,
       note,
       userId,
-      categoryId
+      categoryId,
+      priority,
+      myDay,
     } = req.body;
 
     const addData={
@@ -48,6 +98,9 @@ router.post("/add", upload.single("file"), async (req, res) => {
       userId,
       fileId: req.file && req.file.id,
       originalFileName: req.file && req.file.originalname,
+      priority,
+      myDay,
+      stylePriority:getStyletPriority(priority)
     }
 
     if (categoryId && categoryId !== "") {
@@ -66,9 +119,13 @@ router.post("/add", upload.single("file"), async (req, res) => {
 
     taskObject.categoryName = populatedTask.categoryId ? populatedTask.categoryId.name : null;
 
+    const status =getTaskSatus(taskObject)
+    taskObject.status=status
+    taskObject.styleStatus=getStyletSatus(status)
+
     res.send(taskObject);
   } catch (error) {
-    res.json({ message: error });
+    res.status(500).json({ message: error });
   }
 });
 
@@ -87,6 +144,7 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
     userId,
     categoryId,
     isCompleted,
+    priority
   } = req.body;
 
 
@@ -103,7 +161,9 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
     userId,
     fileId: req.file && req.file.id,
     originalFileName: req.file && req.file.originalname,
-    color:req.body.color
+    color:req.body.color,
+    priority,
+    stylePriority:getStyletPriority(priority)
   };
   
 
@@ -124,6 +184,14 @@ router.put("/update/:id",upload.single("file"), async (req, res) => {
 
     // Ahora, puedes agregar la propiedad categoryName al objeto
     taskObject.categoryName = task.categoryId ? task.categoryId.name : null;
+    const status =getTaskSatus(taskObject)
+    taskObject.status=status
+    taskObject.styleStatus=getStyletSatus(status),
+    // taskObject.map(task => ({
+    //   ...task.toObject(),
+    //    status:getTaskSatus(task),
+    //   categoryName: task.categoryId ? task.categoryId.name : null,
+    // }));
 
     res.send(taskObject);
 } catch (error) {
@@ -137,7 +205,16 @@ router.put("/status", async (req, res) => {
   try {
     const task=await Task.findByIdAndUpdate(idTask,status)
     res.send(task);
-    
+  } catch (error) {
+    res.json({ message: 'ah ocurrido un error intentalo de nuevo o verifica tu conexion a internet' });
+  }
+})
+
+router.put("/myDay", async (req, res) => {
+  const {myDay,idTask}=req.body
+  try {
+    const task=await Task.findByIdAndUpdate(idTask,{myDay})
+    res.send(task);
   } catch (error) {
     res.json({ message: 'ah ocurrido un error intentalo de nuevo o verifica tu conexion a internet' });
   }
@@ -156,7 +233,14 @@ router.get("/getbyid/:id", async (req, res) => {
       const originalNameWithoutExt = path.basename(task.originalFileName, ext);
       taskObject.fileURL = `http://localhost:5000/uploads/${originalNameWithoutExt}-${task.fileId}${ext}`;
     }
-
+    const status =getTaskSatus(task)
+    taskObject.status=getTaskSatus(status)
+    taskObject.styleStatus=getStyletSatus(status),
+    // taskObject.map(task => ({
+    //   ...task.toObject(),
+    //    status:getTaskSatus(task),
+    //   categoryName: task.categoryId ? task.categoryId.name : null,
+    // }));
     // Y envía ese objeto como respuesta
     res.send(taskObject);
   } catch (error) {
@@ -173,6 +257,8 @@ router.get("/getByIdUser/:id", async (req, res) => {
     // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
     const tasksWithCategoryName = tasks.map(task => ({
       ...task.toObject(),
+       status:getTaskSatus(task),
+       styleStatus:getStyletSatus(getTaskSatus(task)),
       categoryName: task.categoryId ? task.categoryId.name : null,
     }));
     
@@ -180,6 +266,31 @@ router.get("/getByIdUser/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.json({ message: 'Ha ocurrido un error, inténtalo de nuevo o verifica tu conexión a internet' });
+  }
+});
+
+router.get("/getByIdCategory/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({ message: 'Invalid categoryId' });
+    }
+
+    const tasks = await Task.find({ categoryId: id }).populate('categoryId', 'name');
+    
+    // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
+    const tasksWithCategoryName = tasks.map(task => ({
+      ...task.toObject(),
+      status:getTaskSatus(task),
+      styleStatus:getStyletSatus(getTaskSatus(task)),
+      categoryName: task.categoryId ? task.categoryId.name : null,
+    }));
+    
+    res.send(tasksWithCategoryName);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Ha ocurrido un error, inténtalo de nuevo o verifica tu conexión a internet' });
   }
 });
 
@@ -202,6 +313,8 @@ router.get("/getImportantByIdUser/:id",async (req,res)=>{
     // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
     const tasksWithCategoryName = tasks.map(task => ({
       ...task.toObject(),
+      status:getTaskSatus(task),
+      styleStatus:getStyletSatus(getTaskSatus(task)),
       categoryName: task.categoryId ? task.categoryId.name : null,
     }));
     
@@ -221,6 +334,8 @@ router.get("/getCompletedByIdUser/:id",async (req,res)=>{
    // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
    const tasksWithCategoryName = tasks.map(task => ({
      ...task.toObject(),
+     status:getTaskSatus(task),
+     styleStatus:getStyletSatus(getTaskSatus(task)),
      categoryName: task.categoryId ? task.categoryId.name : null,
    }));
    
@@ -239,6 +354,8 @@ router.get("/getPendingByIdUser/:id",async (req,res)=>{
    // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
    const tasksWithCategoryName = tasks.map(task => ({
      ...task.toObject(),
+     status:getTaskSatus(task),
+     styleStatus:getStyletSatus(getTaskSatus(task)),
      categoryName: task.categoryId ? task.categoryId.name : null,
    }));
    
@@ -250,5 +367,29 @@ router.get("/getPendingByIdUser/:id",async (req,res)=>{
 
 })
 
+router.get("/getMyDayByIdUser/:id",async (req,res)=>{
+  try {
+   const { id } = req.params;
+   const tasks = await Task.find({ userId: id,myDay:moment().format('DD/MM/YYYY')}).populate('categoryId', 'name');
+   
+   // Transforma los resultados para obtener el nombre de la categoría en la propiedad categoryName
+   const tasksWithCategoryName = tasks.map(task => ({
+     ...task.toObject(),
+     status:getTaskSatus(task),
+     styleStatus:getStyletSatus(getTaskSatus(task)),
+     categoryName: task.categoryId ? task.categoryId.name : null,
+   }));
+
+  //  const taskMyday=tasksWithCategoryName.filter((task)=>{
+  //   return task.myDay==moment().format('DD/MM/YYYY')
+  //  })
+   
+   res.send(tasksWithCategoryName);
+ } catch (error) {
+   console.error(error);
+   res.json({ message: 'Ha ocurrido un error, inténtalo de nuevo o verifica tu conexión a internet' });
+ }
+
+})
 
 module.exports = router;

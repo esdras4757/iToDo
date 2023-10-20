@@ -38,6 +38,7 @@ import "react-calendar/dist/Calendar.css";
 import FullCalendar from "@fullcalendar/react";
 import CalendarApi from "@fullcalendar/react";
 import { ColorPicker } from "antd";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(customParseFormat);
 let timer: NodeJS.Timeout | null = null;
@@ -91,7 +92,7 @@ const Page = () => {
   const [values, setValues] = useState(initValues);
   const [editMode, setEditMode] = useState(false);
   const [errors, setErrors] = useState(false);
-
+  const router = useRouter();
   const calendarRef = useRef<any>(null);
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
@@ -142,7 +143,6 @@ const Page = () => {
     try {
       const response = await getAllEventsByIdUser(id);
       if (response.data && response.data.length > 0) {
-        // console.log(events);
         setAllEventData(response.data);
       }
     } catch (error: any) {
@@ -168,7 +168,6 @@ const Page = () => {
     setErrors(false);
     setFastSpin(true);
     try {
-      console.log(values);
       const data = {
         userId: idUser,
         title: values.title,
@@ -183,7 +182,6 @@ const Page = () => {
 
       const response = await addEvent(data);
       if (isNil(response) === false && isNil(response.data) === false) {
-        console.log("aaaaaaaaaaaaaaaaa");
         ShowHidePanel();
         setAllEventData((prev) => {
           if (!prev) {
@@ -201,6 +199,60 @@ const Page = () => {
     }
   };
 
+  const deleteEvent= async(eventId: string) => {
+    
+    setErrors(false);
+    setFastSpin(true);
+    try {
+      const data = {
+        userId: idUser,
+        title: values.title,
+        description: values.description,
+        initAt: null,
+        endAt: null,
+        color: values.color,
+        reminder: values.reminder,
+        note: values.note,
+        type: "event",
+      };
+      const response = await updateEventById(eventId,data);
+      if (isNil(response) === false && isNil(response.data) === false) {
+        ShowHidePanel();
+        setAllEventData((prev) => {
+          if (!prev || isEmpty(prev)) {
+            return prev;
+          }
+           const newEvent = prev.map((event)=>{
+            if(event.id === response.data._id){
+              const data = {
+                id:response.data._id,
+                userId: response.data.userId,
+                title: response.data.title,
+                description: response.data.description,
+                initAt: response.data.initAt,
+                endAt: response.data.endAt,
+                color: response.data.color,
+                reminder: response.data.reminder,
+                note: response.data.note,
+                type: response.data.type,
+              }
+              event=data
+            }
+            return event
+
+          })
+          return newEvent
+        });
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.render();
+      }
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setFastSpin(false);
+    }
+}
+
   const updateEvent = async () => {
     if (
       isNil(values.title) === true ||
@@ -216,7 +268,6 @@ const Page = () => {
     setErrors(false);
     setFastSpin(true);
     try {
-      console.log(values);
       const data = {
         userId: idUser,
         title: values.title,
@@ -286,10 +337,13 @@ const Page = () => {
       return { ...prev, [name]: value };
     });
   };
-
-  // useEffect(() => {
-  //   console.log(values);
-  // }, [values]);
+  function renderEventContent(eventInfo:any) {
+    return(
+      <div className="justify-content-center align-content-center align-items-center" >
+              {eventInfo.event.title} - <b>{eventInfo.event.extendedProps.type}</b>
+          </div>
+    )
+}
 
   return (
     <Home>
@@ -314,6 +368,7 @@ const Page = () => {
             ref={calendarRef}
             height={"calc(100vh - 260px)"}
             plugins={[dayGridPlugin]}
+            eventContent={renderEventContent}
             initialView="dayGridMonth"
             displayEventTime={false}
             dayMaxEventRows={4}
@@ -323,7 +378,6 @@ const Page = () => {
             eventClick={(e) => {
               ShowHidePanel("remove");
               setEditMode(true);
-              console.log(e);
 
               setValues({
                 id: e.event.id,
@@ -355,10 +409,21 @@ const Page = () => {
               {editMode ? "Detalle del evento" : "Crear nuevo evento"}
 
               {editMode && (
+                <>
                 <i
                   title="Abrir en notas/tareas"
-                  className="fa-solid fs-6 fa-up-right-from-square position-absolute right-3 top-4"
+                  className="fa-solid fs-5 fa-up-right-from-square position-absolute cursor-pointer right-3 top-4"
+                  onClick={() => {
+                    router.replace(`/${values.type}?id=${values.id}`);
+                  }}
                 ></i>
+
+                <i
+                  title="Eliminar Evento"
+                  className="fa-solid fs-5 fa-trash-can text-danger position-absolute cursor-pointer left-3 top-4"
+                  onClick={()=>deleteEvent(values.id)}
+                ></i>
+                </>
               )}
             </div>
 
@@ -375,7 +440,7 @@ const Page = () => {
                   }}
                 />
               </div>
-              <div className="col-12">
+             {values.type !== "note" && <div className="col-12">
                 <label>Descripción</label> <br />
                 <input
                   value={values.description}
@@ -386,7 +451,7 @@ const Page = () => {
                     updateValues(e.target.value, "description");
                   }}
                 />
-              </div>
+              </div>}
               <div className="col-12">
                 <label>Inicio*</label> <br />
                 <DatePicker
@@ -439,7 +504,6 @@ const Page = () => {
                   showTime
                   format={"DD/MM/YYYY HH:mm"}
                   onOk={(e) => {
-                    // console.log(e);
                   }}
                   placeholder="Ingresa una fecha"
                 />
@@ -467,21 +531,8 @@ const Page = () => {
                   showTime
                   format={"DD/MM/YYYY HH:mm"}
                   onOk={(e) => {
-                    // console.log(e);
                   }}
                   placeholder="Ingresa una fecha"
-                />
-              </div>
-              <div className="col-12">
-                <label>Notas</label> <br />
-                <input
-                  value={values.note ?? ""}
-                  type="text"
-                  className="inputAddList col-12"
-                  placeholder={""}
-                  onChange={(e) => {
-                    updateValues(e.target.value, "note");
-                  }}
                 />
               </div>
 
@@ -492,7 +543,6 @@ const Page = () => {
                   size={"middle"}
                   value={values.color}
                   onChange={(color) => {
-                    // console.log(color)
                     updateValues(color.toHexString(), "color");
                   }}
                 />

@@ -6,7 +6,9 @@ import { Row, Col } from "react-bootstrap";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
 import { useRouter } from "next/navigation";
-
+import io from "socket.io-client";
+import openNotification from "../utils/notify";
+const socket = io("http://localhost:5500");
 interface User {
   id: string;
   nombre: string;
@@ -52,7 +54,7 @@ const Header = (props: Required<HomeProps>) => {
         <a
           target="_blank"
           rel="noopener noreferrer"
-          href="https://www.antgroup.com"
+          href="/myAccount"
         >
           Cuenta
         </a>
@@ -82,7 +84,7 @@ const Header = (props: Required<HomeProps>) => {
       <header className="bg-mainContainers h-16 flex items-center justify-between p-3">
         <Row className="col-8 justify-content-start align-content-center align-items-center justify-items-start">
           <h2 className="text-xl col-12 font-semibold">
-            <p>{message}</p>
+            <p className="m-0 p-0">{message}</p>
           </h2>
         </Row>
         <div className="flex col-4 justify-content-end align-items-center">
@@ -93,7 +95,7 @@ const Header = (props: Required<HomeProps>) => {
               </Dropdown>
 
               <div className="text-start ml-2">
-                <h2 className="font-extrabold mb-1">
+                <h2 className="font-extrabold fs-5 mb-1">
                   {userInfo.nombre} {userInfo.apellido}
                 </h2>
                 <h3 className="" style={{ fontSize: 12 }}>

@@ -7,7 +7,7 @@ import Loader from "../Components/Loader";
 import "./styles.css";
 import { Col, Row } from "react-bootstrap";
 import ModalAddTask from "../Components/tasksComponents/modalAddTask";
-import { getCompletedByIdUser } from "../utils/services/services";
+import { getCompletedByIdUser, getTaskById } from "../utils/services/services";
 import openNotification from "../utils/notify";
 import FastLoader from "../Components/FastLoader";
 import Task from "../Components/tasksComponents/Task";
@@ -39,6 +39,7 @@ interface taskDAata {
   originalFileName: string;
   categoryId: string;
   userId: string;
+  priority:string
 }
 
 const page = () => {
@@ -47,6 +48,12 @@ const page = () => {
   const [loaderAllTask, setLoaderAllTask] = useState(false);
   const [errorAllTask, setErrorAllTask] = useState(false);
   const [fastSpin, setFastSpin] = useState(false);
+  const [idOpenTask, setIdOpenTask ] = useState('')
+  const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false);
+  const [taskData, setTaskData] = useState<taskDAata | null>(null);
+  const [taskLoader, setTaskLoader] = useState(false);
+  const [taskError, settaskError] = useState(false);
+
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
       getAllTaskCompletedByUser();
@@ -74,19 +81,35 @@ const page = () => {
     }
   };
 
+  const getTaskByIdFn = async (idTask: string) => {
+    setTaskData(null);
+    setTaskLoader(true);
+    settaskError(false);
+    try {
+      const response = await getTaskById(idTask);
+      console.log(response.data);
+      setTaskData(response.data);
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setTaskLoader(false);
+    }
+  };
+
+
   return (
     <Home>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
-          <Row className="align-content-center mb-3" style={{ width: "82%" }}>
+          <Row className="align-content-center mb-3" style={{ width: "93%" }}>
             <div className="col-3"></div>
             <h1 className="col-6 text-center title bold">Tareas</h1>
             <Row className="col-3 p-0 cursor-pointer justify-end text-center align-content-center align-item-center">
-              <i
+              {/* <i
                 onClick={() => setVisible(true)}
                 className="fas fa-plus addButton"
-              />
+              /> */}
             </Row>
           </Row>
 
@@ -111,9 +134,18 @@ const page = () => {
                   overflowY: "auto",
                 }}
               >
-                {allTaskData.map((item: any) => {
+                {allTaskData.map((item: any,index) => {
                   return (
                     <Task
+                    taskData={taskData}
+                    taskLoader={loaderAllTask}
+                    taskError={taskError}
+                    getTaskByIdFn={getTaskByIdFn}
+                     isModalEditVisible={isModalEditVisible}
+                     setIsModalEditVisible={setIsModalEditVisible}
+                      idOpenTask={idOpenTask}
+                      key={index}
+
                       item={item}
                       getAllTaskDataFn={getAllTaskCompletedByUser}
                       setFastSpin={setFastSpin}

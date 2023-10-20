@@ -8,7 +8,9 @@ const noteSchema = mongoose.Schema({
     initAt:{type:String, required:false},
     endAt:{type:String, required:false},
     userId:{type:String, required:true},
-    color:{type:String, required:false}
+    color:{type:String, required:false},
+    categoryId:{type:mongoose.Schema.Types.ObjectId,ref:'Category',required: false},
+    postponed:{type:Boolean, required:false}
 }, {
     timestamps: true  // Habilita la creación de los campos 'createdAt' y 'updatedAt'
   })

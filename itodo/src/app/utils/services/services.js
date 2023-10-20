@@ -9,9 +9,16 @@ export const getAllTaskByidUser = (data) => {
 export const updateTaskStatusById = (id,status) => 
     axios.put(apiConstants.PUT_UPDATE_TASK_STATUS_BY_ID, {idTask:id,status})
 
+export const updateTaskMyDayById = (id,myDay) => 
+    axios.put(apiConstants.PUT_UPDATE_TASK_MYDAY_BY_ID, {idTask:id,myDay})
+
 export const getTaskById = (id)=>{
    return axios.get(apiConstants.GET_TASK_BY_ID + '/' + id)
 }
+
+export const deleteCategoryById = ((id,data)=>{
+    return axios.delete(apiConstants.DELETE_CATEGORY_BY_ID + '/' + id)
+})
 
 export const updateTaskById = (id,data)=>{
     return axios.put(apiConstants.PUT_UPDATE_TASK_BY_ID + '/' + id,data)
@@ -69,7 +76,32 @@ export const getAllRemindersByIdUser = (id)=>{
     return axios.get(apiConstants.GET_ALL_REMINDERS_BY_ID_USER+ '/' + id)
 }
 
+export const addReminder = (data)=>{
+    return axios.post(apiConstants.POST_ADD_REMINDER, data)
+}
 
+export const updateReminderById = (id, data)=>{
+    return axios.patch(apiConstants.PATCH_UPDATE_REMINDER_BY_ID + "/" + id, data)
+}
 
+export const getAllTaskInProgress = (id)=>{
+    return axios.get(apiConstants.GET_ALL_TASK_INPROGRESS_BY_ID_USER + "/" + id)
+}
+
+export const getAllNotesInProgress = (id)=>{
+    return axios.get(apiConstants.GET_ALL_NOTES_INPROGRESS_BY_ID_USER + "/" + id)
+}
+
+export const getAlltasksByIdCategory = (id)=>{
+    return axios.get(apiConstants.GET_ALL_TASK_BY_CATEGORY_ID + "/" + id)
+}
+
+export const getAllNotesByIdCategory = (id)=>{
+    return axios.get(apiConstants.GET_ALL_NOTES_BY_CATEGORY_ID + "/" + id)
+}
+
+export const getAllTAskMyDayByIdUser = (id)=>{
+    return axios.get(apiConstants.GET_ALL_TASK_MYDAY_BY_ID + "/" + id)
+}
 
 

@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 import Loader from "../Components/Loader";
 import { Spin } from "antd";
-
+import {version} from "../utils/constants/gobals"
 interface User {
   id: string;
   nombre: string;
@@ -105,15 +105,16 @@ const SignIn: React.FC = () => {
         backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)), url('./images/bg-login.jpg')`,
       }}
     >
+      <div className="absolute bottom-4 right-4 text-secondary2 fs-6 p-2" style={{backgroundColor:'rgba(0, 0, 0, 0.4)', borderRadius:'10px'}}> {version} </div>
       <form className="formLogin" onSubmit={handleSubmit}>
         <Row
           className="justify-content-center align-content-center align-items-center text-white"
           style={{ height: "100vh" }}
         >
-          <div className="w-44 mb-5">
-            <img src="./images/logoWhite.png" alt="logoItodo" />
+          <div className="col-auto mb-5">
+            <img src="./images/logoWhite.png" alt="logoItodo" width='200px' />
           </div>
-          <h1 className="text-center mt-4 fs-2 mb-4">Inicia sesión</h1>
+          {/* <h1 className="text-center mt-4 fs-2 mb-4">Inicia sesión</h1> */}
           <label className="row justify-content-center mb-4">
             <p className="text-center mb-3">Correo electrónico: </p>
             <input
@@ -142,7 +143,7 @@ const SignIn: React.FC = () => {
             )}
           </label>
 
-          <button style={{height:40}} className="btnPrimary col-1 p-1"
+          <button style={{height:40}} className="btnPrimary col-auto p-1 mb-1"
           disabled={isLoading}
           type="submit">
             {isLoading ? (

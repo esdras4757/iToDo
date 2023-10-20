@@ -21,14 +21,14 @@ const IconPopover: React.FC<IconPopoverProps> = ({ onIconClick,defaultIcon }) =>
 
   const iconColors: { [key: string]: string } = {
     home: 'blue',
-    work: 'green',
+    briefcase: 'grey',
     school: 'yellow',
     camera: 'red',
     heart: 'pink',
     star: 'orange',
     music: 'purple',
     coffee: 'brown',
-    flag: 'black',
+    flag: 'red',
     book: 'white',
     envelope: 'grey',
     bicycle: 'blue',
@@ -39,14 +39,14 @@ const IconPopover: React.FC<IconPopoverProps> = ({ onIconClick,defaultIcon }) =>
     leaf: 'orange',
     fire: 'purple',
     gift: 'brown',
-    paw: 'black',
+    paw: 'white',
     rocket: 'white',
 
   };
 
   const icons: IconOptions = {
     home: faHome,
-    work: faBriefcase,
+    briefcase: faBriefcase,
     school: faGraduationCap,
     camera: faCamera,
     heart: faHeart,

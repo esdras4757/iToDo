@@ -48,6 +48,7 @@ interface taskDAata {
   note: string;
   userId: string;
   originalFileName: string;
+  priority:string
 }
 
 interface propsInterface {
@@ -57,9 +58,8 @@ interface propsInterface {
   taskLoader: boolean;
   taskError: boolean;
   setAllTaskData: (value: any) => void;
-  setFastSpin:(value:boolean)=>void
+  setFastSpin: (value: boolean) => void;
 }
-
 
 interface dataToAddNote {
   title: string;
@@ -76,6 +76,7 @@ interface dataToAddNote {
   note: string | null;
   isAgend: boolean;
   isRemainder: boolean;
+  priority:string
 }
 const initData: dataToAddNote = {
   title: "",
@@ -92,6 +93,7 @@ const initData: dataToAddNote = {
   note: null,
   isRemainder: false,
   isAgend: false,
+  priority:'Baja'
 };
 
 const ModalEditTask = (props: propsInterface) => {
@@ -102,7 +104,7 @@ const ModalEditTask = (props: propsInterface) => {
     taskError,
     taskLoader,
     setAllTaskData,
-    setFastSpin
+    setFastSpin,
   } = props;
 
   const [reminder, setReminder] = useState(false);
@@ -139,6 +141,7 @@ const ModalEditTask = (props: propsInterface) => {
         categoryId,
         _id,
         originalFileName,
+        priority
       } = taskData;
 
       setData({
@@ -146,21 +149,22 @@ const ModalEditTask = (props: propsInterface) => {
         description: description,
         reminder: reminder,
         userId: userId,
-        initDate: initAt != "" ? dayjs(initAt,'DD/MM/YYYY HH:mm') : dayjs(),
-        endDate: endAt != "" ? dayjs(endAt,'DD/MM/YYYY HH:mm') : dayjs(),
-        initHour: initAt != "" ? dayjs(initAt,'DD/MM/YYYY HH:mm') : dayjs(),
-        endHour: endAt != "" ? dayjs(endAt,'DD/MM/YYYY HH:mm') : dayjs(),
+        initDate: initAt != "" ? dayjs(initAt, "DD/MM/YYYY HH:mm") : dayjs(),
+        endDate: endAt != "" ? dayjs(endAt, "DD/MM/YYYY HH:mm") : dayjs(),
+        initHour: initAt != "" ? dayjs(initAt, "DD/MM/YYYY HH:mm") : dayjs(),
+        endHour: endAt != "" ? dayjs(endAt, "DD/MM/YYYY HH:mm") : dayjs(),
         file: file,
         categoryId: categoryId,
         note: note,
         fileURL,
-        isRemainder: reminder !== "" ? true : false,
+        isRemainder: reminder !== "" && reminder ? true : false,
         isAgend: initAt !== "" || endAt !== "" ? true : false,
+        priority:priority
       });
 
-     setReminder(reminder !== "" && true);
-    setAgenda(initAt != "" || endAt != "" && true);
-     setRemainderSelect(null);
+      setReminder(reminder !== "" && true && reminder ? true : false);
+      setAgenda(initAt != "" || (endAt != "" && true));
+      setRemainderSelect(null);
     }
   }, [taskData]);
 
@@ -180,8 +184,8 @@ const ModalEditTask = (props: propsInterface) => {
     setVisible(false);
   };
 
-  const handleCancel = (event:any) => {
-    event.stopPropagation()
+  const handleCancel = (event: any) => {
+    event.stopPropagation();
     setVisible(false);
   };
 
@@ -210,7 +214,7 @@ const ModalEditTask = (props: propsInterface) => {
       console.log(categories.categories);
       const catalog = categories.categories.map((item: any) => {
         return {
-          value: item.idList,
+          value: item.id,
           label: item.name,
         };
       });
@@ -219,12 +223,9 @@ const ModalEditTask = (props: propsInterface) => {
     }
   }, [categories]);
 
-
-
-
   const updateTaskFn = async () => {
     const userId = sessionStorage.getItem("user") ?? "";
-    setFastSpin(true)
+    setFastSpin(true);
 
     if (data.title && data.title != "" && taskData && taskData._id) {
       setLoading(true);
@@ -253,6 +254,7 @@ const ModalEditTask = (props: propsInterface) => {
               data.endHour.format("h:mm")
           : ""
       );
+      formData.append("priority", data.priority ?? "");
       formData.append("categoryId", data.categoryId ?? "");
       formData.append("file", file); // Asegúrate de que 'file' contenga el archivo que deseas cargar
       formData.append("note", data.note ?? "");
@@ -266,9 +268,9 @@ const ModalEditTask = (props: propsInterface) => {
           setAllTaskData((prev: taskDAata[]) => {
             if (!prev) return prev;
             if (response.data) {
-              setVisible(false)
+              setVisible(false);
               return prev.map((item: taskDAata) => {
-                if(item._id == response.data._id){
+                if (item._id == response.data._id) {
                   return response.data;
                 }
                 return item;
@@ -278,10 +280,10 @@ const ModalEditTask = (props: propsInterface) => {
             }
           });
         }
-        setFastSpin(false)
-         setLoading(false);
-      } catch (error:any) {
-        setFastSpin(false)
+        setFastSpin(false);
+        setLoading(false);
+      } catch (error: any) {
+        setFastSpin(false);
         setLoading(false);
         openNotification(
           "error",
@@ -324,7 +326,7 @@ const ModalEditTask = (props: propsInterface) => {
         onClose={handleCancel}
         className="bg-bg-mainContent"
         open={visible}
-        onClick={e=>{
+        onClick={(e) => {
           e.stopPropagation();
         }}
       >
@@ -370,6 +372,27 @@ const ModalEditTask = (props: propsInterface) => {
                         fillData("description", e.target.value);
                       }}
                     />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Prioridad"
+                    style={{ color: "white", width: "100%", marginBottom: 30 }}
+                  >
+                    <Select
+                      className="inputAddList"
+                      showSearch
+                      placeholder="Selecciona la prioridad de la tarea"
+                      value={data.priority}
+                      onChange={(value) => {
+                        fillData("priority", value);
+                      }}
+                      style={{ marginBottom: 15 }}
+                      options={[
+                        { value: "Baja", label: "Baja" },
+                        { value: "Media", label: "Media" },
+                        { value: "Alta", label: "Alta" },
+                      ]}
+                    ></Select>
                   </Form.Item>
 
                   <Form.Item
@@ -428,17 +451,17 @@ const ModalEditTask = (props: propsInterface) => {
                           }}
                           style={{ marginBottom: 15 }}
                           options={[
-                            {
-                              value: moment().format("DD/MM/YYYY h:mm"),
-                              label: (
-                                <div>
-                                  Hoy{" "}
-                                  <span className="text-primary ml-2">
-                                    ({moment().format("ddd-DD/MM/YYYY h:mm")})
-                                  </span>
-                                </div>
-                              ),
-                            },
+                            // {
+                            //   value: moment().format("DD/MM/YYYY h:mm"),
+                            //   label: (
+                            //     <div>
+                            //       Hoy{" "}
+                            //       <span className="text-primary ml-2">
+                            //         ({moment().format("ddd-DD/MM/YYYY h:mm")})
+                            //       </span>
+                            //     </div>
+                            //   ),
+                            // },
                             {
                               value: moment()
                                 .add(1, "day")
@@ -676,7 +699,9 @@ const ModalEditTask = (props: propsInterface) => {
                           className="p-4"
                         >
                           <i className="fa-solid m-1 fs-4 fa-note-sticky"></i>
-                          <p className="m-1">{data.note || "Agregar nota"}</p>
+                          <p className="m-1 m-0">
+                            {data.note || "Agregar nota"}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -690,7 +715,7 @@ const ModalEditTask = (props: propsInterface) => {
                     onClick={(e) => handleCancel(e)}
                   >
                     <i className="fa-solid fa-xmark fs-6 m-1"></i>
-                    <p>Cancelar</p>
+                    <p className="m-0">Cancelar</p>
                   </Button>
 
                   <Button
@@ -699,7 +724,7 @@ const ModalEditTask = (props: propsInterface) => {
                     className="btnAddTask col-5  mt-5 row px-0"
                   >
                     <i className="fa-solid fa-save fs-6 m-1"></i>
-                    <p>Guardar</p>
+                    <p className="m-0">Guardar</p>
                   </Button>
                 </Row>
               </Spin>

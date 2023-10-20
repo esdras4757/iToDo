@@ -17,7 +17,7 @@ const NoDataPlaceholder = (props: noDataPlaceholderProps) => {
     <Row className="justify-center align-content-center">
       <div className="col-12 row justify-content-center text-center">
         {" "}
-        <img src={img??"/images/folderEmpty.png"} style={{ width: width?? "110px", height: height?? "auto"  }} alt="" />
+        <img src={img??"/images/folderEmpty.png"} style={{ width: width?? "180px", height: height?? "auto"  }} alt="" />
       </div>
       <div
         className="text-center w-auto"

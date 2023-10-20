@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { Row } from 'react-bootstrap';
 import Loader from './Components/Loader';
 import { Metadata } from 'next'
+
 // either Static metadata
 
 const Page = () => {
@@ -11,13 +12,11 @@ const Page = () => {
 // localStorage.setItem("user", "true");
 
   useEffect(() => {
-   
       if (!sessionStorage.getItem("user")) {
         router.push('/login');
       } else {
         router.push('/myDay');
       }
-    
   }, [ router]); // añadir isMounted a la lista de dependencias
 
   return (

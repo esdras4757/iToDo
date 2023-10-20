@@ -25,7 +25,7 @@
 
 body {
   color: rgb(var(--foreground-rgb)) !important;
-  background: rgb(var(--background-end-rgb));
+  background: black !important;
   height: 100vh !important;
   overflow: hidden;
   font-family: Arial, Helvetica, sans-serif !important;
@@ -115,7 +115,7 @@ nav a:last-child {
 }
 
 .lds-roller {
-  display: inline-block;
+  display: contents;
   position: relative;
   width: 80px;
   height: 80px;
@@ -155,12 +155,12 @@ nav a:last-child {
 }
 
 .ant-popover-inner{
-  padding: 1 !important;
+  padding: 10px 5px !important;
   text-align: center;
   margin: 0 !important;
   background-color: #3c3d50cf !important;
   width: max-content !important;
-  height: 200px;
+  /* height: 200px; */
 }
 .ant-popover-inner-content{
 padding: 0;
@@ -332,3 +332,64 @@ padding: 20px;
 }
 
 
+.tag{
+  padding: 5px 10px;
+  background-color: green;
+  border-radius: 5px;
+  font-size: 12px;
+  min-width: max-content;
+}
+
+.borderLeft{
+  position: relative;  /* Añade esto */
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.borderLeft::after{
+  content: "|"; 
+  position: absolute;
+  right: 0;
+  height: 30px;
+  top:0%;
+  width: 2px;
+  background-color: #595959;
+  color:#4b4b4b ;
+}
+
+.borderLeftm{
+  position: relative;  /* Añade esto */
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.borderLeftm::after{
+  content: "|"; 
+  position: absolute;
+  right: 0;
+  height: 30px;
+  width: 2px;
+  background-color: #595959;
+  color:#4b4b4b ;
+  top:25%
+}
+
+.datePickerIcon svg{
+  color: white;
+  width: 30px;
+  height: 20px;
+}
+
+.datePickerIcon input{
+  display: none !important;
+}
+
+.ant-picker-borderless{
+  padding-top: 0px !important;
+}
+
+.colorIcon svg{
+  color: rgb(90, 137, 255) !important;
+}

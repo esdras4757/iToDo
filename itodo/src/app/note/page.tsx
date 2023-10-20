@@ -37,6 +37,7 @@ import ErrorPlaceHolder from "../Components/ErrorPlaceHolder";
 import { convertToRaw } from "draft-js";
 import dayjs, { Dayjs } from "dayjs";
 import { updateNoteById } from "../utils/services/services";
+import { useSearchParams } from "next/navigation";
 
 let timer: NodeJS.Timeout | null = null;
 interface NoteData {
@@ -76,12 +77,25 @@ const Page = () => {
   const [initAt, setInitAt] = useState<Dayjs | null>(null);
   const [endAt, setEndAt] = useState<Dayjs | null>(null);
   const [errorsAddEvent, setErrorsAddEvent] = useState(false);
-
+  const searchParams = useSearchParams() 
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
       getAllNoteByUser();
     }
   }, []);
+
+  useEffect(() => {
+    let search = searchParams.get('id')
+    if (search && allNoteData) {
+      const noteToShow = allNoteData.find(notes=>{
+        return notes._id === search
+      })
+      if(noteToShow){
+        setNoteSelected(noteToShow)
+      }
+    }
+  }, [allNoteData])
+
 
   const onChangeEditor = (
     id: string,
@@ -452,7 +466,7 @@ const Page = () => {
           {isNil(allNoteData) === true &&
             loaderAllNote === true &&
             errorAllNote === false && (
-              <div className="w-75 justify-content-center m-auto row align-content-center mt-5">
+              <div className="w-75 justify-content-center row align-content-center mt-5">
                 <Loader />
               </div>
             )}

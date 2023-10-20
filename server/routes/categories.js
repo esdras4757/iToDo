@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Category = require("../models/category");
+const { findByIdAndDelete } = require("../models/task");
 
 router.post("/add", (req, res) => {
   try {
@@ -11,7 +12,10 @@ router.post("/add", (req, res) => {
     category.styles = styles;
     category
       .save()
-      .then((data) => res.json(data))
+      .then((data) => res.json({
+        id:data._id,
+        ...data.toObject()
+      }))
       .catch((err) => res.json({ message: err }));
   } catch (error) {
     res.json({ message: err });
@@ -26,7 +30,7 @@ router.get("/byIdUser/:id", (req, res) => {
         .then((data) =>{
           const dataFormat = data.map(element => {
                 return {
-                    idList:element.id,
+                    id:element.id,
                     name:element.name,
                     idUser:element.user,
                     styles:element.styles
@@ -42,6 +46,16 @@ router.get("/byIdUser/:id", (req, res) => {
       res.json({ message: err });
     }
   });
+
+  router.delete("/delete/:id", async (req,res)=>{
+    try {
+      Category.findByIdAndDelete({_id:req.params.id}).then(e=>{
+        res.send(e)
+      })
+    } catch (error) {
+      res.status(500).json({ message: err.message });
+    }
+  })
 
   router.put("/update/:id", async (req, res) => {
     try {
@@ -61,7 +75,7 @@ router.get("/byIdUser/:id", (req, res) => {
       }
 
         const dataFormat= {
-            idList:updatedCategory.id,
+            id:updatedCategory.id,
             name:updatedCategory.name,
             idUser:updatedCategory.user,
             styles:updatedCategory.styles

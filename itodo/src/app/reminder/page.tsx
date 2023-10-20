@@ -1,6 +1,6 @@
 "use client";
 import Calendar from "react-calendar";
-import { ReactNode, useEffect, useRef, useState, } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { isNil, isEmpty, debounce } from "lodash";
 import Home from "../main/main";
 import React from "react";
@@ -11,14 +11,27 @@ import ModalAddTask from "../Components/tasksComponents/modalAddTask";
 import openNotification from "../utils/notify";
 import FastLoader from "../Components/FastLoader";
 import Task from "../Components/tasksComponents/Task";
+import { updateReminderById } from "../utils/services/services";
 import NoDataPlaceholder from "../Components/NoDataPlaceholder";
-import { Avatar, Card, DatePicker, Input, Popover, Skeleton, TimePicker } from "antd";
+import {
+  Avatar,
+  Card,
+  DatePicker,
+  Input,
+  Popover,
+  Skeleton,
+  TimePicker,
+} from "antd";
 import draftToHtml from "draftjs-to-html";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { getAllRemindersByIdUser } from "../utils/services/services";
 import "dayjs/locale/es";
 import customParseFormat from "dayjs/plugin/customParseFormat"; // Notar cómo se importa el plugin aquí
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  EllipsisOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 
 const Editor = dynamic(
   () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
@@ -31,6 +44,7 @@ import {
   SelectionState,
   RichUtils,
 } from "draft-js";
+import { addReminder } from "../utils/services/services";
 import dynamic from "next/dynamic";
 import ErrorPlaceHolder from "../Components/ErrorPlaceHolder";
 import { convertToRaw } from "draft-js";
@@ -40,6 +54,7 @@ import FullCalendar from "@fullcalendar/react";
 import CalendarApi from "@fullcalendar/react";
 import { ColorPicker } from "antd";
 import Meta from "antd/es/card/Meta";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(customParseFormat);
 let timer: NodeJS.Timeout | null = null;
@@ -52,34 +67,31 @@ interface status {
 }
 
 interface ReminderData {
-  id: string;
+  _id: string;
   title: string;
-  initAt: string | null;
-  endAt: string | null;
   reminder: string | null;
   type: string;
   description: string;
-  color: string;
-  note: string | null;
+  userId: string;
 }
 
 const initValues: ReminderData = {
-  id: "",
+  _id: "",
   title: "",
-  initAt: null,
-  endAt: null,
   reminder: null,
   type: "",
   description: "",
-  color: "#ccc",
-  note: "",
+  userId: "",
 };
+
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 dayjs.locale("es");
 const Page = () => {
   const [visible, setVisible] = useState<boolean>(false);
-  const [allReminderData, setAllReminderData] = useState<ReminderData[] | null>(null);
+  const [allReminderData, setAllReminderData] = useState<ReminderData[] | null>(
+    null
+  );
   const [eventFormat, setReminderFormat] = useState<any>(null);
 
   const [loaderAllReminder, setLoaderAllReminder] = useState(false);
@@ -90,7 +102,8 @@ const Page = () => {
   const [values, setValues] = useState(initValues);
   const [editMode, setEditMode] = useState(false);
   const [errors, setErrors] = useState(false);
-
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
   const calendarRef = useRef<any>(null);
   useEffect(() => {
     if (sessionStorage.getItem("user")) {
@@ -102,25 +115,12 @@ const Page = () => {
     if (allReminderData && isNil(allReminderData) == false) {
       const events = allReminderData.map((item: ReminderData) => {
         return {
-          id: item.id,
+          id: item._id,
           title: item.title,
-          start:
-            isNil(item.initAt) == false && item.initAt != ""
-              ? dayjs(item.initAt, "DD/MM/YYYY HH:mm").toDate()
-              : null,
-          end:
-            isNil(item.endAt) == false && item.endAt != ""
-              ? dayjs(item.endAt, "DD/MM/YYYY HH:mm").toDate()
-              : null,
-          color: item.color
-            ? item.color
-            : item.type == "task"
-            ? "blue"
-            : item.type == "note" && "#8e8f3d",
           description: item.description,
           type: item.type,
           reminder: item.reminder,
-          note: item.note,
+          userId: item.userId,
         };
       });
 
@@ -132,6 +132,7 @@ const Page = () => {
     setErrorAllReminder(false);
     setAllReminderData(null);
     setLoaderAllReminder(true);
+    setFastSpin(true);
     const id = sessionStorage.getItem("user");
 
     if (id) {
@@ -141,130 +142,97 @@ const Page = () => {
     try {
       const response = await getAllRemindersByIdUser(id);
       if (response.data && response.data.length > 0) {
-        console.log(response.data);
-        setAllReminderData(response.data);
+        setAllReminderData(response.data as ReminderData[]);
       }
     } catch (error: any) {
       setErrorAllReminder(true);
       openNotification("error", error.message);
     } finally {
       setLoaderAllReminder(false);
+      setFastSpin(false);
     }
   };
 
-  // const AddReminder= async () => {
-  //   if (
-  //     isNil(values.title) === true ||
-  //     values.title.trim() === "" ||
-  //     isNil(values.initAt) === true ||
-  //     values.initAt === "" ||
-  //     isNil(values.endAt) === true ||
-  //     values.endAt === ""
-  //   ) {
-  //     setErrors(true);
-  //     return;
-  //   }
-  //   setErrors(false);
-  //   setFastSpin(true);
-  //   try {
-  //     console.log(values);
-  //     const data = {
-  //       userId: idUser,
-  //       title: values.title,
-  //       description: values.description,
-  //       initAt: values.initAt,
-  //       endAt: values.endAt,
-  //       color: values.color,
-  //       reminder: values.reminder,
-  //       note: values.note,
-  //       type: "event",
-  //     };
+  const updateReminder = async (date: String, id: string) => {
+    if (isNil(date) === true || date === "") {
+      setErrors(true);
+      return;
+    }
+    setErrors(false);
+    setFastSpin(true);
+    try {
+      console.log(values);
+      const data = {
+        reminder: date,
+      };
 
-  //     const response = await addReminder(data);
-  //     if (isNil(response) === false && isNil(response.data) === false) {
-  //       console.log("aaaaaaaaaaaaaaaaa");
-  //       ShowHidePanel();
-  //       setAllReminderData((prev) => {
-  //         if (!prev) {
-  //           return prev;
-  //         }
-  //         return [...prev, response.data];
-  //       });
-  //       const calendarApi = calendarRef.current.getApi();
-  //       calendarApi.render();
-  //     }
-  //   } catch (error: any) {
-  //     openNotification("error", error.message);
-  //   } finally {
-  //     setFastSpin(false);
-  //   }
-  // };
+      const response = await updateReminderById(id, data);
+      if (isNil(response) === false && isNil(response.data) === false) {
+        ShowHidePanel();
+        setAllReminderData((prev) => {
+          if (!prev || isEmpty(prev)) {
+            return prev;
+          }
+          const newReminder = prev.map((reminder) => {
+            if (reminder._id === response.data._id) {
+              const data: ReminderData = {
+                _id: response.data._id,
+                userId: response.data.userId,
+                title: response.data.title,
+                description: response.data.description,
+                reminder: response.data.reminder,
+                type: response.data.type,
+              };
+              reminder = data;
+            }
+            return reminder;
+          });
+          return newReminder;
+        });
+      }
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setFastSpin(false);
+    }
+  };
 
-  // const updateReminder = async () => {
-  //   if (
-  //     isNil(values.title) === true ||
-  //     values.title.trim() === "" ||
-  //     isNil(values.initAt) === true ||
-  //     values.initAt === "" ||
-  //     isNil(values.endAt) === true ||
-  //     values.endAt === ""
-  //   ) {
-  //     setErrors(true);
-  //     return;
-  //   }
-  //   setErrors(false);
-  //   setFastSpin(true);
-  //   try {
-  //     console.log(values);
-  //     const data = {
-  //       userId: idUser,
-  //       title: values.title,
-  //       description: values.description,
-  //       initAt: values.initAt,
-  //       endAt: values.endAt,
-  //       color: values.color,
-  //       reminder: values.reminder,
-  //       note: values.note,
-  //       type: "event",
-  //     };
+  const deleteReminder = async (id: string, type: String) => {
+    setErrors(false);
+    setFastSpin(true);
+    try {
+      console.log(values);
+      let data;
+      if (type == "task") {
+        data = {
+          reminder: null,
+          isReminder: false,
+        };
+      } else {
+        data = {
+          reminder: null,
+        };
+      }
 
-  //     const response = await updateReminderById(values.id,data);
-  //     if (isNil(response) === false && isNil(response.data) === false) {
-  //       ShowHidePanel();
-  //       setAllReminderData((prev) => {
-  //         if (!prev || isEmpty(prev)) {
-  //           return prev;
-  //         }
-  //          const newReminder = prev.map((event)=>{
-  //           if(event.id === response.data._id){
-  //             const data = {
-  //               id:response.data._id,
-  //               userId: response.data.userId,
-  //               title: response.data.title,
-  //               description: response.data.description,
-  //               initAt: response.data.initAt,
-  //               endAt: response.data.endAt,
-  //               color: response.data.color,
-  //               reminder: response.data.reminder,
-  //               note: response.data.note,
-  //               type: response.data.type,
-  //             }
-  //             event=data
-  //           }
-  //           return event
-
-  //         })
-  //         return newReminder
-  //       });
-  //       const calendarApi = calendarRef.current.getApi();
-  //       calendarApi.render();
-  //     }
-  //   } catch (error: any) {
-  //     openNotification("error", error.message);
-  //   } finally {
-  //     setFastSpin(false);
-  //   }
-  // };
+      const response = await updateReminderById(id, data);
+      if (isNil(response) === false && isNil(response.data) === false) {
+        ShowHidePanel();
+        setAllReminderData((prev) => {
+          if (!prev || isEmpty(prev)) {
+            return prev;
+          }
+          const newReminder = prev.filter((reminder) => {
+            return reminder._id !== response.data._id;
+          });
+          return newReminder;
+        });
+      }
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setFastSpin(false);
+    }
+  };
 
   const ShowHidePanel = (type: "toggle" | "add" | "remove" = "toggle") => {
     const detailPanel = document.querySelector(".detailPanel");
@@ -286,84 +254,442 @@ const Page = () => {
     });
   };
 
-  // useEffect(() => {
-  //   console.log(values);
-  // }, [values]);
+  const addReminderFn = async () => {
+    if (
+      isNil(values.title) === true ||
+      values.title === "" ||
+      isNil(values.reminder) ||
+      dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid() == false
+    ) {
+      setErrors(true);
+      return;
+    }
+    setErrors(false);
+    const data = {
+      title: values.title,
+      description: values.description,
+      reminder: values.reminder,
+      type: "reminder",
+      userId: idUser,
+    };
+
+    setFastSpin(true);
+    const id = sessionStorage.getItem("user");
+
+    if (id) {
+      setIdUser(id);
+    }
+
+    try {
+      const response = await addReminder(data);
+      if (response.data) {
+        setAllReminderData((prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return [...prev, response.data];
+        });
+        setOpen(false);
+        setValues(initValues);
+      }
+    } catch (error: any) {
+      openNotification("error", error.message);
+    } finally {
+      setFastSpin(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log(values);
+  }, [values]);
 
   return (
     <Home>
-      <div className="row align-content-end align-items-end  gap-3 justify-content-between p-5 w-100 m-auto">
-        <FastLoader isLoading={fastSpin} />
-        <h1 className="col-12 text-center mb-2 flex align-items-center justify-content-center title bold">
-            <i className="fas fa-bell text-warning mr-3" /> Recordatorios
-            </h1>
-        <Card
-        style={{ width: 340, marginTop: 16 }}
-        actions={[
-          <SettingOutlined key="setting" />,
-          <EditOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
-        ]}
-      >
-        <Skeleton loading={fastSpin} avatar active>
-          <Meta
-            avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />}
-            title="Card title"
-            description="This is the description"
-          />
-        </Skeleton>
-      </Card>
+      <FastLoader isLoading={fastSpin} />
+      {isNil(allReminderData) == true &&
+        loaderAllReminder == false &&
+        errorAllReminder == true && <ErrorPlaceHolder />}
 
-      <Card
-        style={{ width: 340, marginTop: 16 }}
-        actions={[
-          <SettingOutlined key="setting" />,
-          <EditOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
-        ]}
-      >
-        <Skeleton loading={fastSpin} avatar active>
-          <Meta
-            avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />}
-            title="Card title"
-            description="This is the description"
-          />
-        </Skeleton>
-      </Card>
+      {isEmpty(allReminderData) == true &&
+        loaderAllReminder == false &&
+        errorAllReminder == false && (
+          <>
+            <div className="row align-content-center align-items-center  gap-3 justify-content-left p-5 w-100 m-auto">
+              <h1 className="col-12 text-center mb-2 flex align-items-center justify-content-center title bold">
+                <i className="fas fa-bell text-warning mr-3" /> Recordatorios
+              </h1>
+              <div className="row m-auto justify-content-center">
+                <Popover
+                  id="popNoteAddReminder"
+                  open={open}
+                  onOpenChange={(e) => {
+                    setOpen(e);
+                    setErrors(false);
+                  }}
+                  content={
+                    <div className="flex-column mt-2 flex justify-content-center row-gap-3 align-items-center">
+                      <div className="col-12 text-white">
+                        <label className="text-white">Nombre*</label> <br />
+                        <input
+                          value={values.title}
+                          type="text"
+                          className="inputAddList col-12"
+                          placeholder="Nombre del evento"
+                          onChange={(e) => {
+                            updateValues(e.target.value, "title");
+                          }}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="text-white">Descripción</label> <br />
+                        <input
+                          value={values.description}
+                          type="text"
+                          className="inputAddList col-12"
+                          placeholder="Descripción  del evento"
+                          onChange={(e) => {
+                            updateValues(e.target.value, "description");
+                          }}
+                        />
+                      </div>
+                      <label className="text-white">Fecha y hora*</label>
+                      <DatePicker
+                        className="col-12"
+                        value={
+                          dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid()
+                            ? dayjs(values.reminder, "DD/MM/YYYY HH:mm")
+                            : null
+                        }
+                        style={{
+                          color: "white",
+                          height: "35px",
+                          width: "100%",
+                        }}
+                        onChange={(e) => {
+                          updateValues(
+                            dayjs(e).format("DD/MM/YYYY HH:mm"),
+                            "reminder"
+                          );
+                        }}
+                        showTime
+                        format={"DD/MM/YYYY HH:mm"}
+                        onOk={(e) => {
+                          console.log(e);
+                        }}
+                        placeholder="Ingresa una fecha"
+                      />
+                      {errors && (
+                        <span className="alert m-0 alert-danger p-1">
+                          Campos requeridos*
+                        </span>
+                      )}
+                      <div className="row justify-content-between w-100 align-content-center">
+                        <button
+                          className="col-auto btn btn-danger"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <i className="fa-solid fa-xmark pr-1"></i>Cerrar
+                        </button>
+                        <button
+                          className="col-auto btn btn-primary"
+                          onClick={() => {
+                            addReminderFn();
+                          }}
+                        >
+                          <i className="fa-solid fa-floppy-disk pr-1"></i>
+                          Guardar
+                        </button>
+                      </div>
+                    </div>
+                  }
+                  trigger={"click"}
+                  title={
+                    <span style={{ color: "white", fontSize: 17 }}>
+                      Agregar recordatorio
+                    </span>
+                  }
+                >
+                  <button
+                    onClick={() => {
+                      // ShowHidePanel("remove");
+                      // setValues(initValues);
+                      // setEditMode(false);
+                    }}
+                    className="btn col-auto  btn-primary"
+                  >
+                    <i className="fa-solid fa-plus pr-2"></i>
+                    Recordatorio
+                  </button>
+                </Popover>
+              </div>
+            </div>
+            <NoDataPlaceholder />
+          </>
+        )}
 
-      <Card
-        style={{ width: 340, marginTop: 16 }}
-        actions={[
-          <SettingOutlined key="setting" />,
-          <EditOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
-        ]}
-      >
-        <Skeleton loading={fastSpin} avatar active>
-          <Meta
-            avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />}
-            title="Card title"
-            description="This is the description"
-          />
-        </Skeleton>
-      </Card>
-      <Card
-        style={{ width: 340, marginTop: 16 }}
-        actions={[
-          <SettingOutlined key="setting" />,
-          <EditOutlined key="edit" />,
-          <EllipsisOutlined key="ellipsis" />,
-        ]}
-      >
-        <Skeleton loading={fastSpin} avatar active>
-          <Meta
-            avatar={<Avatar src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=2" />}
-            title="Card title"
-            description="This is the description"
-          />
-        </Skeleton>
-      </Card>
-      </div>
+      {isNil(allReminderData) == false &&
+        isEmpty(allReminderData) == false &&
+        loaderAllReminder == false &&
+        errorAllReminder == false && (
+          <>
+            <div className="row align-content-center align-items-center  gap-3 justify-content-left p-5 w-100 m-auto">
+              <h1 className="col-12 text-center mb-2 flex align-items-center justify-content-center title bold">
+                <i className="fas fa-bell text-warning mr-3" /> Recordatorios
+              </h1>
+              <div className="row m-auto justify-content-center">
+                <Popover
+                  id="popNoteAddReminder"
+                  open={open}
+                  onOpenChange={(e) => {
+                    setOpen(e);
+                    setErrors(false);
+                  }}
+                  content={
+                    <div className="flex-column mt-2 flex justify-content-center row-gap-3 align-items-center">
+                      <div className="col-12 text-white">
+                        <label className="text-white">Nombre*</label> <br />
+                        <input
+                          value={values.title}
+                          type="text"
+                          className="inputAddList col-12"
+                          placeholder="Nombre del evento"
+                          onChange={(e) => {
+                            updateValues(e.target.value, "title");
+                          }}
+                        />
+                      </div>
+                      <div className="col-12">
+                        <label className="text-white">Descripción</label> <br />
+                        <input
+                          value={values.description}
+                          type="text"
+                          className="inputAddList col-12"
+                          placeholder="Descripción  del evento"
+                          onChange={(e) => {
+                            updateValues(e.target.value, "description");
+                          }}
+                        />
+                      </div>
+                      <label className="text-white">Fecha y hora*</label>
+                      <DatePicker
+                        className="col-12"
+                        value={
+                          dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid()
+                            ? dayjs(values.reminder, "DD/MM/YYYY HH:mm")
+                            : null
+                        }
+                        style={{
+                          color: "white",
+                          height: "35px",
+                          width: "100%",
+                        }}
+                        onChange={(e) => {
+                          updateValues(
+                            dayjs(e).format("DD/MM/YYYY HH:mm"),
+                            "reminder"
+                          );
+                        }}
+                        showTime
+                        format={"DD/MM/YYYY HH:mm"}
+                        onOk={(e) => {
+                          console.log(e);
+                        }}
+                        placeholder="Ingresa una fecha"
+                      />
+                      {errors && (
+                        <span className="alert m-0 alert-danger p-1">
+                          Campos requeridos*
+                        </span>
+                      )}
+                      <div className="row justify-content-between w-100 align-content-center">
+                        <button
+                          className="col-auto btn btn-danger"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <i className="fa-solid fa-xmark pr-1"></i>Cerrar
+                        </button>
+                        <button
+                          className="col-auto btn btn-primary"
+                          onClick={() => {
+                            addReminderFn();
+                          }}
+                        >
+                          <i className="fa-solid fa-floppy-disk pr-1"></i>
+                          Guardar
+                        </button>
+                      </div>
+                    </div>
+                  }
+                  trigger={"click"}
+                  title={
+                    <span style={{ color: "white", fontSize: 17 }}>
+                      Agregar recordatorio
+                    </span>
+                  }
+                >
+                  <button
+                    onClick={() => {
+                      // ShowHidePanel("remove");
+                      // setValues(initValues);
+                      // setEditMode(false);
+                    }}
+                    className="btn col-auto  btn-primary"
+                  >
+                    <i className="fa-solid fa-plus pr-2"></i>
+                    Recordatorio
+                  </button>
+                </Popover>
+              </div>
+              <div
+                className="row gap-2 justify-content-around"
+                style={{ height: "calc(100vh - 385px", overflow: "auto" }}
+              >
+                {allReminderData?.map((reminder) => {
+                  return (
+                    <Card
+                      key={reminder._id}
+                      style={{ width: 340, marginTop: 16 }}
+                      actions={[
+                        <Popover
+                          id="popNoteEdit"
+                          content={
+                            <div className="flex-column flex justify-content-center row-gap-3 align-items-center">
+                              <DatePicker
+                                className="col-12"
+                                value={
+                                  dayjs(
+                                    reminder.reminder,
+                                    "DD/MM/YYYY HH:mm"
+                                  ).isValid()
+                                    ? dayjs(
+                                        reminder.reminder,
+                                        "DD/MM/YYYY HH:mm"
+                                      )
+                                    : null
+                                }
+                                style={{
+                                  color: "white",
+                                  height: "35px",
+                                  width: "100%",
+                                }}
+                                onChange={(e) => {
+                                  // setReminder(e);
+                                  // console.log(e);
+                                  // saveNote(
+                                  //   noteSelected._id,
+                                  //   title ?? "",
+                                  //   stateContentEditorState,
+                                  //   noteSelected.isImportant,
+                                  //   dayjs(e, "DD/MM/YYYY HH:mm")
+                                  // );
+                                  console.log(reminder);
+                                  updateReminder(
+                                    dayjs(e).format("DD/MM/YYYY HH:mm"),
+                                    reminder._id
+                                  );
+                                }}
+                                showTime
+                                format={"DD/MM/YYYY HH:mm"}
+                                onOk={(e) => {
+                                  console.log(e);
+                                }}
+                                placeholder="Ingresa una fecha"
+                              />
+                            </div>
+                          }
+                          trigger={"click"}
+                          title={
+                            <span style={{ color: "white", fontSize: 17 }}>
+                              Editar recordatorio
+                            </span>
+                          }
+                        >
+                          <i className="fa-solid col-12 fa-pen text-primary" />
+                        </Popover>,
+                        reminder.type === "reminder" ? (
+                          <div className="text-white cursor-auto w-100">-</div>
+                        ) : (
+                          <i
+                            title="Abrir en notas/tareas"
+                            className="fa-solid text-success fa-up-right-from-square"
+                            onClick={() => {
+                              if(reminder.type != 'event'){
+                                router.replace(
+                                  `/${reminder.type}?id=${reminder._id}`
+                                )
+                              }
+                              else{
+                                router.replace(
+                                  `/diary`
+                                )
+                              }
+                              
+                            }}
+                          />
+                        ),
+                        <i
+                          onClick={(e) => {
+                            deleteReminder(reminder._id, reminder.type);
+                          }}
+                          className="fa-solid fa-trash text-danger"
+                        />,
+                      ]}
+                    >
+                      <Skeleton loading={loaderAllReminder} avatar active>
+                        <Meta
+                          avatar={
+                            <Avatar
+                              className="justify-content-center row align-content-center align-items-center m-1"
+                              style={{ background: "#2f2f2f" }}
+                              src={
+                                reminder.type === "reminder" ? (
+                                  <i className="fas fa-bell fs-2 text-warning" />
+                                ) : reminder.type === "note" ? (
+                                  <i className="fas fa-sticky-note fs-2 text-warning" />
+                                ) : reminder.type === "task" ? (
+                                  <i className="fas fa-list-check fs-2 text-primary" />
+                                ) : (
+                                  reminder.type === "event" && (
+                                    <i className="fas fa-calendar fs-2 text-primary" />
+                                  )
+                                )
+                              }
+                            />
+                          }
+                          title={reminder.title}
+                          description={
+                            <>
+                              <div style={{ fontSize: 14 }}>
+                                {reminder.description &&
+                                reminder.description != ""
+                                  ? reminder.type == "note"
+                                    ? JSON.parse(
+                                        reminder.description
+                                      )?.blocks[0]?.text.substring(0, 20) +
+                                      "..."
+                                    : reminder.description
+                                  : "Sin descripçión"}
+                              </div>
+                              <div style={{ fontSize: 12, color: "#9a9a9a" }}>
+                                {reminder.reminder && reminder.reminder != ""
+                                  ? reminder.reminder
+                                  : "-"}
+                              </div>
+                            </>
+                          }
+                        />
+                      </Skeleton>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
     </Home>
   );
 };

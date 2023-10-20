@@ -3,7 +3,7 @@ import { Row } from 'react-bootstrap'
 
 const Loader = () => {
   return (
-    <Row className=' justify-center align-content-center h-full'>
+    <Row className='justify-content-center align-content-center h-full'>
     <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </Row>
   )

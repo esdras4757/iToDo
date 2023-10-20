@@ -1,26 +1,74 @@
 .anticon {
-    font-size: 20px !important;
+  font-size: 20px !important;
 }
 
-.ant-card-meta-title{
-    font-size: 20px !important;
+.ant-card-meta-title {
+  font-size: 20px !important;
+  color: rgb(210, 210, 210) !important;
 }
 
-.ant-card-meta-description{
-    font-size: 17px !important;
-
+.ant-card-meta-description {
+  font-size: 17px !important;
+  color: rgb(210, 210, 210) !important;
 }
 
-.ant-avatar{
-    height: 65px;
-    width: 65px;
+.ant-avatar {
+  height: 65px;
+  width: 65px;
+}
+.ant-card-meta-title {
+  margin: 0px !important;
 }
 
-.title{
-    color: #ddd;
-    font-weight: bold;
-    text-shadow: 1px 2px 5px rgb(46, 46, 46);
-    font-size: 40px;
-    padding: 5px 0;
-    border-radius: 7px;
+.title {
+  color: #ddd;
+  font-weight: bold;
+  text-shadow: 1px 2px 5px rgb(46, 46, 46);
+  font-size: 30px;
+  padding: 5px 0;
+  border-radius: 7px;
 }
+
+.ant-card,
+.ant-card-actions {
+  background-color: #262626 !important;
+  /* border-top: 1px solid #7b7b7b !important; */
+  color: rgb(187, 187, 187);
+}
+
+.ant-card{
+    max-height:165px !important;
+}
+
+.ant-card-bordered {
+  border: 1px solid #3e3e3e;
+}
+
+.ant-card .ant-card-actions {
+  border-top: 1px solid #7b7b7b;
+}
+
+.ant-card .ant-card-actions > li:not(:last-child) {
+  border-inline-end: 1px solid #7b7b7b !important;
+}
+
+#popNoteEdit {
+  height: 100px !important;
+}
+
+#popNoteAddReminder {
+  height: auto !important;
+  padding: 15px;
+}
+
+.ant-picker-ok button {
+  background-color: #2b80ef;
+}
+
+.ant-popover-inner-content{
+    width: 265px;
+}
+.ant-popover-inner{
+    background: #3e3e3e !important;
+}
+
