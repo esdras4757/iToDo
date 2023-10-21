@@ -202,11 +202,11 @@ const ModalAddTask = (props: propsInterface) => {
 
       axios
         .post('https://todoserver-8410.onrender.com/api/task/add',
-         formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+          formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
         .then((res) => {
           console.log(res)
           setLoading(false)

@@ -10,7 +10,7 @@ import io from 'socket.io-client'
 import openNotification from './utils/notify'
 import React, { useEffect } from 'react'
 import LayoutClient from './Components/LayoutClient'
-const socket = io('http://localhost:5500')
+const socket = io('https://todoserver-8410.onrender.com/:5500')
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
