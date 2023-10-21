@@ -16,7 +16,8 @@
     "typescript": "^5.1.6"
   },
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "build": "echo 'No build step required for Express'"
   },
   "devDependencies": {
     "@types/node": "^20.4.2"
