@@ -1,7 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL
-
 
 interface dataQuery {
   title: string;
@@ -28,19 +27,19 @@ interface dataResponseadd {
 }
 
 export const taskApi = createApi({
-  reducerPath: "taskApi",
+  reducerPath: 'taskApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${apiUrl}/api/task/`,
+    baseUrl: `${apiUrl}/api/task/`
   }),
   endpoints: (builder) => ({
     addTask: builder.mutation<dataResponseadd, dataQuery>({
       query: (dataQuery) => ({
-        url: "add",
-        method: "POST",
-        body: dataQuery,
-      }),
-    }),
-  }),
-});
+        url: 'add',
+        method: 'POST',
+        body: dataQuery
+      })
+    })
+  })
+})
 
-export const { useAddTaskMutation } = taskApi;
+export const { useAddTaskMutation } = taskApi

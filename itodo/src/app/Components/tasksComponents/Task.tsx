@@ -1,20 +1,20 @@
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
 import {
   deleteTaskById,
-  updateTaskMyDayById,
-} from "../../utils/services/services";
-import { updateTaskStatusById } from "../../utils/services/services";
-import { getTaskById } from "../../utils/services/services";
-import userInfoSlice from "@/redux/features/userInfoSlice";
-import { Col, Row } from "react-bootstrap";
-import openNotification from "../../utils/notify";
-import ModalEditTask from "./modalEditTask";
-import { useSearchParams } from "next/navigation";
-import moment from "moment";
-import { DatePicker, Popover } from "antd";
-import dayjs from "dayjs";
-import { isEmpty, isNil } from "lodash";
+  updateTaskMyDayById
+  , updateTaskStatusById, getTaskById
+} from '../../utils/services/services'
+
+import userInfoSlice from '@/redux/features/userInfoSlice'
+import { Col, Row } from 'react-bootstrap'
+import openNotification from '../../utils/notify'
+import ModalEditTask from './modalEditTask'
+
+import moment from 'moment'
+import { DatePicker, Popover } from 'antd'
+import dayjs from 'dayjs'
+import { isEmpty, isNil } from 'lodash'
 interface taskDAata {
   _id: string;
   title: string;
@@ -76,141 +76,141 @@ const Task = (props: propsInterface) => {
     getTaskByIdFn,
     taskData,
     taskError,
-    taskLoader,
-  } = props;
+    taskLoader
+  } = props
   // const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false);
   // const [taskData, setTaskData] = useState<taskDAata | null>(null);
   // const [taskLoader, setTaskLoader] = useState(false);
   // const [taskError, settaskError] = useState(false);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const [width, setwidth] = useState(window.innerWidth);
-
-
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [width, setwidth] = useState(window.innerWidth)
 
   useEffect(() => {
-    const antPop = document.querySelectorAll(".ant-popover");
+    const antPop = document.querySelectorAll('.ant-popover')
     if (isNil(antPop) == false && isEmpty(antPop) == false) {
       const handleClick = (e:any) => {
-        e.stopPropagation();
+        e.stopPropagation()
         // Código adicional que desees ejecutar
-      };
+      }
       antPop.forEach((item) => {
         console.log(item.parentElement)
-        item.parentElement?.addEventListener("click", handleClick);
-      });
+        item.parentElement?.addEventListener('click', handleClick)
+      })
 
       return () => {
         antPop.forEach((item) => {
-          item.removeEventListener("click", handleClick);
+          item.removeEventListener('click', handleClick)
         })
       }
     }
-  }, []);
+  }, [])
 
   const deleteTask = async (idTask: string) => {
-    setFastSpin(true);
+    setFastSpin(true)
     try {
-      const response = await deleteTaskById(idTask);
-      console.log(response.data);
+      const response = await deleteTaskById(idTask)
+      console.log(response.data)
       if (response && response.data) {
         setAllTaskData((prev: taskDAata[] | null) => {
-          if (prev === null) return null;
-          return prev.filter((item: taskDAata) => item._id !== idTask);
-        });
+          if (prev === null) return null
+          return prev.filter((item: taskDAata) => item._id !== idTask)
+        })
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
   const updateStatus = async (id: string, status: Partial<status>) => {
-    setFastSpin(true);
+    setFastSpin(true)
     try {
-      const response = await updateTaskStatusById(id, status);
-      console.log(response.data);
+      const response = await updateTaskStatusById(id, status)
+      console.log(response.data)
       if (response && response.data) {
-        getAllTaskDataFn();
+        getAllTaskDataFn()
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
   const myDay = async (id: string, date: string) => {
-    setFastSpin(true);
+    setFastSpin(true)
     try {
-      const response = await updateTaskMyDayById(id, date);
-      console.log(response.data);
+      const response = await updateTaskMyDayById(id, date)
+      console.log(response.data)
       if (response && response.data) {
-        getAllTaskDataFn();
+        getAllTaskDataFn()
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
   useEffect(() => {
     const handleResize = (e: any) => {
-      console.log(e);
-      setwidth(window.innerWidth);
-    };
+      console.log(e)
+      setwidth(window.innerWidth)
+    }
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
 
   return (
     <div
       onClick={(e) => {
-        e.stopPropagation();
-        getTaskByIdFn(item._id);
-        setIsModalEditVisible(true);
+        e.stopPropagation()
+        getTaskByIdFn(item._id)
+        setIsModalEditVisible(true)
       }}
       className="listMyDay cursor-alias"
     >
       <Row className="justify-content-around py-1 m-auto row-gap-3 h-100 flex-wrap px-2 align-content-center align-items-center text-center">
         <div className="col-auto">
-          {item?.isCompleted == false ? (
+          {item?.isCompleted == false
+            ? (
             <i
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
                 updateStatus(item._id, {
-                  isCompleted: !item.isCompleted,
-                });
+                  isCompleted: !item.isCompleted
+                })
               }}
               className="fa-regular cursor-pointer fs-4 fa-circle"
             ></i>
-          ) : (
+              )
+            : (
             <i
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
                 updateStatus(item._id, {
-                  isCompleted: !item.isCompleted,
-                });
+                  isCompleted: !item.isCompleted
+                })
               }}
               className="fa-solid fs-4 cursor-pointer text-primary fa-circle-check"
             ></i>
-          )}
+              )}
         </div>
 
         <div className="col-4  text-left borderLeftm">
           <span className="titleTask fs-5 text-white fw-bolder">
-            {item?.title && item?.title != "" ? item.title : "-"}
+            {item?.title && item?.title != '' ? item.title : '-'}
           </span>
 
           {width > 980 && (
             <div className="gap-2 contList fs-6">
-              {item?.categoryName && item?.categoryName != "" && (
+              {item?.categoryName && item?.categoryName != '' && (
                 <>
                   <span>
                     <i className="fa-solid mr-1 fa-layer-group"></i>
@@ -223,7 +223,7 @@ const Task = (props: propsInterface) => {
                               esdras4757
                             </span>
                             <i className="fa-solid dot fa-circle"></i> */}
-              {item?.fileId && item?.fileId != "" && (
+              {item?.fileId && item?.fileId != '' && (
                 <>
                   <i className="fa-solid dot fa-circle"></i>
                   <span>
@@ -232,7 +232,7 @@ const Task = (props: propsInterface) => {
                 </>
               )}
 
-              {item?.reminder && item?.reminder != "" && (
+              {item?.reminder && item?.reminder != '' && (
                 <>
                   <i className="fa-solid dot fa-circle"></i>
                   <span>
@@ -245,7 +245,7 @@ const Task = (props: propsInterface) => {
                               <i className="fa-solid mr-1 text-primary fa-share-nodes"></i>
                             </span> */}
 
-              {item?.note && item?.note != "" && (
+              {item?.note && item?.note != '' && (
                 <>
                   <i className="fa-solid dot fa-circle"></i>
                   <span>
@@ -259,7 +259,7 @@ const Task = (props: propsInterface) => {
 
         <div
           className="col-2  text-left d-flex borderLeft"
-          style={{ minWidth: "max-content" }}
+          style={{ minWidth: 'max-content' }}
         >
           <span
             className="tag"
@@ -271,20 +271,20 @@ const Task = (props: propsInterface) => {
 
         <div
           className="col-2 text-left d-flex borderLeft"
-          style={{ minWidth: "max-content" }}
+          style={{ minWidth: 'max-content' }}
         >
           <span className="tag" style={{ backgroundColor: item?.styleStatus }}>
             {item?.status}
           </span>
         </div>
-        {/* completada 
+        {/* completada
     No completada
     En progreso
-    Pendiente*/}
+    Pendiente */}
         {/* actionButtons */}
         <Row
           style={{
-            minWidth: "max-content",
+            minWidth: 'max-content'
           }}
           className="col-3 text-center justify-content-around justify-items-around align-content-around"
         >
@@ -295,19 +295,19 @@ const Task = (props: propsInterface) => {
                className="justify-content-around col-12 m-auto row">
                 <i
                   onClick={(e) => {
-                    e.stopPropagation();
-                    console.log(item?.myDay == moment().format("DD/MM/YYYY"));
+                    e.stopPropagation()
+                    console.log(item?.myDay == moment().format('DD/MM/YYYY'))
                     myDay(
                       item._id,
-                      item?.myDay == moment().format("DD/MM/YYYY")
-                        ? ""
-                        : moment().format("DD/MM/YYYY")
-                    );
+                      item?.myDay == moment().format('DD/MM/YYYY')
+                        ? ''
+                        : moment().format('DD/MM/YYYY')
+                    )
                   }}
                   className={`col-auto cursor-pointer ${
-                    item?.myDay == moment().format("DD/MM/YYYY")
-                      ? "fa-solid text-primary"
-                      : "fa-regular text-white"
+                    item?.myDay == moment().format('DD/MM/YYYY')
+                      ? 'fa-solid text-primary'
+                      : 'fa-regular text-white'
                   } fs-5 fa-sun`}
                 ></i>
 
@@ -317,27 +317,27 @@ const Task = (props: propsInterface) => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <DatePicker
-                  onClick={e=>{
-                    item?.myDay != moment().format("DD/MM/YYYY") &&
-                      item?.myDay != "" &&
+                  onClick={e => {
+                    item?.myDay != moment().format('DD/MM/YYYY') &&
+                      item?.myDay != '' &&
                       myDay(
                         item._id,
                         ''
-                      );
+                      )
                   }}
                     className={`cursor-pointer datePickerIcon ${
-                      item?.myDay != moment().format("DD/MM/YYYY") &&
-                      item?.myDay != "" &&
-                      "colorIcon"
+                      item?.myDay != moment().format('DD/MM/YYYY') &&
+                      item?.myDay != '' &&
+                      'colorIcon'
                     } text-white`}
                     bordered={false}
                     onChange={(dateValue) => {
                       myDay(
                         item._id,
-                        item?.myDay == dayjs(dateValue).format("DD/MM/YYYY")
-                          ? ""
-                          : dayjs(dateValue).format("DD/MM/YYYY")
-                      );
+                        item?.myDay == dayjs(dateValue).format('DD/MM/YYYY')
+                          ? ''
+                          : dayjs(dateValue).format('DD/MM/YYYY')
+                      )
                     }}
                   />
                 </div>
@@ -347,65 +347,69 @@ const Task = (props: propsInterface) => {
             title={
               <div
               onClick={(e) => e.stopPropagation()}
-                style={{ fontSize: "11", minWidth: 250 }}
+                style={{ fontSize: '11', minWidth: 250 }}
                 className="col-12 m-auto row text-white"
               >
-                <div 
+                <div
                 onClick={(e) => e.stopPropagation()}
                 className="col-6 p-0">
-                  {item?.myDay == moment().format("DD/MM/YYYY") ?
-                      "Eliminar de mi dia":'Añadir a mi dia'}
+                  {item?.myDay == moment().format('DD/MM/YYYY')
+                    ? 'Eliminar de mi dia'
+                    : 'Añadir a mi dia'}
                   </div>
 
-                <div 
+                <div
                 onClick={(e) => e.stopPropagation()}
                 title={item?.myDay}
                 className="col-6 p-0">
-                {item?.myDay != moment().format("DD/MM/YYYY") &&
-                      item?.myDay != "" ?
-                      "Eliminar dia":'Seleccionar un dia'}
+                {item?.myDay != moment().format('DD/MM/YYYY') &&
+                      item?.myDay != ''
+                  ? 'Eliminar dia'
+                  : 'Seleccionar un dia'}
                   </div>
               </div>
             }
           >
             <i
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
               }}
               className={`col-auto cursor-pointer ${
-                item?.myDay == moment().format("DD/MM/YYYY")
-                  ? "fa-solid text-primary"
-                  : "fa-regular text-secondary"
+                item?.myDay == moment().format('DD/MM/YYYY')
+                  ? 'fa-solid text-primary'
+                  : 'fa-regular text-secondary'
               } fs-5 fa-sun`}
             ></i>
           </Popover>
 
-          {item?.isImportant == true ? (
+          {item?.isImportant == true
+            ? (
             <i
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
                 updateStatus(item._id, {
-                  isImportant: !item.isImportant,
-                });
+                  isImportant: !item.isImportant
+                })
               }}
               className="col-auto fa-solid cursor-pointer text-warning fs-5 fa-star"
             ></i>
-          ) : (
+              )
+            : (
             <i
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation()
                 updateStatus(item._id, {
-                  isImportant: !item.isImportant,
-                });
+                  isImportant: !item.isImportant
+                })
               }}
               className="col-auto fa-regular cursor-pointer fs-5 fa-star"
             ></i>
-          )}
+              )}
 
           <i
             onClick={(e) => {
-              e.stopPropagation();
-              deleteTask(item._id);
+              e.stopPropagation()
+              deleteTask(item._id)
             }}
             className="col-auto cursor-pointer fa fs-5 text-danger fa-trash"
           ></i>
@@ -422,7 +426,7 @@ const Task = (props: propsInterface) => {
         setFastSpin={setFastSpin}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Task;
+export default Task

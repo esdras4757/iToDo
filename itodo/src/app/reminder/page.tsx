@@ -1,18 +1,18 @@
-"use client";
-import Calendar from "react-calendar";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { isNil, isEmpty, debounce } from "lodash";
-import Home from "../main/main";
-import React from "react";
-import Loader from "../Components/Loader";
-import "./styles.css";
-import { Col, Row } from "react-bootstrap";
-import ModalAddTask from "../Components/tasksComponents/modalAddTask";
-import openNotification from "../utils/notify";
-import FastLoader from "../Components/FastLoader";
-import Task from "../Components/tasksComponents/Task";
-import { updateReminderById } from "../utils/services/services";
-import NoDataPlaceholder from "../Components/NoDataPlaceholder";
+'use client'
+import Calendar from 'react-calendar'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import { isNil, isEmpty, debounce } from 'lodash'
+import Home from '../main/main'
+
+import Loader from '../Components/Loader'
+import './styles.css'
+import { Col, Row } from 'react-bootstrap'
+import ModalAddTask from '../Components/tasksComponents/modalAddTask'
+import openNotification from '../utils/notify'
+import FastLoader from '../Components/FastLoader'
+import Task from '../Components/tasksComponents/Task'
+import { updateReminderById, addReminder, getAllRemindersByIdUser } from '../utils/services/services'
+import NoDataPlaceholder from '../Components/NoDataPlaceholder'
 import {
   Avatar,
   Card,
@@ -20,44 +20,45 @@ import {
   Input,
   Popover,
   Skeleton,
-  TimePicker,
-} from "antd";
-import draftToHtml from "draftjs-to-html";
-import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
-import { getAllRemindersByIdUser } from "../utils/services/services";
-import "dayjs/locale/es";
-import customParseFormat from "dayjs/plugin/customParseFormat"; // Notar cómo se importa el plugin aquí
+  TimePicker
+  , ColorPicker
+} from 'antd'
+import draftToHtml from 'draftjs-to-html'
+import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
+// import { getAllRemindersByIdUser } from '../utils/services/services'
+import 'dayjs/locale/es'
+import customParseFormat from 'dayjs/plugin/customParseFormat' // Notar cómo se importa el plugin aquí
 import {
   EditOutlined,
   EllipsisOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-
-const Editor = dynamic(
-  () => import("react-draft-wysiwyg").then((mod) => mod.Editor),
-  { ssr: false }
-);
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+  SettingOutlined
+} from '@ant-design/icons'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import {
   EditorState,
   convertFromRaw,
   SelectionState,
-  RichUtils,
-} from "draft-js";
-import { addReminder } from "../utils/services/services";
-import dynamic from "next/dynamic";
-import ErrorPlaceHolder from "../Components/ErrorPlaceHolder";
-import { convertToRaw } from "draft-js";
-import dayjs, { Dayjs } from "dayjs";
-import "react-calendar/dist/Calendar.css";
-import FullCalendar from "@fullcalendar/react";
-import CalendarApi from "@fullcalendar/react";
-import { ColorPicker } from "antd";
-import Meta from "antd/es/card/Meta";
-import { useRouter } from "next/navigation";
+  RichUtils
+  , convertToRaw
+} from 'draft-js'
 
-dayjs.extend(customParseFormat);
-let timer: NodeJS.Timeout | null = null;
+import dynamic from 'next/dynamic'
+import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
+
+import dayjs, { Dayjs } from 'dayjs'
+import 'react-calendar/dist/Calendar.css'
+
+import Meta from 'antd/es/card/Meta'
+import { useRouter } from 'next/navigation'
+
+const Editor = dynamic(
+  () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
+  { ssr: false }
+)
+
+dayjs.extend(customParseFormat)
+/* global NodeJS */
+const timer: NodeJS.Timeout | null = null
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -76,40 +77,40 @@ interface ReminderData {
 }
 
 const initValues: ReminderData = {
-  _id: "",
-  title: "",
+  _id: '',
+  title: '',
   reminder: null,
-  type: "",
-  description: "",
-  userId: "",
-};
+  type: '',
+  description: '',
+  userId: ''
+}
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-dayjs.locale("es");
+dayjs.locale('es')
 const Page = () => {
-  const [visible, setVisible] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false)
   const [allReminderData, setAllReminderData] = useState<ReminderData[] | null>(
     null
-  );
-  const [eventFormat, setReminderFormat] = useState<any>(null);
+  )
+  const [eventFormat, setReminderFormat] = useState<any>(null)
 
-  const [loaderAllReminder, setLoaderAllReminder] = useState(false);
-  const [errorAllReminder, setErrorAllReminder] = useState(false);
-  const [fastSpin, setFastSpin] = useState(false);
-  const [idUser, setIdUser] = useState("");
-  const [title, setTitle] = useState<null | string>(null);
-  const [values, setValues] = useState(initValues);
-  const [editMode, setEditMode] = useState(false);
-  const [errors, setErrors] = useState(false);
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const calendarRef = useRef<any>(null);
+  const [loaderAllReminder, setLoaderAllReminder] = useState(false)
+  const [errorAllReminder, setErrorAllReminder] = useState(false)
+  const [fastSpin, setFastSpin] = useState(false)
+  const [idUser, setIdUser] = useState('')
+  const [title, setTitle] = useState<null | string>(null)
+  const [values, setValues] = useState(initValues)
+  const [editMode, setEditMode] = useState(false)
+  const [errors, setErrors] = useState(false)
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const calendarRef = useRef<any>(null)
   useEffect(() => {
-    if (sessionStorage.getItem("user")) {
-      getAllReminderByUser();
+    if (sessionStorage.getItem('user')) {
+      getAllReminderByUser()
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (allReminderData && isNil(allReminderData) == false) {
@@ -120,58 +121,58 @@ const Page = () => {
           description: item.description,
           type: item.type,
           reminder: item.reminder,
-          userId: item.userId,
-        };
-      });
+          userId: item.userId
+        }
+      })
 
-      setReminderFormat(events);
+      setReminderFormat(events)
     }
-  }, [allReminderData]);
+  }, [allReminderData])
 
   const getAllReminderByUser = async () => {
-    setErrorAllReminder(false);
-    setAllReminderData(null);
-    setLoaderAllReminder(true);
-    setFastSpin(true);
-    const id = sessionStorage.getItem("user");
+    setErrorAllReminder(false)
+    setAllReminderData(null)
+    setLoaderAllReminder(true)
+    setFastSpin(true)
+    const id = sessionStorage.getItem('user')
 
     if (id) {
-      setIdUser(id);
+      setIdUser(id)
     }
 
     try {
-      const response = await getAllRemindersByIdUser(id);
+      const response = await getAllRemindersByIdUser(id)
       if (response.data && response.data.length > 0) {
-        setAllReminderData(response.data as ReminderData[]);
+        setAllReminderData(response.data as ReminderData[])
       }
     } catch (error: any) {
-      setErrorAllReminder(true);
-      openNotification("error", error.message);
+      setErrorAllReminder(true)
+      openNotification('error', error.message)
     } finally {
-      setLoaderAllReminder(false);
-      setFastSpin(false);
+      setLoaderAllReminder(false)
+      setFastSpin(false)
     }
-  };
+  }
 
   const updateReminder = async (date: String, id: string) => {
-    if (isNil(date) === true || date === "") {
-      setErrors(true);
-      return;
+    if (isNil(date) === true || date === '') {
+      setErrors(true)
+      return
     }
-    setErrors(false);
-    setFastSpin(true);
+    setErrors(false)
+    setFastSpin(true)
     try {
-      console.log(values);
+      console.log(values)
       const data = {
-        reminder: date,
-      };
+        reminder: date
+      }
 
-      const response = await updateReminderById(id, data);
+      const response = await updateReminderById(id, data)
       if (isNil(response) === false && isNil(response.data) === false) {
-        ShowHidePanel();
+        ShowHidePanel()
         setAllReminderData((prev) => {
           if (!prev || isEmpty(prev)) {
-            return prev;
+            return prev
           }
           const newReminder = prev.map((reminder) => {
             if (reminder._id === response.data._id) {
@@ -181,127 +182,127 @@ const Page = () => {
                 title: response.data.title,
                 description: response.data.description,
                 reminder: response.data.reminder,
-                type: response.data.type,
-              };
-              reminder = data;
+                type: response.data.type
+              }
+              reminder = data
             }
-            return reminder;
-          });
-          return newReminder;
-        });
+            return reminder
+          })
+          return newReminder
+        })
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
   const deleteReminder = async (id: string, type: String) => {
-    setErrors(false);
-    setFastSpin(true);
+    setErrors(false)
+    setFastSpin(true)
     try {
-      console.log(values);
-      let data;
-      if (type == "task") {
+      console.log(values)
+      let data
+      if (type == 'task') {
         data = {
           reminder: null,
-          isReminder: false,
-        };
+          isReminder: false
+        }
       } else {
         data = {
-          reminder: null,
-        };
+          reminder: null
+        }
       }
 
-      const response = await updateReminderById(id, data);
+      const response = await updateReminderById(id, data)
       if (isNil(response) === false && isNil(response.data) === false) {
-        ShowHidePanel();
+        ShowHidePanel()
         setAllReminderData((prev) => {
           if (!prev || isEmpty(prev)) {
-            return prev;
+            return prev
           }
           const newReminder = prev.filter((reminder) => {
-            return reminder._id !== response.data._id;
-          });
-          return newReminder;
-        });
+            return reminder._id !== response.data._id
+          })
+          return newReminder
+        })
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
-  const ShowHidePanel = (type: "toggle" | "add" | "remove" = "toggle") => {
-    const detailPanel = document.querySelector(".detailPanel");
-    const calndarPanel = document.querySelector(".calendarPanel");
+  const ShowHidePanel = (type: 'toggle' | 'add' | 'remove' = 'toggle') => {
+    const detailPanel = document.querySelector('.detailPanel')
+    const calndarPanel = document.querySelector('.calendarPanel')
     if (detailPanel && calndarPanel && calendarRef?.current) {
-      detailPanel.classList[type]("d-none");
-      calndarPanel.classList[type]("w-100");
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.render();
+      detailPanel.classList[type]('d-none')
+      calndarPanel.classList[type]('w-100')
+      const calendarApi = calendarRef.current.getApi()
+      calendarApi.render()
     }
-  };
+  }
 
   const updateValues = <K extends keyof ReminderData>(
     value: ReminderData[K],
     name: K
   ) => {
     setValues((prev) => {
-      return { ...prev, [name]: value };
-    });
-  };
+      return { ...prev, [name]: value }
+    })
+  }
 
   const addReminderFn = async () => {
     if (
       isNil(values.title) === true ||
-      values.title === "" ||
+      values.title === '' ||
       isNil(values.reminder) ||
-      dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid() == false
+      dayjs(values.reminder, 'DD/MM/YYYY HH:mm').isValid() == false
     ) {
-      setErrors(true);
-      return;
+      setErrors(true)
+      return
     }
-    setErrors(false);
+    setErrors(false)
     const data = {
       title: values.title,
       description: values.description,
       reminder: values.reminder,
-      type: "reminder",
-      userId: idUser,
-    };
+      type: 'reminder',
+      userId: idUser
+    }
 
-    setFastSpin(true);
-    const id = sessionStorage.getItem("user");
+    setFastSpin(true)
+    const id = sessionStorage.getItem('user')
 
     if (id) {
-      setIdUser(id);
+      setIdUser(id)
     }
 
     try {
-      const response = await addReminder(data);
+      const response = await addReminder(data)
       if (response.data) {
         setAllReminderData((prev) => {
           if (!prev) {
-            return prev;
+            return prev
           }
-          return [...prev, response.data];
-        });
-        setOpen(false);
-        setValues(initValues);
+          return [...prev, response.data]
+        })
+        setOpen(false)
+        setValues(initValues)
       }
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setFastSpin(false);
+      setFastSpin(false)
     }
-  };
+  }
 
   useEffect(() => {
-    console.log(values);
-  }, [values]);
+    console.log(values)
+  }, [values])
 
   return (
     <Home>
@@ -323,8 +324,8 @@ const Page = () => {
                   id="popNoteAddReminder"
                   open={open}
                   onOpenChange={(e) => {
-                    setOpen(e);
-                    setErrors(false);
+                    setOpen(e)
+                    setErrors(false)
                   }}
                   content={
                     <div className="flex-column mt-2 flex justify-content-center row-gap-3 align-items-center">
@@ -336,7 +337,7 @@ const Page = () => {
                           className="inputAddList col-12"
                           placeholder="Nombre del evento"
                           onChange={(e) => {
-                            updateValues(e.target.value, "title");
+                            updateValues(e.target.value, 'title')
                           }}
                         />
                       </div>
@@ -348,7 +349,7 @@ const Page = () => {
                           className="inputAddList col-12"
                           placeholder="Descripción  del evento"
                           onChange={(e) => {
-                            updateValues(e.target.value, "description");
+                            updateValues(e.target.value, 'description')
                           }}
                         />
                       </div>
@@ -356,25 +357,25 @@ const Page = () => {
                       <DatePicker
                         className="col-12"
                         value={
-                          dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid()
-                            ? dayjs(values.reminder, "DD/MM/YYYY HH:mm")
+                          dayjs(values.reminder, 'DD/MM/YYYY HH:mm').isValid()
+                            ? dayjs(values.reminder, 'DD/MM/YYYY HH:mm')
                             : null
                         }
                         style={{
-                          color: "white",
-                          height: "35px",
-                          width: "100%",
+                          color: 'white',
+                          height: '35px',
+                          width: '100%'
                         }}
                         onChange={(e) => {
                           updateValues(
-                            dayjs(e).format("DD/MM/YYYY HH:mm"),
-                            "reminder"
-                          );
+                            dayjs(e).format('DD/MM/YYYY HH:mm'),
+                            'reminder'
+                          )
                         }}
                         showTime
-                        format={"DD/MM/YYYY HH:mm"}
+                        format={'DD/MM/YYYY HH:mm'}
                         onOk={(e) => {
-                          console.log(e);
+                          console.log(e)
                         }}
                         placeholder="Ingresa una fecha"
                       />
@@ -387,7 +388,7 @@ const Page = () => {
                         <button
                           className="col-auto btn btn-danger"
                           onClick={() => {
-                            setOpen(false);
+                            setOpen(false)
                           }}
                         >
                           <i className="fa-solid fa-xmark pr-1"></i>Cerrar
@@ -395,7 +396,7 @@ const Page = () => {
                         <button
                           className="col-auto btn btn-primary"
                           onClick={() => {
-                            addReminderFn();
+                            addReminderFn()
                           }}
                         >
                           <i className="fa-solid fa-floppy-disk pr-1"></i>
@@ -404,9 +405,9 @@ const Page = () => {
                       </div>
                     </div>
                   }
-                  trigger={"click"}
+                  trigger={'click'}
                   title={
-                    <span style={{ color: "white", fontSize: 17 }}>
+                    <span style={{ color: 'white', fontSize: 17 }}>
                       Agregar recordatorio
                     </span>
                   }
@@ -427,7 +428,7 @@ const Page = () => {
             </div>
             <NoDataPlaceholder />
           </>
-        )}
+      )}
 
       {isNil(allReminderData) == false &&
         isEmpty(allReminderData) == false &&
@@ -443,8 +444,8 @@ const Page = () => {
                   id="popNoteAddReminder"
                   open={open}
                   onOpenChange={(e) => {
-                    setOpen(e);
-                    setErrors(false);
+                    setOpen(e)
+                    setErrors(false)
                   }}
                   content={
                     <div className="flex-column mt-2 flex justify-content-center row-gap-3 align-items-center">
@@ -456,7 +457,7 @@ const Page = () => {
                           className="inputAddList col-12"
                           placeholder="Nombre del evento"
                           onChange={(e) => {
-                            updateValues(e.target.value, "title");
+                            updateValues(e.target.value, 'title')
                           }}
                         />
                       </div>
@@ -468,7 +469,7 @@ const Page = () => {
                           className="inputAddList col-12"
                           placeholder="Descripción  del evento"
                           onChange={(e) => {
-                            updateValues(e.target.value, "description");
+                            updateValues(e.target.value, 'description')
                           }}
                         />
                       </div>
@@ -476,25 +477,25 @@ const Page = () => {
                       <DatePicker
                         className="col-12"
                         value={
-                          dayjs(values.reminder, "DD/MM/YYYY HH:mm").isValid()
-                            ? dayjs(values.reminder, "DD/MM/YYYY HH:mm")
+                          dayjs(values.reminder, 'DD/MM/YYYY HH:mm').isValid()
+                            ? dayjs(values.reminder, 'DD/MM/YYYY HH:mm')
                             : null
                         }
                         style={{
-                          color: "white",
-                          height: "35px",
-                          width: "100%",
+                          color: 'white',
+                          height: '35px',
+                          width: '100%'
                         }}
                         onChange={(e) => {
                           updateValues(
-                            dayjs(e).format("DD/MM/YYYY HH:mm"),
-                            "reminder"
-                          );
+                            dayjs(e).format('DD/MM/YYYY HH:mm'),
+                            'reminder'
+                          )
                         }}
                         showTime
-                        format={"DD/MM/YYYY HH:mm"}
+                        format={'DD/MM/YYYY HH:mm'}
                         onOk={(e) => {
-                          console.log(e);
+                          console.log(e)
                         }}
                         placeholder="Ingresa una fecha"
                       />
@@ -507,7 +508,7 @@ const Page = () => {
                         <button
                           className="col-auto btn btn-danger"
                           onClick={() => {
-                            setOpen(false);
+                            setOpen(false)
                           }}
                         >
                           <i className="fa-solid fa-xmark pr-1"></i>Cerrar
@@ -515,7 +516,7 @@ const Page = () => {
                         <button
                           className="col-auto btn btn-primary"
                           onClick={() => {
-                            addReminderFn();
+                            addReminderFn()
                           }}
                         >
                           <i className="fa-solid fa-floppy-disk pr-1"></i>
@@ -524,9 +525,9 @@ const Page = () => {
                       </div>
                     </div>
                   }
-                  trigger={"click"}
+                  trigger={'click'}
                   title={
-                    <span style={{ color: "white", fontSize: 17 }}>
+                    <span style={{ color: 'white', fontSize: 17 }}>
                       Agregar recordatorio
                     </span>
                   }
@@ -546,7 +547,7 @@ const Page = () => {
               </div>
               <div
                 className="row gap-2 justify-content-around"
-                style={{ height: "calc(100vh - 385px", overflow: "auto" }}
+                style={{ height: 'calc(100vh - 385px', overflow: 'auto' }}
               >
                 {allReminderData?.map((reminder) => {
                   return (
@@ -555,6 +556,7 @@ const Page = () => {
                       style={{ width: 340, marginTop: 16 }}
                       actions={[
                         <Popover
+                        key={'pop'}
                           id="popNoteEdit"
                           content={
                             <div className="flex-column flex justify-content-center row-gap-3 align-items-center">
@@ -563,18 +565,18 @@ const Page = () => {
                                 value={
                                   dayjs(
                                     reminder.reminder,
-                                    "DD/MM/YYYY HH:mm"
+                                    'DD/MM/YYYY HH:mm'
                                   ).isValid()
                                     ? dayjs(
-                                        reminder.reminder,
-                                        "DD/MM/YYYY HH:mm"
-                                      )
+                                      reminder.reminder,
+                                      'DD/MM/YYYY HH:mm'
+                                    )
                                     : null
                                 }
                                 style={{
-                                  color: "white",
-                                  height: "35px",
-                                  width: "100%",
+                                  color: 'white',
+                                  height: '35px',
+                                  width: '100%'
                                 }}
                                 onChange={(e) => {
                                   // setReminder(e);
@@ -586,57 +588,58 @@ const Page = () => {
                                   //   noteSelected.isImportant,
                                   //   dayjs(e, "DD/MM/YYYY HH:mm")
                                   // );
-                                  console.log(reminder);
+                                  console.log(reminder)
                                   updateReminder(
-                                    dayjs(e).format("DD/MM/YYYY HH:mm"),
+                                    dayjs(e).format('DD/MM/YYYY HH:mm'),
                                     reminder._id
-                                  );
+                                  )
                                 }}
                                 showTime
-                                format={"DD/MM/YYYY HH:mm"}
+                                format={'DD/MM/YYYY HH:mm'}
                                 onOk={(e) => {
-                                  console.log(e);
+                                  console.log(e)
                                 }}
                                 placeholder="Ingresa una fecha"
                               />
                             </div>
                           }
-                          trigger={"click"}
+                          trigger={'click'}
                           title={
-                            <span style={{ color: "white", fontSize: 17 }}>
+                            <span style={{ color: 'white', fontSize: 17 }}>
                               Editar recordatorio
                             </span>
                           }
                         >
                           <i className="fa-solid col-12 fa-pen text-primary" />
                         </Popover>,
-                        reminder.type === "reminder" ? (
+                        reminder.type === 'reminder'
+                          ? (
                           <div className="text-white cursor-auto w-100">-</div>
-                        ) : (
+                            )
+                          : (
                           <i
                             title="Abrir en notas/tareas"
                             className="fa-solid text-success fa-up-right-from-square"
                             onClick={() => {
-                              if(reminder.type != 'event'){
+                              if (reminder.type != 'event') {
                                 router.replace(
                                   `/${reminder.type}?id=${reminder._id}`
                                 )
-                              }
-                              else{
+                              } else {
                                 router.replace(
-                                  `/diary`
+                                  '/diary'
                                 )
                               }
-                              
                             }}
                           />
-                        ),
+                            ),
                         <i
+                        key={reminder._id}
                           onClick={(e) => {
-                            deleteReminder(reminder._id, reminder.type);
+                            deleteReminder(reminder._id, reminder.type)
                           }}
                           className="fa-solid fa-trash text-danger"
-                        />,
+                        />
                       ]}
                     >
                       <Skeleton loading={loaderAllReminder} avatar active>
@@ -644,19 +647,25 @@ const Page = () => {
                           avatar={
                             <Avatar
                               className="justify-content-center row align-content-center align-items-center m-1"
-                              style={{ background: "#2f2f2f" }}
+                              style={{ background: '#2f2f2f' }}
                               src={
-                                reminder.type === "reminder" ? (
+                                reminder.type === 'reminder'
+                                  ? (
                                   <i className="fas fa-bell fs-2 text-warning" />
-                                ) : reminder.type === "note" ? (
+                                    )
+                                  : reminder.type === 'note'
+                                    ? (
                                   <i className="fas fa-sticky-note fs-2 text-warning" />
-                                ) : reminder.type === "task" ? (
+                                      )
+                                    : reminder.type === 'task'
+                                      ? (
                                   <i className="fas fa-list-check fs-2 text-primary" />
-                                ) : (
-                                  reminder.type === "event" && (
+                                        )
+                                      : (
+                                          reminder.type === 'event' && (
                                     <i className="fas fa-calendar fs-2 text-primary" />
-                                  )
-                                )
+                                          )
+                                        )
                               }
                             />
                           }
@@ -665,33 +674,33 @@ const Page = () => {
                             <>
                               <div style={{ fontSize: 14 }}>
                                 {reminder.description &&
-                                reminder.description != ""
-                                  ? reminder.type == "note"
+                                reminder.description != ''
+                                  ? reminder.type == 'note'
                                     ? JSON.parse(
-                                        reminder.description
-                                      )?.blocks[0]?.text.substring(0, 20) +
-                                      "..."
+                                      reminder.description
+                                    )?.blocks[0]?.text.substring(0, 20) +
+                                      '...'
                                     : reminder.description
-                                  : "Sin descripçión"}
+                                  : 'Sin descripçión'}
                               </div>
-                              <div style={{ fontSize: 12, color: "#9a9a9a" }}>
-                                {reminder.reminder && reminder.reminder != ""
+                              <div style={{ fontSize: 12, color: '#9a9a9a' }}>
+                                {reminder.reminder && reminder.reminder != ''
                                   ? reminder.reminder
-                                  : "-"}
+                                  : '-'}
                               </div>
                             </>
                           }
                         />
                       </Skeleton>
                     </Card>
-                  );
+                  )
                 })}
               </div>
             </div>
           </>
-        )}
+      )}
     </Home>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page

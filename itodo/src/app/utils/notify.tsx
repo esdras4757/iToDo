@@ -1,5 +1,5 @@
-import { Descriptions, notification } from 'antd';
-import { ReactNode } from 'react';
+import { Descriptions, notification } from 'antd'
+import { ReactNode } from 'react'
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error' | 'open';
 
@@ -8,12 +8,12 @@ const openNotification = <T extends ReactNode>(
   message: string,
   duration: number = 3,
   description?:T
-  ): void => {
+): void => {
   notification[type]({
-    message: <div className={`${type=='info'?'text-dark':'text-white'}`}>{message}</div>,
+    message: <div className={`${type == 'info' ? 'text-dark' : 'text-white'}`}>{message}</div>,
     description,
-    duration,
-  });
-};
+    duration
+  })
+}
 
-export default openNotification;
+export default openNotification

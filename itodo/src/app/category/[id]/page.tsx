@@ -1,21 +1,20 @@
-"use client";
+'use client'
 
-import { ReactNode, useEffect, useState } from "react";
-import Home from "../../main/main";
-import React from "react";
-import Loader from "../../Components/Loader";
-import "../styles.css";
-import { Col, Row } from "react-bootstrap";
-import ModalAddTask from "../../Components/tasksComponents/modalAddTask";
-import { getAllNotesByIdCategory, getAllNotesInProgress, getAllTaskInProgress, getAlltasksByIdCategory, getPendingByIdUser, getTaskById } from "../../utils/services/services";
-import openNotification from "../../utils/notify";
-import FastLoader from "../../Components/FastLoader";
-import Task from "../../Components/tasksComponents/Task";
-import NoDataPlaceholder from "../../Components/NoDataPlaceholder";
-import dayjs from "dayjs";
-import { isEmpty, isNil } from "lodash";
-import ErrorPlaceHolder from "../../Components/ErrorPlaceHolder";
-import { useRouter } from "next/navigation";
+import React, { ReactNode, useEffect, useState } from 'react'
+import Home from '../../main/main'
+import Loader from '../../Components/Loader'
+import '../styles.css'
+import { Col, Row } from 'react-bootstrap'
+import ModalAddTask from '../../Components/tasksComponents/modalAddTask'
+import { getAllNotesByIdCategory, getAllNotesInProgress, getAllTaskInProgress, getAlltasksByIdCategory, getPendingByIdUser, getTaskById } from '../../utils/services/services'
+import openNotification from '../../utils/notify'
+import FastLoader from '../../Components/FastLoader'
+import Task from '../../Components/tasksComponents/Task'
+import NoDataPlaceholder from '../../Components/NoDataPlaceholder'
+import dayjs from 'dayjs'
+import { isEmpty, isNil } from 'lodash'
+import ErrorPlaceHolder from '../../Components/ErrorPlaceHolder'
+import { useRouter } from 'next/navigation'
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -59,135 +58,140 @@ interface NoteData {
   reminder: string;
 }
 
-const Page = (params:{params:{id:string},searchParams:string}) => {
-  const [visible, setVisible] = useState<boolean>(false);
-  const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null);
-  const [loaderAllTask, setLoaderAllTask] = useState(false);
-  const [errorAllTask, setErrorAllTask] = useState(false);
-  const [fastSpin, setFastSpin] = useState(false);
-  const [idOpenTask, setIdOpenTask ] = useState('')
-  const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false);
-  const [taskData, setTaskData] = useState<taskDAata | null>(null);
-  const [taskLoader, setTaskLoader] = useState(false);
-  const [taskError, settaskError] = useState(false);
-  const [allNoteData, setAllNoteData] = useState<NoteData[] | null>(null);
-  const [loaderAllNote, setLoaderAllNote] = useState(false);
-  const [errorAllNote, setErrorAllNote] = useState(false);
-  const router = useRouter();
+const Page = (params:{params:{id:string}, searchParams:string}) => {
+  const [visible, setVisible] = useState<boolean>(false)
+  const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
+  const [loaderAllTask, setLoaderAllTask] = useState(false)
+  const [errorAllTask, setErrorAllTask] = useState(false)
+  const [fastSpin, setFastSpin] = useState(false)
+  const [idOpenTask, setIdOpenTask] = useState('')
+  const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false)
+  const [taskData, setTaskData] = useState<taskDAata | null>(null)
+  const [taskLoader, setTaskLoader] = useState(false)
+  const [taskError, settaskError] = useState(false)
+  const [allNoteData, setAllNoteData] = useState<NoteData[] | null>(null)
+  const [loaderAllNote, setLoaderAllNote] = useState(false)
+  const [errorAllNote, setErrorAllNote] = useState(false)
+  const router = useRouter()
 
   const getAllNoteByUser = async () => {
-    setErrorAllNote(false);
-    setAllNoteData(null);
-    setLoaderAllNote(true);
-    const id = sessionStorage.getItem("user");
+    setErrorAllNote(false)
+    setAllNoteData(null)
+    setLoaderAllNote(true)
+    const id = sessionStorage.getItem('user')
 
     try {
-      const response = await getAllNotesByIdCategory(params.params.id);
+      const response = await getAllNotesByIdCategory(params.params.id)
 
-      if (response.data ) {
+      if (response.data) {
         // setNoteSelected(response.data[0]);
-        setAllNoteData(response.data);
+        setAllNoteData(response.data)
       }
     } catch (error: any) {
-      setErrorAllNote(true);
-      openNotification("error", error.message);
+      setErrorAllNote(true)
+      openNotification('error', error.message)
     } finally {
-      setLoaderAllNote(false);
+      setLoaderAllNote(false)
     }
-  };
-
+  }
 
   const getTaskByIdFn = async (idTask: string) => {
-    setTaskData(null);
-    setTaskLoader(true);
-    settaskError(false);
+    setTaskData(null)
+    setTaskLoader(true)
+    settaskError(false)
     try {
-      const response = await getTaskById(idTask);
-      console.log(response.data);
-      setTaskData(response.data);
+      const response = await getTaskById(idTask)
+      console.log(response.data)
+      setTaskData(response.data)
     } catch (error: any) {
-      openNotification("error", error.message);
+      openNotification('error', error.message)
     } finally {
-      setTaskLoader(false);
+      setTaskLoader(false)
     }
-  };
+  }
 
   useEffect(() => {
-    if (sessionStorage.getItem("user")) {
-      getAllTaskPendingByUser();
-      getAllNoteByUser();
+    if (sessionStorage.getItem('user')) {
+      getAllTaskPendingByUser()
+      getAllNoteByUser()
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    console.log(allTaskData);
-  }, [allTaskData]);
+    console.log(allTaskData)
+  }, [allTaskData])
 
   const getAllTaskPendingByUser = async () => {
-    setErrorAllTask(false);
-    setAllTaskData(null);
-    setLoaderAllTask(true);
-    const id = sessionStorage.getItem("user");
+    setErrorAllTask(false)
+    setAllTaskData(null)
+    setLoaderAllTask(true)
+    const id = sessionStorage.getItem('user')
     try {
-      const response = await getAlltasksByIdCategory(params.params.id);
-      console.log(response.data);
-      setAllTaskData(response.data);
+      const response = await getAlltasksByIdCategory(params.params.id)
+      console.log(response.data)
+      setAllTaskData(response.data)
     } catch (error: any) {
       console.log(error)
-      setErrorAllTask(true);
-      openNotification("error", error.message);
+      setErrorAllTask(true)
+      openNotification('error', error.message)
     } finally {
-      setLoaderAllTask(false);
+      setLoaderAllTask(false)
     }
-  };
+  }
 
   return (
     <Home>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
-          <Row className="align-content-center align-items-center mb-2" style={{ width: "93%" }}>
-            
+          <Row className="align-content-center align-items-center mb-2" style={{ width: '93%' }}>
+
             <h1 className="col-6 px-3 text-left fs-4 title bold">Tareas</h1>
-            <h1 
+            <h1
              onClick={() => {
-              router.replace(`/task`);
-            }}
+               router.replace('/task')
+             }}
             className="col-6 px-3 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
           </Row>
 
-          {errorAllTask ? (
+          {errorAllTask
+            ? (
              <ErrorPlaceHolder
              width={120}
              fs={13}
-             img={"../images/sunkenShip.png"}
+             img={'../images/sunkenShip.png'}
            />
-          ) : loaderAllTask ? (
+              )
+            : loaderAllTask
+              ? (
             <div className="col-12">
               <Loader />
             </div>
-          ) : allTaskData && allTaskData.length === 0 ? (
+                )
+              : allTaskData && allTaskData.length === 0
+                ? (
             <div className="col-12 mb-4">
-              <NoDataPlaceholder 
+              <NoDataPlaceholder
               title="Ups"
               text="No se han encontrado tareas para mostrar aqui"
               width={120}
               />
             </div>
-          ) : (
-            allTaskData &&
+                  )
+                : (
+                    allTaskData &&
             allTaskData.length > 0 && (
               <div
                 className="w-100 flex-column flex align-items-center"
                 style={{
-                  maxHeight: "calc(25vh)",
-                  overflowX: "hidden",
-                  overflowY: "auto",
-                  minHeight:'130px'
+                  maxHeight: 'calc(25vh)',
+                  overflowX: 'hidden',
+                  overflowY: 'auto',
+                  minHeight: '130px'
                 }}
               >
-                {allTaskData.map((item: any,index) => {
+                {allTaskData.map((item: any, index) => {
                   return (
                     <Task
                     taskData={taskData}
@@ -203,14 +207,12 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
                       setFastSpin={setFastSpin}
                       setAllTaskData={setAllTaskData}
                     />
-                  );
+                  )
                 })}
               </div>
-            )
-          )}
+                    )
+                  )}
         </div>
-
-
 
         <div className="mt-5">
         {/* <h1 className="col-12 mt-4 text-center title bold">Notas</h1> */}
@@ -218,11 +220,10 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
                   <h1 className="col-6 px-4 text-left fs-4 title bold">Notas</h1>
                   <h1
                    onClick={() => {
-                    router.replace(`/note`);
-                  }}
+                     router.replace('/note')
+                   }}
                    className="col-6 px-4 text-right cursor-pointer fs-6 title bold">Todas las Notas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
-                  
-                  
+
           {isNil(allNoteData) === false &&
             isEmpty(allNoteData) === true &&
             loaderAllNote === false &&
@@ -234,7 +235,7 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
                   text="No se han encontrado notas para mostrar aqui."
                 />
               </div>
-            )}
+          )}
 
           {isNil(allNoteData) === true &&
             loaderAllNote === true &&
@@ -242,7 +243,7 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
               <div className="w-75 justify-content-center m-auto row align-content-center mt-5">
                 <Loader />
               </div>
-            )}
+          )}
 
           {isNil(allNoteData) === true &&
             loaderAllNote === false &&
@@ -251,70 +252,71 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
                 <ErrorPlaceHolder
                   width={120}
                   fs={13}
-                  img={"../images/sunkenShip.png"}
+                  img={'../images/sunkenShip.png'}
                 />
               </div>
-            )}
+          )}
 
           {isNil(allNoteData) === false &&
-          allNoteData&&
+          allNoteData &&
             isEmpty(allNoteData) === false &&
             loaderAllNote === false &&
             errorAllNote === false && (
               <>
               <div className="col-12 row justify-content-left flex-nowrap overflow-auto">
                 {allNoteData.map((note: NoteData) => {
-                    const TextShort =
+                  const TextShort =
                       note.content &&
                       JSON.parse(note.content)?.blocks[0]?.text.substring(
                         0,
                         160
-                      );
-                    return (
+                      )
+                  return (
                       <div
                         key={note._id}
                         onClick={() => {
-                          router.replace(`/note?id=${note._id}`);
+                          router.replace(`/note?id=${note._id}`)
                         }}
-                        style={{width:'200px',
-                         height:'240px',
-                         borderRadius:'10px',
-                         border:'3px solid #858585'
+                        style={{
+                          width: '200px',
+                          height: '240px',
+                          borderRadius: '10px',
+                          border: '3px solid #858585'
                         }}
                         className="cardNote bg-bg-mainContent mt-2 mb-3 p-3 mx-4 cursor-pointer relative"
                       >
                         <h3>
-                          {note.title && note.title != ""
+                          {note.title && note.title != ''
                             ? note.title
-                            : "Sin titulo"}
+                            : 'Sin titulo'}
                         </h3>
                         <p
                           className="m-0"
-                          style={{ color: "#989898", fontSize: "15px" }}
+                          style={{ color: '#989898', fontSize: '15px' }}
                         >
                           {TextShort
                             ? TextShort +
-                              `${TextShort.length > 159 ? "..." : ""}`
-                            : "Sin contenido"}
+                              `${TextShort.length > 159 ? '...' : ''}`
+                            : 'Sin contenido'}
                         </p>
                         <p
                           className="px-1 absolute bottom-2 left-1"
-                          style={{ color: "#989898", fontSize: "13px" }}
+                          style={{ color: '#989898', fontSize: '13px' }}
                         >
                           {note.createdAt
-                            ? dayjs(note.createdAt).format("DD [de] MMMM YYYY")
-                            : "-"}
+                            ? dayjs(note.createdAt).format('DD [de] MMMM YYYY')
+                            : '-'}
                         </p>
 
                         <p
                           className="px-2 absolute text-center bottom-2 flex flex-column m-0 right-1"
-                          style={{ color: "#989898", fontSize: "14px", lineHeight:'normal' }}
+                          style={{ color: '#989898', fontSize: '14px', lineHeight: 'normal' }}
                         >
                           {
                             <>
-                            {note.isImportant&&<i className="fas text-center fa-star text-secondary2"></i>}<br/>
-                            {note.reminder&&<i className="fas text-center fa-bell text-secondary2"></i>}<br/>
-                            {note.initAt&&<i className="fas text-center fa-calendar text-secondary2"></i>}<br/>
+                            {note.isImportant && <i className="fas text-center fa-star text-secondary2"></i>}<br/>
+                            {note.reminder && <i className="fas text-center fa-bell text-secondary2"></i>}<br/>
+                            {note.initAt && <i className="fas text-center fa-calendar text-secondary2"></i>}<br/>
 
                             </>
                           }
@@ -322,14 +324,14 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
 
                         <p
                           className="px-3 absolute bottom-2 right-1"
-                          style={{ color: "#989898", fontSize: "13px" }}
+                          style={{ color: '#989898', fontSize: '13px' }}
                         ></p>
                       </div>
-                    );
-                  })}
+                  )
+                })}
                </div>
               </>
-            )}
+          )}
         </div>
         </div>
       </div>
@@ -339,7 +341,7 @@ const Page = (params:{params:{id:string},searchParams:string}) => {
         setAllTaskData={setAllTaskData}
       />
     </Home>
-  );
-};
+  )
+}
 
-export default Page;
+export default Page

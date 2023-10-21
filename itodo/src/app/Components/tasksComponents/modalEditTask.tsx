@@ -48,7 +48,7 @@ interface taskDAata {
   note: string;
   userId: string;
   originalFileName: string;
-  priority:string
+  priority: string;
 }
 
 interface propsInterface {
@@ -76,7 +76,7 @@ interface dataToAddNote {
   note: string | null;
   isAgend: boolean;
   isRemainder: boolean;
-  priority:string
+  priority: string;
 }
 const initData: dataToAddNote = {
   title: "",
@@ -93,7 +93,7 @@ const initData: dataToAddNote = {
   note: null,
   isRemainder: false,
   isAgend: false,
-  priority:'Baja'
+  priority: "Baja",
 };
 
 const ModalEditTask = (props: propsInterface) => {
@@ -141,28 +141,28 @@ const ModalEditTask = (props: propsInterface) => {
         categoryId,
         _id,
         originalFileName,
-        priority
+        priority,
       } = taskData;
 
       setData({
-        title: title,
-        description: description,
-        reminder: reminder,
-        userId: userId,
+        title,
+        description,
+        reminder,
+        userId,
         initDate: initAt != "" ? dayjs(initAt, "DD/MM/YYYY HH:mm") : dayjs(),
         endDate: endAt != "" ? dayjs(endAt, "DD/MM/YYYY HH:mm") : dayjs(),
         initHour: initAt != "" ? dayjs(initAt, "DD/MM/YYYY HH:mm") : dayjs(),
         endHour: endAt != "" ? dayjs(endAt, "DD/MM/YYYY HH:mm") : dayjs(),
-        file: file,
-        categoryId: categoryId,
-        note: note,
+        file,
+        categoryId,
+        note,
         fileURL,
-        isRemainder: reminder !== "" && reminder ? true : false,
-        isAgend: initAt !== "" || endAt !== "" ? true : false,
-        priority:priority
+        isRemainder: !!(reminder !== "" && reminder),
+        isAgend: !!(initAt !== "" || endAt !== ""),
+        priority,
       });
 
-      setReminder(reminder !== "" && true && reminder ? true : false);
+      setReminder(!!(reminder !== "" && true && reminder));
       setAgenda(initAt != "" || (endAt != "" && true));
       setRemainderSelect(null);
     }
@@ -562,8 +562,6 @@ const ModalEditTask = (props: propsInterface) => {
                       onChange={() => {
                         fillData("isAgend", !agenda);
                         setAgenda(!agenda);
-                        if (!agenda) {
-                        }
                       }}
                     >
                       Agregar a agenda

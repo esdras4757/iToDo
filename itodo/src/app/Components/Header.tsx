@@ -1,14 +1,14 @@
-import React from "react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { Avatar } from "@mui/material";
-import { Row, Col } from "react-bootstrap";
-import type { MenuProps } from "antd";
-import { Dropdown, Space } from "antd";
-import { useRouter } from "next/navigation";
-import io from "socket.io-client";
-import openNotification from "../utils/notify";
-const socket = io("http://localhost:5500");
+import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
+
+import { Avatar } from '@mui/material'
+import { Row, Col } from 'react-bootstrap'
+import type { MenuProps } from 'antd'
+import { Dropdown, Space } from 'antd'
+import { useRouter } from 'next/navigation'
+import io from 'socket.io-client'
+import openNotification from '../utils/notify'
+const socket = io('http://localhost:5500')
 interface User {
   id: string;
   nombre: string;
@@ -26,30 +26,30 @@ interface HomeProps {
 }
 
 const Header = (props: Required<HomeProps>) => {
-  const router = useRouter();
-  const { userName, isOpen, setIsOpen, userInfo } = props;
-  const [message, setMessage] = useState("");
+  const router = useRouter()
+  const { userName, isOpen, setIsOpen, userInfo } = props
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     //   if(userName && userName!= ''){
     if (userInfo?.nombre && userInfo?.apellido) {
-      const user = userInfo.nombre + " " + userInfo.apellido;
+      const user = userInfo.nombre + ' ' + userInfo.apellido
 
       const messages = [
         `¡Hola, ${user}!`,
         `¡Bienvenido, ${user}!`,
         `¡Saludos, ${user}!`,
-        `¡Qué tal, ${user}!`,
-      ];
+        `¡Qué tal, ${user}!`
+      ]
       const randomMessage =
-        messages[Math.floor(Math.random() * messages.length)];
-      setMessage(randomMessage);
+        messages[Math.floor(Math.random() * messages.length)]
+      setMessage(randomMessage)
     }
-  }, [userInfo]);
+  }, [userInfo])
 
-  const items: MenuProps["items"] = [
+  const items: MenuProps['items'] = [
     {
-      key: "1",
+      key: '1',
       label: (
         <a
           target="_blank"
@@ -59,15 +59,15 @@ const Header = (props: Required<HomeProps>) => {
           Cuenta
         </a>
       ),
-      icon: <i className="fas fa-user text-dark" />,
+      icon: <i className="fas fa-user text-dark" />
     },
     {
-      key: "2",
+      key: '2',
       label: (
         <a
           onClick={() => {
-            router.replace("/login");
-            sessionStorage.clear();
+            router.replace('/login')
+            sessionStorage.clear()
           }}
         >
           Cerrar sesión
@@ -75,9 +75,9 @@ const Header = (props: Required<HomeProps>) => {
       ),
       icon: (
         <i className="fa-solid fa-person-walking-dashed-line-arrow-right fa-flip-horizontal"></i>
-      ),
-    },
-  ];
+      )
+    }
+  ]
 
   return (
     <div className="flex-1 flex flex-col">
@@ -91,7 +91,7 @@ const Header = (props: Required<HomeProps>) => {
           {userInfo && (
             <>
               <Dropdown menu={{ items }}>
-                <Avatar style={{ width: "40px", height: "40px" }}>EL</Avatar>
+                <Avatar style={{ width: '40px', height: '40px' }}>EL</Avatar>
               </Dropdown>
 
               <div className="text-start ml-2">
@@ -107,7 +107,7 @@ const Header = (props: Required<HomeProps>) => {
         </div>
       </header>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

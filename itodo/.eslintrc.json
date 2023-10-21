@@ -1,3 +1,12 @@
 {
-  "extends": ["standard","next/core-web-vitals"]
+  "extends": ["standard", "next/core-web-vitals"],
+  "rules": {
+    "eqeqeq": "off",
+    "no-unused-vars": "off",
+    "multiline-ternary": "off",
+    "quotes": "off",
+    "semi": "off",
+    "comma-dangle": "off",
+    "react-hooks/rules-of-hooks": "off"
+  }
 }
