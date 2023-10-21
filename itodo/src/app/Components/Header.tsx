@@ -6,9 +6,7 @@ import { Row, Col } from 'react-bootstrap'
 import type { MenuProps } from 'antd'
 import { Dropdown, Space } from 'antd'
 import { useRouter } from 'next/navigation'
-import io from 'socket.io-client'
 import openNotification from '../utils/notify'
-const socket = io('http://localhost:5500')
 interface User {
   id: string;
   nombre: string;

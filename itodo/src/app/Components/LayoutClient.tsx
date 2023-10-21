@@ -9,7 +9,7 @@ import io from 'socket.io-client'
 
 import openNotification from '../utils/notify'
 import { useEffect } from 'react'
-const socket = io('http://localhost:5500')
+const socket = io('https://todoserver-8410.onrender.com')
 const inter = Inter({ subsets: ['latin'] })
 
 export default function LayoutClient () {

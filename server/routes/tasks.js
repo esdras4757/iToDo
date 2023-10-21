@@ -231,7 +231,7 @@ router.get("/getbyid/:id", async (req, res) => {
     if (task.fileId) {
       const ext = path.extname(task.originalFileName); // obtener la extensión del archivo original
       const originalNameWithoutExt = path.basename(task.originalFileName, ext);
-      taskObject.fileURL = `http://localhost:5000/uploads/${originalNameWithoutExt}-${task.fileId}${ext}`;
+      taskObject.fileURL = `https://todoserver-8410.onrender.com/uploads/${originalNameWithoutExt}-${task.fileId}${ext}`;
     }
     const status =getTaskSatus(task)
     taskObject.status=getTaskSatus(status)

@@ -51,7 +51,7 @@ server.listen(PORT, () => {
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Dirección de tu aplicación Next.js
+    origin: "https://i-to-do-esdras4757.vercel.app", // Dirección de tu aplicación Next.js
     methods: ["GET", "POST"],
   },
 });

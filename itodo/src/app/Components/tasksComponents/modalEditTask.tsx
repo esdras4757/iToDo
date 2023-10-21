@@ -290,25 +290,6 @@ const ModalEditTask = (props: propsInterface) => {
           error.message || "ah ocurrido un error intentalo de nuevo"
         );
       }
-
-      // axios
-      //   .post("http://localhost:5000/api/task/add", formData, {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   })
-      //   .then((res) => {
-      //     console.log(res);
-      //     setLoading(false)
-      //     setVisible(false)
-      //   })
-      //   .catch((error) => {
-      //     setLoading(false)
-      //     openNotification(
-      //       "error",
-      //       error.message || "ah ocurrido un error intentalo de nuevo"
-      //     );
-      //   });
     } else {
       if (data.title == "" || !(data.isRemainder == true && data.reminder)) {
         setIsMessageError(true);
