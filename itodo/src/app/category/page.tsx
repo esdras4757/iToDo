@@ -58,7 +58,11 @@ interface NoteData {
   reminder: string;
 }
 
-const Page = (props:{idProps:string}) => {
+interface Prop{
+  idProps:string
+}
+
+const Page = (props:Prop) => {
   const {
     idProps
   } = props
