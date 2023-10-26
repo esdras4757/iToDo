@@ -75,9 +75,10 @@ interface Category {
 }
 
 const Dashboard = (props: DashboarProps) => {
-  const { isOpen, setIsOpen, userInfo, currentComponent, 
-    setCurrentComponent,setLabelCurrentComponent,labelCurrentComponent
-   } =
+  const {
+    isOpen, setIsOpen, userInfo, currentComponent,
+    setCurrentComponent, setLabelCurrentComponent, labelCurrentComponent
+  } =
     props;
   const [size, setSize] = useState<{ width: number; height: any }>({
     width: 200,
@@ -102,19 +103,18 @@ const Dashboard = (props: DashboarProps) => {
 
   useEffect(() => {
     const handleResize = (e: any) => {
-      if(window.innerWidth>760){
+      if (window.innerWidth > 760) {
         setIsOpen(true)
         const elements = document.getElementsByClassName("dashboardClose");
-            for (let i = 0; i < elements.length; i++) {
-              elements[i].classList.remove("d-none");
-            }
-      }
-      else{
+        for (let i = 0; i < elements.length; i++) {
+          elements[i].classList.remove("d-none");
+        }
+      } else {
         setIsOpen(false)
         const elements = document.getElementsByClassName("dashboardClose");
-            for (let i = 0; i < elements.length; i++) {
-              elements[i].classList.add("d-none");
-            }
+        for (let i = 0; i < elements.length; i++) {
+          elements[i].classList.add("d-none");
+        }
       }
     }
 
@@ -253,7 +253,7 @@ const Dashboard = (props: DashboarProps) => {
     setSelectedIcon(JSON.stringify(stylesIcon));
   };
 
-  const updateCurrentConponent=(component:ReactElement,label:string)=>{
+  const updateCurrentConponent = (component:ReactElement, label:string) => {
     setCurrentComponent(component)
     setLabelCurrentComponent(label)
   }
@@ -261,13 +261,12 @@ const Dashboard = (props: DashboarProps) => {
   useEffect(() => {
     console.log(labelCurrentComponent)
   }, [labelCurrentComponent])
-  
 
   return (
     <div
     style={{
-      minWidth:isOpen ? "240px" : "60px",
-      maxWidth:isOpen ? "240px" : "2vw",
+      minWidth: isOpen ? "240px" : "60px",
+      maxWidth: isOpen ? "240px" : "2vw",
     }}
       className={
         "flex flex-col px-1 overflow-hidden transition-all duration-200 ease-in-out bg-mainContainers"
@@ -318,11 +317,11 @@ const Dashboard = (props: DashboarProps) => {
               <div
                 onClick={(e) => {
                   e.preventDefault();
-                  updateCurrentConponent(<PageTask />,'PageTask');
+                  updateCurrentConponent(<PageTask />, 'PageTask');
                 }}
                 className="col-12 d-block itemDashboard"
                 style={
-                  labelCurrentComponent=='PageTask'
+                  labelCurrentComponent == 'PageTask'
                     ? { background: "#393939" }
                     : {}
                 }
@@ -336,10 +335,10 @@ const Dashboard = (props: DashboarProps) => {
               <div
                 onClick={(e) => {
                   e.preventDefault();
-                  updateCurrentConponent(<PageNote />,'PageNote');
+                  updateCurrentConponent(<PageNote />, 'PageNote');
                 }}
                 style={
-                  labelCurrentComponent=='PageNote'
+                  labelCurrentComponent == 'PageNote'
                     ? { background: "#393939" }
                     : {}
                 }
@@ -352,12 +351,12 @@ const Dashboard = (props: DashboarProps) => {
               </div>
             </section>
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageMyDay/>,'PageMyDay')
+              updateCurrentConponent(<PageMyDay/>, 'PageMyDay')
             }}
               style={
-                labelCurrentComponent=='PageMyDay'
+                labelCurrentComponent == 'PageMyDay'
                   ? { background: "#393939" }
                   : {}
               }
@@ -369,12 +368,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageImportans/>,'PageImportans')
+              updateCurrentConponent(<PageImportans/>, 'PageImportans')
             }}
               style={
-                labelCurrentComponent=='PageImportans'
+                labelCurrentComponent == 'PageImportans'
                   ? { background: "#393939" }
                   : {}
               }
@@ -386,12 +385,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageComplete/>,'PageComplete')
+              updateCurrentConponent(<PageComplete/>, 'PageComplete')
             }}
               style={
-                labelCurrentComponent=='PageComplete'
+                labelCurrentComponent == 'PageComplete'
                   ? { background: "#393939" }
                   : {}
               }
@@ -403,12 +402,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PagePending/>,'PagePending')
+              updateCurrentConponent(<PagePending/>, 'PagePending')
             }}
               style={
-                labelCurrentComponent=='PagePending'
+                labelCurrentComponent == 'PagePending'
                   ? { background: "#393939" }
                   : {}
               }
@@ -420,12 +419,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageReminder/>,'PageReminder')
+              updateCurrentConponent(<PageReminder/>, 'PageReminder')
             }}
               style={
-                labelCurrentComponent=='PageReminder'
+                labelCurrentComponent == 'PageReminder'
                   ? { background: "#393939" }
                   : {}
               }
@@ -437,12 +436,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageInProgress/>,'PageInProgress')
+              updateCurrentConponent(<PageInProgress/>, 'PageInProgress')
             }}
               style={
-                labelCurrentComponent=='PageInProgress'
+                labelCurrentComponent == 'PageInProgress'
                   ? { background: "#393939" }
                   : {}
               }
@@ -454,12 +453,12 @@ const Dashboard = (props: DashboarProps) => {
             </div>
 
             <div
-            onClick={e=>{
+            onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageDiary/>,'PageDiary')
+              updateCurrentConponent(<PageDiary/>, 'PageDiary')
             }}
               style={
-                labelCurrentComponent=='PageDiary'
+                labelCurrentComponent == 'PageDiary'
                   ? { background: "#393939" }
                   : {}
               }

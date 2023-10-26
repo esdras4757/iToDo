@@ -149,10 +149,10 @@ export default function Home ({ children }: { children: ReactNode }) {
   return (
 
     <main className="h-screen w-screen overflow-hidden flex">
-      <Dashboard 
-      isOpen={isOpen} 
-      setIsOpen={setIsOpen} 
-      userInfo={userInfo} 
+      <Dashboard
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      userInfo={userInfo}
       setCurrentComponent={setCurrentComponent}
       currentComponent={currentComponent}
       setLabelCurrentComponent={setLabelCurrentComponent}

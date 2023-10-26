@@ -555,7 +555,7 @@ const Page = () => {
           )}
         </div>
 
-        <div className="asideNotes content p-3 relative" style={{ minWidth: '440px', overflow:'auto' }}>
+        <div className="asideNotes content p-3 relative" style={{ minWidth: '440px', overflow: 'auto' }}>
           {noteSelected ? (
             <>
               <Row
@@ -580,13 +580,13 @@ const Page = () => {
                   }}
                 ></i>
                 <div className="col-4"
-                style={{fontSize:14}}
+                style={{ fontSize: 14 }}
                 >
                   Fecha de creación:{' '}
                   {dayjs(noteSelected.createdAt).format('DD/MM/YYYY - HH:mm')}
                 </div>
                 <div className="col-4"
-                style={{fontSize:14}}
+                style={{ fontSize: 14 }}
                 >
                   Actualización:{' '}
                   {dayjs(noteSelected.updatedAt).format('DD/MM/YYYY - HH:mm')}

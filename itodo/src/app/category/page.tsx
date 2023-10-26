@@ -59,9 +59,9 @@ interface NoteData {
 }
 
 const Page = (props:{idProps:string}) => {
- const{
+  const {
     idProps
-  }=props
+  } = props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
