@@ -80,8 +80,8 @@ const Header = (props: Required<HomeProps>) => {
   return (
     <div className="flex-1 flex flex-col">
       <header className="bg-mainContainers h-16 flex items-center justify-between p-3">
-        <Row className="col-8 justify-content-start align-content-center align-items-center justify-items-start">
-          <h2 className="text-xl col-12 font-semibold">
+        <Row className="col-auto justify-content-start align-content-center align-items-center justify-items-start">
+          <h2 className="col-12 font-semibold">
             <p className="m-0 p-0">{message}</p>
           </h2>
         </Row>
@@ -93,7 +93,7 @@ const Header = (props: Required<HomeProps>) => {
               </Dropdown>
 
               <div className="text-start ml-2">
-                <h2 className="font-extrabold fs-5 mb-1">
+                <h2 className="font-extrabold fs-6 mb-1">
                   {userInfo.nombre} {userInfo.apellido}
                 </h2>
                 <h3 className="" style={{ fontSize: 12 }}>

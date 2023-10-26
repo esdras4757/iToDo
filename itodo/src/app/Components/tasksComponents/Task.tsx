@@ -203,8 +203,8 @@ const Task = (props: propsInterface) => {
               )}
         </div>
 
-        <div className="col-4  text-left borderLeftm">
-          <span className="titleTask fs-5 text-white fw-bolder">
+        <div className="col-12 col-md-6 col-lg-4 text-md-start  p-0 text-center borderLeftm">
+          <span className="titleTask fs-6 text-white fw-bolder">
             {item?.title && item?.title != '' ? item.title : '-'}
           </span>
 
@@ -258,7 +258,7 @@ const Task = (props: propsInterface) => {
         </div>
 
         <div
-          className="col-2  text-left d-flex borderLeft"
+          className="col-2 d-none d-lg-block text-left d-flex borderLeft"
           style={{ minWidth: 'max-content' }}
         >
           <span
@@ -270,7 +270,7 @@ const Task = (props: propsInterface) => {
         </div>
 
         <div
-          className="col-2 text-left d-flex borderLeft"
+          className="col-2 d-none d-lg-block text-left d-flex borderLeft"
           style={{ minWidth: 'max-content' }}
         >
           <span className="tag" style={{ backgroundColor: item?.styleStatus }}>

@@ -2,7 +2,7 @@
 import Calendar from 'react-calendar'
 import React, { ReactNode, useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
-import Home from '../main/main'
+import Home from '../Home/page'
 
 import Loader from '../Components/Loader'
 import './styles.css'
@@ -342,7 +342,7 @@ const Page = () => {
   }
 
   return (
-    <Home>
+    <>
       <div className="row align-content-end align-items-end p-4 w-100 m-auto">
         <FastLoader isLoading={fastSpin} />
 
@@ -577,7 +577,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-    </Home>
+    </>
   )
 }
 

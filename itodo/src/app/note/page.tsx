@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
-import Home from '../main/main'
+import Home from '../Home/page'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -423,8 +423,8 @@ const Page = () => {
     ' Falta-- Vacaciones-- incapacidades solo dias, concecutivos---Permisos - permiso normal---sin gose de sueldo añadir nombre delempleado columna de fecha de creacion ultima act- quien lo hizoorden decendente de fecha de creacion mostrar modal de detalleal agregar incidencia eliminar o cancelar pendiende de ap..-pendiente, justificado, rechazado incapacidad'
 
   return (
-    <Home>
-      <div className="row p-0 w-100 m-auto" style={{ flexWrap: 'nowrap' }}>
+    <>
+      <div className="row allContainer p-0 w-100 m-auto" style={{ flexWrap: 'nowrap' }}>
         <FastLoader isLoading={fastSpin} />
 
         <div className="asideNotes p-2 mr-3 cardContainer">
@@ -485,7 +485,7 @@ const Page = () => {
             errorAllNote === false && (
               <>
                 <div
-                  className="row m-auto align-items-end justify-content-between mb-3"
+                  className="row m-auto align-items-end justify-content-between numberNotes mb-3"
                   style={{
                     fontSize: 13,
                     borderBottom: '1px solid #4b4b4b',
@@ -555,7 +555,7 @@ const Page = () => {
           )}
         </div>
 
-        <div className="asideNotes content p-3" style={{ minWidth: '555px' }}>
+        <div className="asideNotes content p-3 relative" style={{ minWidth: '440px', overflow:'auto' }}>
           {noteSelected ? (
             <>
               <Row
@@ -579,12 +579,16 @@ const Page = () => {
                     }
                   }}
                 ></i>
-                <div className="col-4">
+                <div className="col-4"
+                style={{fontSize:14}}
+                >
                   Fecha de creación:{' '}
                   {dayjs(noteSelected.createdAt).format('DD/MM/YYYY - HH:mm')}
                 </div>
-                <div className="col-4">
-                  Ultima actualización:{' '}
+                <div className="col-4"
+                style={{fontSize:14}}
+                >
+                  Actualización:{' '}
                   {dayjs(noteSelected.updatedAt).format('DD/MM/YYYY - HH:mm')}
                 </div>
 
@@ -637,7 +641,7 @@ const Page = () => {
                   </button>
                 </Popover>
 
-                <div className="col-12 mt-3 relative">
+                <div className="col-12 mt-3">
                   <Editor
                     editorState={editorState}
                     handleReturn={handleReturn}
@@ -904,7 +908,7 @@ const Page = () => {
           )}
         </div>
       </div>
-    </Home>
+    </>
   )
 }
 

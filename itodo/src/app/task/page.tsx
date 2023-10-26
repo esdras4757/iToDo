@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import React, { ReactNode, useEffect, useState } from 'react'
-import Home from '../main/main'
+import Home from '../Home/page'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Loader from '../Components/Loader'
 import './styles.css'
@@ -111,7 +111,7 @@ const Page = () => {
   }
 
   return (
-    <Home>
+    <>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
@@ -184,7 +184,7 @@ const Page = () => {
           { isImportant: false }
         }
       />
-    </Home>
+    </>
   )
 }
 

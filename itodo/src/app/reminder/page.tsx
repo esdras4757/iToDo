@@ -2,7 +2,7 @@
 import Calendar from 'react-calendar'
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
-import Home from '../main/main'
+import Home from '../Home/page'
 
 import Loader from '../Components/Loader'
 import './styles.css'
@@ -305,7 +305,7 @@ const Page = () => {
   }, [values])
 
   return (
-    <Home>
+    <>
       <FastLoader isLoading={fastSpin} />
       {isNil(allReminderData) == true &&
         loaderAllReminder == false &&
@@ -699,7 +699,7 @@ const Page = () => {
             </div>
           </>
       )}
-    </Home>
+    </>
   )
 }
 

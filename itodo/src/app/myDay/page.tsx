@@ -1,7 +1,6 @@
 'use client'
 
 import React, { ReactNode, useEffect, useState } from 'react'
-import Home from '../main/main'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -135,14 +134,14 @@ const Page = () => {
   }
 
   return (
-    <Home>
+    <>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
           <h2 className="title justify-content-center col-12 align-items-center mb-3 align-content-center row  text-center mt-3 fw-bolder">Mi día <i className="fas col-auto fa-sun text-warning mr-3"></i></h2>
           <Row className="align-content-center mb-4 align-items-center mb-2" style={{ width: '93%' }}>
 
-            <h1 className="col-4 px-3 text-left m-0 fs-4 title bold">Tareas</h1>
+            <h1 className="col-4 p-0 text-left m-0 fs-4 title bold">Tareas</h1>
             <Row className="col-4 p-0 cursor-pointer  justify-center text-center align-content-center align-item-center">
               <i
                 onClick={() => setVisible(true)}
@@ -153,7 +152,7 @@ const Page = () => {
              onClick={() => {
                router.replace('/task')
              }}
-            className="col-4 px-3 m-0 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
+            className="col-4 p-0 m-0 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
           </Row>
 
@@ -224,7 +223,7 @@ const Page = () => {
           }
         }
       />
-    </Home>
+    </>
   )
 }
 

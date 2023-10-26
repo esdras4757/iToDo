@@ -1,7 +1,6 @@
 'use client'
 
 import React, { ReactNode, useEffect, useState } from 'react'
-import Home from '../main/main'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -139,7 +138,7 @@ const Page = () => {
   }
 
   return (
-    <Home>
+    <>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
@@ -353,7 +352,7 @@ const Page = () => {
         setVisible={setVisible}
         setAllTaskData={setAllTaskData}
       />
-    </Home>
+    </>
   )
 }
 

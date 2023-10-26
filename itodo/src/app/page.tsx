@@ -15,7 +15,7 @@ const Page = () => {
     if (!sessionStorage.getItem('user')) {
       router.push('/login')
     } else {
-      router.push('/myDay')
+      router.push('/Home')
     }
   }, [router]) // añadir isMounted a la lista de dependencias
 

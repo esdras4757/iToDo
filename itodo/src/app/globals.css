@@ -393,3 +393,27 @@ padding: 20px;
 .colorIcon svg{
   color: rgb(90, 137, 255) !important;
 }
+
+.itemDashboard{
+padding: 13px;
+cursor: pointer;
+}
+/* Estilos para teléfonos en orientación vertical */
+@media (max-width: 480px) {
+  /* tus estilos aquí */
+}
+
+/* Estilos para teléfonos en orientación horizontal y tablets en orientación vertical */
+@media (min-width: 481px) and (max-width: 768px) {
+  /* tus estilos aquí */
+}
+
+/* Estilos para tablets en orientación horizontal y pantallas pequeñas de escritorio */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* tus estilos aquí */
+}
+
+/* Estilos para pantallas de escritorio grandes */
+@media (min-width: 1025px) {
+  /* tus estilos aquí */
+}

@@ -23,6 +23,8 @@ import { RootState } from '../../redux/store'
 import { useGetByidMutation } from '@/redux/services/loginApi'
 import openNotification from '../utils/notify'
 import FastLoader from '../Components/FastLoader'
+import Page from '../myDay/page'
+
 const AREmojiHello = '../images/AREmojiHello.png'
 interface User {
   id: string;
@@ -41,6 +43,8 @@ const defaultImage =
 
 export default function Home ({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(true)
+  const [currentComponent, setCurrentComponent] = useState<React.ReactElement | null>(<Page/>)
+  const [labelCurrentComponent, setLabelCurrentComponent] = useState(`${currentComponent}`)
   const [bgimg, setBgimg] = useState('')
   const [anchorEl, setAnchorEl] = useState<boolean>(false)
   const router = useRouter()
@@ -143,8 +147,17 @@ export default function Home ({ children }: { children: ReactNode }) {
   }
 
   return (
+
     <main className="h-screen w-screen overflow-hidden flex">
-      <Dashboard isOpen={isOpen} setIsOpen={setIsOpen} userInfo={userInfo} />
+      <Dashboard 
+      isOpen={isOpen} 
+      setIsOpen={setIsOpen} 
+      userInfo={userInfo} 
+      setCurrentComponent={setCurrentComponent}
+      currentComponent={currentComponent}
+      setLabelCurrentComponent={setLabelCurrentComponent}
+      labelCurrentComponent={labelCurrentComponent}
+      />
       <section className="w-full overflow-hidden">
         <Header
           userName={'Esdras Lara'}
@@ -162,7 +175,7 @@ export default function Home ({ children }: { children: ReactNode }) {
         >
           <Row className="w-100 justify-center m-auto align-items-center">
             <div className="p-3 row justify-content-center align-content-center align-items-center">
-              {children}
+              {currentComponent}
             </div>
           </Row>
 

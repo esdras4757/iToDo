@@ -26,8 +26,8 @@
  background-color: transparent !important;
  border: none !important;
  justify-content: center !important;
- width: 100%;
- top: 2px;
+ width: 97%;
+ top: 70px;
  position: absolute;
 }
 
@@ -47,7 +47,7 @@
     font-size: 25px;
     color: white;
     z-index: 3;
-    top: 78px;
+    top: 150px;
     width: 96.6%;
     padding: 8px 0px;
     padding-bottom: 1px;
@@ -66,7 +66,7 @@
 
 .footerNote{
     position: absolute;
-    bottom: -62px;
+    bottom: 9px;
     width: 96.6%;
     margin: auto;
     height: 35px;
@@ -102,3 +102,65 @@ background-color: #2b80ef;
 .addEventNote button{
     font-size: 14px
 }
+
+  /* Estilos para teléfonos en orientación vertical */
+  @media (max-width: 480px) {
+  }
+  
+  /* Estilos para teléfonos en orientación horizontal y tablets en orientación vertical */
+  @media (min-width: 481px) and (max-width: 1126px) {
+    .allContainer{
+        display: flex;
+        flex-wrap: wrap !important;
+    }
+    .cardContainer{
+        overflow: hidden;
+        width: 90% !important;
+        height: 280px;
+        margin: auto;
+    }
+    .card-container{
+        overflow: auto;
+        display: flex;
+        padding: 10px;
+    }
+    .cardNote {
+        height: 168px;
+        margin: 0;
+        min-width: 300px !important;
+        margin-right: 15px;
+    }
+    .content{
+        width: 90% !important;
+        margin-top: 20px !important;
+        height: calc(100vh - 500px);
+    }
+    .asideNotes{
+        margin: auto;
+    }
+    .numberNotes{
+        margin-bottom: 2px !important;
+    }
+    .DraftEditor-editorContainer{
+        height: calc(100vh - 810px) !important;
+
+    }
+
+    .rdw-editor-toolbar{
+        height: 77px !important;
+        overflow: auto !important;
+        overflow-x: auto;   /* Permite el desplazamiento horizontal si es necesario */
+        overflow-y: hidden; /* Evita el desplazamiento vertical */
+        white-space: nowrap; 
+    }
+  }
+  
+  /* Estilos para tablets en orientación horizontal y pantallas pequeñas de escritorio */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    
+  }
+  
+  /* Estilos para pantallas de escritorio grandes */
+  @media (min-width: 1025px) {
+    
+  }

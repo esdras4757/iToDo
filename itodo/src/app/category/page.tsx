@@ -1,19 +1,19 @@
 'use client'
 
 import React, { ReactNode, useEffect, useState } from 'react'
-import Home from '../../main/main'
-import Loader from '../../Components/Loader'
-import '../styles.css'
+import Home from '../Home/page'
+import Loader from '../Components/Loader'
+import './styles.css'
 import { Col, Row } from 'react-bootstrap'
-import ModalAddTask from '../../Components/tasksComponents/modalAddTask'
-import { getAllNotesByIdCategory, getAllNotesInProgress, getAllTaskInProgress, getAlltasksByIdCategory, getPendingByIdUser, getTaskById } from '../../utils/services/services'
-import openNotification from '../../utils/notify'
-import FastLoader from '../../Components/FastLoader'
-import Task from '../../Components/tasksComponents/Task'
-import NoDataPlaceholder from '../../Components/NoDataPlaceholder'
+import ModalAddTask from '../Components/tasksComponents/modalAddTask'
+import { getAllNotesByIdCategory, getAllNotesInProgress, getAllTaskInProgress, getAlltasksByIdCategory, getPendingByIdUser, getTaskById } from '../utils/services/services'
+import openNotification from '../utils/notify'
+import FastLoader from '../Components/FastLoader'
+import Task from '../Components/tasksComponents/Task'
+import NoDataPlaceholder from '../Components/NoDataPlaceholder'
 import dayjs from 'dayjs'
 import { isEmpty, isNil } from 'lodash'
-import ErrorPlaceHolder from '../../Components/ErrorPlaceHolder'
+import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
 import { useRouter } from 'next/navigation'
 interface status {
   isCompleted: boolean;
@@ -58,7 +58,10 @@ interface NoteData {
   reminder: string;
 }
 
-const Page = (params:{params:{id:string}, searchParams:string}) => {
+const Page = (props:{idProps:string}) => {
+ const{
+    idProps
+  }=props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
@@ -81,7 +84,7 @@ const Page = (params:{params:{id:string}, searchParams:string}) => {
     const id = sessionStorage.getItem('user')
 
     try {
-      const response = await getAllNotesByIdCategory(params.params.id)
+      const response = await getAllNotesByIdCategory(idProps)
 
       if (response.data) {
         // setNoteSelected(response.data[0]);
@@ -115,7 +118,7 @@ const Page = (params:{params:{id:string}, searchParams:string}) => {
       getAllTaskPendingByUser()
       getAllNoteByUser()
     }
-  }, [])
+  }, [idProps])
 
   useEffect(() => {
     console.log(allTaskData)
@@ -127,7 +130,7 @@ const Page = (params:{params:{id:string}, searchParams:string}) => {
     setLoaderAllTask(true)
     const id = sessionStorage.getItem('user')
     try {
-      const response = await getAlltasksByIdCategory(params.params.id)
+      const response = await getAlltasksByIdCategory(idProps)
       console.log(response.data)
       setAllTaskData(response.data)
     } catch (error: any) {
@@ -140,7 +143,7 @@ const Page = (params:{params:{id:string}, searchParams:string}) => {
   }
 
   return (
-    <Home>
+    <>
       <FastLoader isLoading={fastSpin} />
       <div>
         <div className="listMyDayContainer">
@@ -340,7 +343,7 @@ const Page = (params:{params:{id:string}, searchParams:string}) => {
         setVisible={setVisible}
         setAllTaskData={setAllTaskData}
       />
-    </Home>
+    </>
   )
 }
 
