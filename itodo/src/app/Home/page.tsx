@@ -41,7 +41,7 @@ console.log(new Date(), 'currentTime')
 const defaultImage =
   'https://images.unsplash.com/photo-1528184039930-bd03972bd974?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb'
 
-export default function Home ({ children }: { children: ReactNode }) {
+export default function Home () {
   const [isOpen, setIsOpen] = useState(true)
   const [currentComponent, setCurrentComponent] = useState<React.ReactElement | null>(<Page/>)
   const [labelCurrentComponent, setLabelCurrentComponent] = useState(`${currentComponent}`)
