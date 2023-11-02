@@ -1,6 +1,6 @@
 'use client'
 import Calendar from 'react-calendar'
-import React, { ReactNode, useEffect, useRef, useState, KeyboardEvent } from 'react'
+import React, { ReactNode,ReactElement, useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
 import Home from '../Home/page'
 
@@ -34,7 +34,8 @@ import 'react-calendar/dist/Calendar.css'
 import FullCalendar from '@fullcalendar/react'
 
 import { useRouter } from 'next/navigation' // Notar cómo se importa el plugin aquí
-
+import PageTask from '../task/page'
+import PageNote from '../note/page'
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
   { ssr: false }
@@ -72,10 +73,29 @@ const initValues: EventData = {
   color: '#ccc',
   note: ''
 }
+
+type CurrentComponentType = ReactElement;
+
+type DashboarProps = {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  setCurrentComponent: React.Dispatch<
+    React.SetStateAction<CurrentComponentType | null>
+  >;
+  currentComponent?: CurrentComponentType | null;
+  setLabelCurrentComponent:(value:string)=>void;
+  labelCurrentComponent:string
+};
+
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 dayjs.locale('es')
-const Page = () => {
+const Page = (props: DashboarProps) => {
+  const {
+    isOpen, setIsOpen, currentComponent,
+    setCurrentComponent, setLabelCurrentComponent, labelCurrentComponent
+  } =
+    props;
   const [visible, setVisible] = useState<boolean>(false)
   const [allEventData, setAllEventData] = useState<EventData[] | null>(null)
   const [eventFormat, setEventFormat] = useState<any>(null)
@@ -333,6 +353,7 @@ const Page = () => {
       return { ...prev, [name]: value }
     })
   }
+
   function renderEventContent (eventInfo:any) {
     return (
       <div className="justify-content-center align-content-center align-items-center" >
@@ -410,7 +431,20 @@ const Page = () => {
                   title="Abrir en notas/tareas"
                   className="fa-solid fs-5 fa-up-right-from-square position-absolute cursor-pointer right-3 top-4"
                   onClick={() => {
-                    router.replace(`/${values.type}?id=${values.id}`)
+                    // router.replace(`/${values.type}?id=${values.id}`)
+                    if (values.type=='task') {
+                      setCurrentComponent(
+                        <PageTask
+                        />)
+                        setLabelCurrentComponent('PageTask')
+                    }
+                    else if(values.type=='note'){
+                      setCurrentComponent(
+                        <PageNote
+                        />)
+                        setLabelCurrentComponent('PageNote')
+                    }
+                   
                   }}
                 ></i>
 

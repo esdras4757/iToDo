@@ -1,6 +1,6 @@
 'use client'
 import Calendar from 'react-calendar'
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import React, { ReactNode,ReactElement, useEffect, useRef, useState } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
 import Home from '../Home/page'
 
@@ -13,6 +13,8 @@ import FastLoader from '../Components/FastLoader'
 import Task from '../Components/tasksComponents/Task'
 import { updateReminderById, addReminder, getAllRemindersByIdUser } from '../utils/services/services'
 import NoDataPlaceholder from '../Components/NoDataPlaceholder'
+import PageTask from '../task/page'
+import PageNote from '../note/page'
 import {
   Avatar,
   Card,
@@ -50,11 +52,23 @@ import 'react-calendar/dist/Calendar.css'
 
 import Meta from 'antd/es/card/Meta'
 import { useRouter } from 'next/navigation'
-
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
   { ssr: false }
 )
+
+type CurrentComponentType = ReactElement;
+
+type DashboarProps = {
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  setCurrentComponent: React.Dispatch<
+    React.SetStateAction<CurrentComponentType | null>
+  >;
+  currentComponent?: CurrentComponentType | null;
+  setLabelCurrentComponent:(value:string)=>void;
+  labelCurrentComponent:string
+};
 
 dayjs.extend(customParseFormat)
 /* global NodeJS */
@@ -88,7 +102,12 @@ const initValues: ReminderData = {
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 dayjs.locale('es')
-const Page = () => {
+const Page = (props: DashboarProps) => {
+  const {
+    isOpen, setIsOpen, currentComponent,
+    setCurrentComponent, setLabelCurrentComponent, labelCurrentComponent
+  } =
+    props;
   const [visible, setVisible] = useState<boolean>(false)
   const [allReminderData, setAllReminderData] = useState<ReminderData[] | null>(
     null
@@ -622,9 +641,18 @@ const Page = () => {
                             className="fa-solid text-success fa-up-right-from-square"
                             onClick={() => {
                               if (reminder.type != 'event') {
-                                router.replace(
-                                  `/${reminder.type}?id=${reminder._id}`
-                                )
+                                if (reminder.type=='task') {
+                                  setCurrentComponent(
+                                    <PageTask
+                                    />)
+                                    setLabelCurrentComponent('PageTask')
+                                }
+                                else if(reminder.type=='note'){
+                                  setCurrentComponent(
+                                    <PageNote
+                                    />)
+                                    setLabelCurrentComponent('PageNote')
+                                }
                               } else {
                                 router.replace(
                                   '/diary'

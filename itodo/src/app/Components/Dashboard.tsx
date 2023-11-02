@@ -33,6 +33,7 @@ import PageReminder from "../reminder/page";
 import PageInProgress from "../inProgress/page";
 import PageDiary from "../diary/page";
 import PageCategory from "../category/page";
+import NoDataPlaceholder from "./NoDataPlaceholder";
 interface User {
   id: string;
   nombre: string;
@@ -103,6 +104,9 @@ const Dashboard = (props: DashboarProps) => {
 
   useEffect(() => {
     const handleResize = (e: any) => {
+      if (window.innerWidth < 425 ) {
+       router.replace('/mobile')
+      }
       if (window.innerWidth > 760) {
         setIsOpen(true)
         const elements = document.getElementsByClassName("dashboardClose");
@@ -124,6 +128,27 @@ const Dashboard = (props: DashboarProps) => {
       window.removeEventListener('resize', handleResize)
     }
   }, [])
+
+  useEffect(() => {
+    if (window.innerWidth < 425 ) {
+      router.replace('/mobile')
+     }
+   if (window.innerWidth < 600 && isOpen===true) {
+      const disableBackground = document.querySelector('section main')
+      if (disableBackground) {
+        disableBackground.classList.add('invisible')
+      }
+   }else{
+    const disableBackground = document.querySelector('section main')
+      if (disableBackground) {
+        disableBackground.classList.remove('invisible')
+      }
+   }
+
+   
+
+  }, [isOpen])
+  
 
   useEffect(() => {
     if (response && response.data) {
@@ -421,7 +446,14 @@ const Dashboard = (props: DashboarProps) => {
             <div
             onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageReminder/>, 'PageReminder')
+              updateCurrentConponent(<PageReminder
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                setCurrentComponent={setCurrentComponent}
+                currentComponent={currentComponent}
+                setLabelCurrentComponent={setLabelCurrentComponent}
+                labelCurrentComponent={labelCurrentComponent}
+              />, 'PageReminder')
             }}
               style={
                 labelCurrentComponent == 'PageReminder'
@@ -455,7 +487,14 @@ const Dashboard = (props: DashboarProps) => {
             <div
             onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageDiary/>, 'PageDiary')
+              updateCurrentConponent(<PageDiary 
+                isOpen={isOpen}
+                setIsOpen={setIsOpen}
+                setCurrentComponent={setCurrentComponent}
+                currentComponent={currentComponent}
+                setLabelCurrentComponent={setLabelCurrentComponent}
+                labelCurrentComponent={labelCurrentComponent}
+                />, 'PageDiary')
             }}
               style={
                 labelCurrentComponent == 'PageDiary'
