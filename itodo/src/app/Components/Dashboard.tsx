@@ -129,8 +129,12 @@ const Dashboard = (props: DashboarProps) => {
     }
   }, [])
 
+  function isMobileUserAgent () {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
+
   useEffect(() => {
-    if (window.innerWidth < 765) {
+    if (isMobileUserAgent()) {
       router.replace('/mobile')
     }
     if (window.innerWidth < 600 && isOpen === true) {

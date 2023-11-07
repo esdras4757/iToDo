@@ -19,10 +19,14 @@ const Page = () => {
   }, [])
 
   useEffect(() => {
-    if (window.innerWidth > 765) {
+    if (!isMobileUserAgent()) {
       router.replace('/Home')
     }
   }, [])
+
+  function isMobileUserAgent () {
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  }
 
   return (
     <div className="w-100 h-100 p-5 row m-auto justify-content-center align-content-center align-items-center">

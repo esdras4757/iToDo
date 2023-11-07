@@ -347,7 +347,7 @@ padding: 20px;
   justify-content: center;
 }
 
-.borderLeft::after{
+/* .borderLeft::after{
   content: "|"; 
   position: absolute;
   right: 0;
@@ -356,7 +356,7 @@ padding: 20px;
   width: 2px;
   background-color: #595959;
   color:#4b4b4b ;
-}
+} */
 
 .borderLeftm{
   position: relative;  /* Añade esto */
@@ -365,7 +365,7 @@ padding: 20px;
   justify-content: center;
 }
 
-.borderLeftm::after{
+/* .borderLeftm::after{
   content: "|"; 
   position: absolute;
   right: 0;
@@ -374,7 +374,7 @@ padding: 20px;
   background-color: #595959;
   color:#4b4b4b ;
   top:25%
-}
+} */
 
 .datePickerIcon svg{
   color: white;
