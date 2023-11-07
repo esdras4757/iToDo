@@ -1,6 +1,6 @@
 'use client'
 import Calendar from 'react-calendar'
-import React, { ReactNode,ReactElement, useEffect, useRef, useState, KeyboardEvent } from 'react'
+import React, { ReactNode, ReactElement, useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
 import Home from '../Home/page'
 
@@ -432,19 +432,17 @@ const Page = (props: DashboarProps) => {
                   className="fa-solid fs-5 fa-up-right-from-square position-absolute cursor-pointer right-3 top-4"
                   onClick={() => {
                     // router.replace(`/${values.type}?id=${values.id}`)
-                    if (values.type=='task') {
+                    if (values.type == 'task') {
                       setCurrentComponent(
                         <PageTask
                         />)
-                        setLabelCurrentComponent('PageTask')
-                    }
-                    else if(values.type=='note'){
+                      setLabelCurrentComponent('PageTask')
+                    } else if (values.type == 'note') {
                       setCurrentComponent(
                         <PageNote
                         />)
-                        setLabelCurrentComponent('PageNote')
+                      setLabelCurrentComponent('PageNote')
                     }
-                   
                   }}
                 ></i>
 

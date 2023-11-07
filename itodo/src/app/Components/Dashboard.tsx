@@ -104,8 +104,8 @@ const Dashboard = (props: DashboarProps) => {
 
   useEffect(() => {
     const handleResize = (e: any) => {
-      if (window.innerWidth < 425 ) {
-       router.replace('/mobile')
+      if (window.innerWidth < 425) {
+        router.replace('/mobile')
       }
       if (window.innerWidth > 760) {
         setIsOpen(true)
@@ -130,25 +130,21 @@ const Dashboard = (props: DashboarProps) => {
   }, [])
 
   useEffect(() => {
-    if (window.innerWidth < 425 ) {
+    if (window.innerWidth < 425) {
       router.replace('/mobile')
-     }
-   if (window.innerWidth < 600 && isOpen===true) {
+    }
+    if (window.innerWidth < 600 && isOpen === true) {
       const disableBackground = document.querySelector('section main')
       if (disableBackground) {
         disableBackground.classList.add('invisible')
       }
-   }else{
-    const disableBackground = document.querySelector('section main')
+    } else {
+      const disableBackground = document.querySelector('section main')
       if (disableBackground) {
         disableBackground.classList.remove('invisible')
       }
-   }
-
-   
-
+    }
   }, [isOpen])
-  
 
   useEffect(() => {
     if (response && response.data) {
@@ -487,7 +483,7 @@ const Dashboard = (props: DashboarProps) => {
             <div
             onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageDiary 
+              updateCurrentConponent(<PageDiary
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 setCurrentComponent={setCurrentComponent}

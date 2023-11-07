@@ -1,6 +1,6 @@
 'use client'
 import Calendar from 'react-calendar'
-import React, { ReactNode,ReactElement, useEffect, useRef, useState } from 'react'
+import React, { ReactNode, ReactElement, useEffect, useRef, useState } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
 import Home from '../Home/page'
 
@@ -641,17 +641,16 @@ const Page = (props: DashboarProps) => {
                             className="fa-solid text-success fa-up-right-from-square"
                             onClick={() => {
                               if (reminder.type != 'event') {
-                                if (reminder.type=='task') {
+                                if (reminder.type == 'task') {
                                   setCurrentComponent(
                                     <PageTask
                                     />)
-                                    setLabelCurrentComponent('PageTask')
-                                }
-                                else if(reminder.type=='note'){
+                                  setLabelCurrentComponent('PageTask')
+                                } else if (reminder.type == 'note') {
                                   setCurrentComponent(
                                     <PageNote
                                     />)
-                                    setLabelCurrentComponent('PageNote')
+                                  setLabelCurrentComponent('PageNote')
                                 }
                               } else {
                                 router.replace(
