@@ -89,7 +89,9 @@ const Header = (props: Required<HomeProps>) => {
           {userInfo && (
             <>
               <Dropdown menu={{ items }}>
-                <Avatar style={{ width: '40px', height: '40px' }}>EL</Avatar>
+                <Avatar style={{ width: '40px', height: '40px' }}>
+                {userInfo && userInfo.nombre ? userInfo.nombre.charAt(0).toUpperCase() : ''}{userInfo && userInfo.apellido ? userInfo.apellido.charAt(0).toUpperCase() : ''}
+                  </Avatar>
               </Dropdown>
 
               <div className="text-start ml-2">
