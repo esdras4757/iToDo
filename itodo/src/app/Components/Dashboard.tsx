@@ -130,7 +130,7 @@ const Dashboard = (props: DashboarProps) => {
   }, [])
 
   useEffect(() => {
-    if (window.innerWidth < 425) {
+    if (window.innerWidth < 765) {
       router.replace('/mobile')
     }
     if (window.innerWidth < 600 && isOpen === true) {

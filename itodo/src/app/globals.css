@@ -19,7 +19,7 @@
 .formLogin input {
   border-radius: 8px;
   height: 35px;
-  color: #808080;
+  color: #808080 !important;
   background-color: #dfe6ea;
 }
 

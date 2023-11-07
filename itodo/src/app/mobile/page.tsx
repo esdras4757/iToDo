@@ -19,7 +19,7 @@ const Page = () => {
   }, [])
 
   useEffect(() => {
-    if (window.innerWidth > 425) {
+    if (window.innerWidth >  765) {
       router.replace('/Home')
     }
   }, [])
