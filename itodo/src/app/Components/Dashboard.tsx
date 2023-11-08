@@ -378,7 +378,12 @@ const Dashboard = (props: DashboarProps) => {
             <div
             onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageMyDay/>, 'PageMyDay')
+              updateCurrentConponent(<PageMyDay
+                setCurrentComponent={setCurrentComponent}
+                currentComponent={currentComponent}
+                setLabelCurrentComponent={setLabelCurrentComponent}
+                labelCurrentComponent={labelCurrentComponent}
+              />, 'PageMyDay')
             }}
               style={
                 labelCurrentComponent == 'PageMyDay'

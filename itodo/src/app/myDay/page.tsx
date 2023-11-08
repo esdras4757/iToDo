@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState, ReactElement } from 'react'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -14,6 +14,7 @@ import dayjs from 'dayjs'
 import { isEmpty, isNil } from 'lodash'
 import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
 import { useRouter } from 'next/navigation'
+import PageTask from '../task/page'
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -56,8 +57,22 @@ interface NoteData {
   isImportant: boolean;
   reminder: string;
 }
+type CurrentComponentType = ReactElement;
+type DashboarProps = {
+  setCurrentComponent: React.Dispatch<
+    React.SetStateAction<CurrentComponentType | null>
+  >;
+  currentComponent?: CurrentComponentType | null;
+  setLabelCurrentComponent:(value:string)=>void;
+  labelCurrentComponent:string
+};
 
-const Page = () => {
+const Page = (props: DashboarProps) => {
+  const {
+    currentComponent,
+    setCurrentComponent, setLabelCurrentComponent, labelCurrentComponent
+  } =
+    props;
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
@@ -150,7 +165,10 @@ const Page = () => {
             </Row>
             <h1
              onClick={() => {
-               router.replace('/task')
+               setCurrentComponent(
+                <PageTask
+                />)
+               setLabelCurrentComponent('PageTask')
              }}
             className="col-4 p-0 m-0 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
