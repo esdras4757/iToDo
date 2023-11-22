@@ -1,12 +1,22 @@
 {
   "name": "itodo",
   "version": "0.1.0",
+  "main": "main.js",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "electron-start": "electron main.js",
+    "build-installer": "electron-builder"
+  },
+  "build": {
+    "mac": {
+      "target": "dmg",
+      "icon": "dist/logoWhite.png"
+    },
+    "files": ["dist/**/*", "package.json", "public", "main.js"]
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -59,6 +69,8 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.197",
+    "electron": "^27.1.0",
+    "electron-builder": "^24.6.4",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-standard": "^5.0.0"
