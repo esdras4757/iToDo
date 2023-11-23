@@ -1,4 +1,15 @@
 const { app, BrowserWindow } = require('electron');
+const { autoUpdater } = require('electron-updater');
+const path = require('path');
+
+autoUpdater.setFeedURL({
+    provider: 'github',
+    owner: 'esdras4757',
+    repo: 'iToDo',
+    releaseType: 'draft',
+  });
+
+  autoUpdater.checkForUpdatesAndNotify();
 
 function createWindow() {
   // Crea la ventana del navegador.
@@ -13,7 +24,7 @@ function createWindow() {
   });
 
   // y carga el archivo index.html de tu aplicación.
-  win.loadURL('http://localhost:3000');  // Cambia 'index.html' por la ruta a tu archivo principal de React.
+  win.loadURL('https://i-to-do-esdras4757.vercel.app');
 }
 
 // Este método se llamará cuando Electron haya terminado de inicializarse
