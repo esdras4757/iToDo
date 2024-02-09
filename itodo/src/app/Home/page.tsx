@@ -24,6 +24,11 @@ import { useGetByidMutation } from '@/redux/services/loginApi'
 import openNotification from '../utils/notify'
 import FastLoader from '../Components/FastLoader'
 import Page from '../myDay/page'
+import ChatBot from '../Components/ChatBot'
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+dayjs.locale('es');  // Configura dayjs para usar el idioma español
+
 
 const AREmojiHello = '../images/AREmojiHello.png'
 interface User {
@@ -43,7 +48,7 @@ const defaultImage =
 
 export default function Home () {
   const [isOpen, setIsOpen] = useState(true)
-  const [currentComponent, setCurrentComponent] = useState<React.ReactElement | null>(<Page/>)
+  const [currentComponent, setCurrentComponent] = useState<React.ReactElement | null>(<></>)
   const [labelCurrentComponent, setLabelCurrentComponent] = useState(`${currentComponent}`)
   const [bgimg, setBgimg] = useState('')
   const [anchorEl, setAnchorEl] = useState<boolean>(false)
@@ -192,12 +197,10 @@ export default function Home () {
             />
             <div className="col-7">
               {/* <InputLabel className="text-white" htmlFor="component-filled">Name</InputLabel> */}
-              <TextField
-                style={{ width: '100%' }}
-                fullWidth
-                label="Hola.! Soy tu asistente virtual, en que puedo ayudarte?"
-                id="fullWidth"
-              />
+              <ChatBot setCurrentComponent={setCurrentComponent}
+      currentComponent={currentComponent}
+      setLabelCurrentComponent={setLabelCurrentComponent}
+      labelCurrentComponent={labelCurrentComponent}/>
             </div>
           </Row>
         </main>

@@ -164,3 +164,6 @@ background-color: #2b80ef;
   @media (min-width: 1025px) {
     
   }
+  .rdw-dropdown-selectedtext,.rdw-fontsize-wrapper,.rdw-fontfamily-wrapper,.rdw-block-wrapper{
+    display: none !important;
+  }

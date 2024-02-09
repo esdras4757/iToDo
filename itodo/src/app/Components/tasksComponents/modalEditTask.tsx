@@ -422,6 +422,7 @@ const ModalEditTask = (props: propsInterface) => {
                           className="inputAddList"
                           value={data.reminder}
                           placeholder="ingresa una fecha"
+                          defaultValue={'0'}
                           onChange={(value) => {
                             fillData("reminder", value);
                             setRemainderSelect(value);
@@ -444,7 +445,7 @@ const ModalEditTask = (props: propsInterface) => {
                             //   ),
                             // },
                             {
-                              value: moment()
+                              value: dayjs()
                                 .add(1, "day")
                                 .format("DD/MM/YYYY h:mm"),
                               label: (
@@ -452,7 +453,7 @@ const ModalEditTask = (props: propsInterface) => {
                                   Mañana{" "}
                                   <span className="text-primary ml-2">
                                     (
-                                    {moment()
+                                    {dayjs()
                                       .add(1, "day")
                                       .format("ddd-DD/MM/YYYY h:mm")}
                                     )
@@ -461,7 +462,7 @@ const ModalEditTask = (props: propsInterface) => {
                               ),
                             },
                             {
-                              value: moment()
+                              value: dayjs()
                                 .add(1, "week")
                                 .format("DD/MM/YYYY h:mm"),
                               label: (
@@ -469,7 +470,7 @@ const ModalEditTask = (props: propsInterface) => {
                                   Siguiente semana{" "}
                                   <span className="text-primary ml-2">
                                     (
-                                    {moment()
+                                    {dayjs()
                                       .add(1, "week")
                                       .format("ddd-DD/MM/YYYY h:mm")}
                                     )
@@ -478,7 +479,7 @@ const ModalEditTask = (props: propsInterface) => {
                               ),
                             },
                             {
-                              value: moment()
+                              value: dayjs()
                                 .add(1, "month")
                                 .format("DD/MM/YYYY h:mm"),
                               label: (
@@ -486,7 +487,7 @@ const ModalEditTask = (props: propsInterface) => {
                                   Siguiente mes{" "}
                                   <span className="text-primary ml-2">
                                     (
-                                    {moment()
+                                    {dayjs()
                                       .add(1, "month")
                                       .format("ddd-DD/MM/YYYY h:mm")}
                                     )

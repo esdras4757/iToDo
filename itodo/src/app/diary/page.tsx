@@ -28,7 +28,7 @@ import {
 } from 'draft-js'
 import dynamic from 'next/dynamic'
 import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
-
+import 'dayjs/locale/es';  // Importa la localización que instalaste // Configura dayjs para usar el idioma español
 import dayjs, { Dayjs } from 'dayjs'
 import 'react-calendar/dist/Calendar.css'
 import FullCalendar from '@fullcalendar/react'
@@ -36,6 +36,13 @@ import FullCalendar from '@fullcalendar/react'
 import { useRouter } from 'next/navigation' // Notar cómo se importa el plugin aquí
 import PageTask from '../task/page'
 import PageNote from '../note/page'
+import moment from 'moment';
+import 'moment/locale/es';  // Importa la localización que deseas usar
+
+moment.locale('es');  // Configura moment para usar el idioma español
+dayjs.locale('es'); 
+
+
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
   { ssr: false }
@@ -51,6 +58,7 @@ interface status {
 }
 
 interface EventData {
+  _id?:string
   id: string;
   title: string;
   initAt: string | null;
@@ -172,6 +180,11 @@ const Page = (props: DashboarProps) => {
     }
   }
 
+  useEffect(() => {
+    console.log(allEventData)
+  }, [allEventData])
+  
+
   const AddEvent = async () => {
     if (
       isNil(values.title) === true ||
@@ -205,6 +218,9 @@ const Page = (props: DashboarProps) => {
         setAllEventData((prev) => {
           if (!prev) {
             return prev
+          }
+          if (response.data._id) {
+            response.data.id=response.data._id
           }
           return [...prev, response.data]
         })
@@ -294,6 +310,7 @@ const Page = (props: DashboarProps) => {
         color: values.color,
         reminder: values.reminder,
         note: values.note,
+        _id:values._id,
         type: 'event'
       }
 
@@ -387,8 +404,10 @@ const Page = (props: DashboarProps) => {
             plugins={[dayGridPlugin]}
             eventContent={renderEventContent}
             initialView="dayGridMonth"
+            buttonText={{ today: 'Hoy' }}
             displayEventTime={false}
             dayMaxEventRows={4}
+            locale="es"
             moreLinkContent={() => {
               return 'Ver más'
             }}

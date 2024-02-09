@@ -696,10 +696,10 @@ const Page = (props: DashboarProps) => {
                               }
                             />
                           }
-                          title={reminder.title}
+                          title={<div className='w-100 overflow-text' title={reminder.title}>{reminder.title}</div>}
                           description={
                             <>
-                              <div style={{ fontSize: 14 }}>
+                              <div className='overflow-text' title={reminder.description} style={{ fontSize: 14, maxHeight:20, overflowY:'hidden' }}>
                                 {reminder.description &&
                                 reminder.description != ''
                                   ? reminder.type == 'note'
@@ -710,7 +710,7 @@ const Page = (props: DashboarProps) => {
                                     : reminder.description
                                   : 'Sin descripçión'}
                               </div>
-                              <div style={{ fontSize: 12, color: '#9a9a9a' }}>
+                              <div style={{ fontSize: 12, color: '#9a9a9a', textOverflow:'ellipsis' }}>
                                 {reminder.reminder && reminder.reminder != ''
                                   ? reminder.reminder
                                   : '-'}

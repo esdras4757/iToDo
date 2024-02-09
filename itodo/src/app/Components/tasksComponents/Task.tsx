@@ -204,7 +204,7 @@ const Task = (props: propsInterface) => {
         </div>
 
         <div className="col-12 col-md-6 col-lg-4 text-md-start  p-0 text-center borderLeftm">
-          <span className="titleTask fs-6 text-white fw-bolder">
+          <span title={item?.title && item?.title != '' ? item.title : '-'} className="titleTask fs-6 text-white fw-bolder overflow-text">
             {item?.title && item?.title != '' ? item.title : '-'}
           </span>
 

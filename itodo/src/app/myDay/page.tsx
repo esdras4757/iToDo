@@ -58,21 +58,20 @@ interface NoteData {
   reminder: string;
 }
 type CurrentComponentType = ReactElement;
-type DashboarProps = {
+interface propsInterface{
   setCurrentComponent: React.Dispatch<
     React.SetStateAction<CurrentComponentType | null>
   >;
   currentComponent?: CurrentComponentType | null;
   setLabelCurrentComponent:(value:string)=>void;
   labelCurrentComponent:string
-};
+}
 
-const Page = (props: DashboarProps) => {
+const Page = (props: propsInterface) => {
   const {
     currentComponent,
     setCurrentComponent, setLabelCurrentComponent, labelCurrentComponent
-  } =
-    props;
+  } = props;
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)

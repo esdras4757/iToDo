@@ -63,6 +63,10 @@ export const getAllEventsByIdUser = (id) => {
   return axios.get(apiConstants.GET_ALL_EVENTS_BY_USER_ID + '/' + id)
 }
 
+export const getAllByIdUser = (id) => {
+  return axios.get(apiConstants.GET_ALL_BY_USER_ID + '/' + id)
+}
+
 export const addEvent = (data) => {
   return axios.post(apiConstants.POST_ADD_EVENT, data)
 }

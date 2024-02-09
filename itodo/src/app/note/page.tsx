@@ -61,6 +61,7 @@ const Page = () => {
   const [noteSelected, setNoteSelected] = useState<null | NoteData>(null)
   const [editMode, setEditMode] = useState(true)
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
+  const [editorStateRealTime, setEditorStateRealTime] = useState(EditorState.createEmpty())
   const [stateContentEditorState, setStateContentEditorState] = useState('')
   const [idUser, setIdUser] = useState('')
   const [title, setTitle] = useState<null | string>(null)
@@ -105,9 +106,11 @@ const Page = () => {
     const oldContent = editorState.getCurrentContent().getPlainText()
     if (newContent == oldContent) {
       setEditorState(value)
+      setEditorStateRealTime(value)
       return
     }
     setEditorState(value)
+    setEditorStateRealTime(value)
 
     if (timer) {
       clearTimeout(timer)
@@ -156,7 +159,7 @@ const Page = () => {
         reminder
       )
       timer = null // Restablecer el temporizador
-    }, 800)
+    }, 2000)
   }
 
   const getAllNoteByUser = async () => {
@@ -185,22 +188,6 @@ const Page = () => {
     }
   }
 
-  const handleReturn = (e: KeyboardEvent, state: EditorState): boolean => {
-    const newState = RichUtils.insertSoftNewline(state)
-    if (newState) {
-      setEditorState(newState)
-      if (noteSelected) {
-        onChangeEditor(
-          noteSelected._id,
-          newState,
-          noteSelected.isImportant,
-          dayjs(noteSelected.reminder, 'DD/MM/YYYY HH:mm')
-        )
-      }
-      return true
-    }
-    return false
-  }
 
   const saveNote = async (
     id: string,
@@ -231,6 +218,7 @@ const Page = () => {
     try {
       // Tu lógica para guardar la nota aquí, por ejemplo:
       const response = await updateNoteById(id, data)
+      
       if (response && response.data) {
         setAllNoteData((prev) => {
           if (isNil(prev)) {
@@ -249,6 +237,9 @@ const Page = () => {
         setOpenAddEvent(false)
       }
     } catch (error: any) {
+      setErrorAllNote(true)
+      setAllNoteData(null)
+      setNoteSelected(null)
       openNotification('error', error.message)
     } finally {
       setFastSpin(false)
@@ -391,6 +382,7 @@ const Page = () => {
         : null)
       if (!noteSelected.content || noteSelected.content == '') {
         setEditorState(EditorState.createEmpty())
+        setEditorStateRealTime(EditorState.createEmpty())
         return
       }
       try {
@@ -413,7 +405,7 @@ const Page = () => {
         // Actualizar el estado del editor
         setEditorState(newEditorState)
         setStateContentEditorState(noteSelected.content)
-
+        setEditorStateRealTime(newEditorState)
         // Actualizar cualquier otro estado si es necesario
       } catch (e) {}
     }
@@ -437,6 +429,7 @@ const Page = () => {
               <i
                 onClick={(e) => {
                   setEditorState(EditorState.createEmpty())
+                  setEditorStateRealTime(EditorState.createEmpty())
                   setStateContentEditorState('')
                   addNoteFn()
                 }}
@@ -500,17 +493,23 @@ const Page = () => {
                     {allNoteData ? allNoteData.length : '-'}{' '}
                     {allNoteData && allNoteData.length > 1 ? 'Notas' : 'Nota'}
                   </div>
-                  <i className="fa-solid col-1 col-auto fa-filter"></i>
                 </div>
 
                 <div className="card-container">
                   {allNoteData?.map((note: NoteData) => {
-                    const TextShort =
-                      note.content &&
+                    let TextShort 
+                    try {
+                      TextShort = note.content &&
+                      JSON.parse(note.content) &&
+                      JSON.parse(note.content).blocks &&
                       JSON.parse(note.content)?.blocks[0]?.text.substring(
                         0,
                         160
                       )
+                    } catch (error) {
+                      return
+                    }
+                    
                     return (
                       <div
                         key={note._id}
@@ -643,8 +642,7 @@ const Page = () => {
 
                 <div className="col-12 mt-3">
                   <Editor
-                    editorState={editorState}
-                    handleReturn={handleReturn}
+                    editorState={editorStateRealTime}
                     toolbarClassName={
                       editorFocused
                         ? 'toolbarClassName'
@@ -669,6 +667,7 @@ const Page = () => {
                     onBlur={() => {
                       setEditorFocused(false)
                       setShouldFocusEditor(false)
+                      
                     }}
                     placeholder="Ingresa el contenido de la nota"
                   />

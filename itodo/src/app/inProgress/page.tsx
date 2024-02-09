@@ -1,6 +1,6 @@
 'use client'
 
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -14,6 +14,19 @@ import dayjs from 'dayjs'
 import { isEmpty, isNil } from 'lodash'
 import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
 import { useRouter } from 'next/navigation'
+import PageTask from '../task/page'
+import PageNote from '../note/page'
+
+type CurrentComponentType = ReactElement;
+interface propsInterface{
+  setCurrentComponent: React.Dispatch<
+    React.SetStateAction<CurrentComponentType | null>
+  >;
+  currentComponent?: CurrentComponentType | null;
+  setLabelCurrentComponent:(value:string)=>void;
+  labelCurrentComponent:string
+}
+
 interface status {
   isCompleted: boolean;
   isImportant: boolean;
@@ -57,7 +70,9 @@ interface NoteData {
   reminder: string;
 }
 
-const Page = () => {
+
+const Page = (props:propsInterface) => {
+  const {setCurrentComponent,setLabelCurrentComponent}=props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
@@ -71,6 +86,8 @@ const Page = () => {
   const [allNoteData, setAllNoteData] = useState<NoteData[] | null>(null)
   const [loaderAllNote, setLoaderAllNote] = useState(false)
   const [errorAllNote, setErrorAllNote] = useState(false)
+
+  const [updateTask, setUpdateTask] = useState(false)
   const router = useRouter()
 
   const getAllNoteByUser = async () => {
@@ -136,6 +153,7 @@ const Page = () => {
       setLoaderAllTask(false)
     }
   }
+  
 
   return (
     <>
@@ -147,7 +165,10 @@ const Page = () => {
             <h1 className="col-6 px-3 text-left fs-4 title bold">Tareas en curso</h1>
             <h1
              onClick={() => {
-               router.replace('/task')
+                setCurrentComponent(
+                  <PageTask
+                  />)
+                setLabelCurrentComponent('PageTask')
              }}
             className="col-6 px-3 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
@@ -214,7 +235,10 @@ const Page = () => {
                   <h1 className="col-6 px-4 text-left fs-4 title bold">Notas en curso</h1>
                   <h1
                    onClick={() => {
-                     router.replace('/note')
+                    setCurrentComponent(
+                      <PageNote
+                      />)
+                    setLabelCurrentComponent('PageNote')
                    }}
                    className="col-6 px-4 text-right cursor-pointer fs-6 title bold">Todas las Notas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 

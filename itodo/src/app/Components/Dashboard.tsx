@@ -284,8 +284,13 @@ const Dashboard = (props: DashboarProps) => {
   }
 
   useEffect(() => {
-    console.log(labelCurrentComponent)
-  }, [labelCurrentComponent])
+    updateCurrentConponent(<PageMyDay
+      setCurrentComponent={setCurrentComponent}
+      currentComponent={currentComponent}
+      setLabelCurrentComponent={setLabelCurrentComponent}
+      labelCurrentComponent={labelCurrentComponent}
+    />, 'PageMyDay')
+  }, [])
 
   return (
     <div
@@ -475,7 +480,12 @@ const Dashboard = (props: DashboarProps) => {
             <div
             onClick={e => {
               e.preventDefault()
-              updateCurrentConponent(<PageInProgress/>, 'PageInProgress')
+              updateCurrentConponent(<PageInProgress
+                setCurrentComponent={setCurrentComponent}
+                currentComponent={currentComponent}
+                setLabelCurrentComponent={setLabelCurrentComponent}
+                labelCurrentComponent={labelCurrentComponent}
+              />, 'PageInProgress')
             }}
               style={
                 labelCurrentComponent == 'PageInProgress'
@@ -539,7 +549,13 @@ const Dashboard = (props: DashboarProps) => {
                   <span
                     key={element.id}
                     onClick={() => {
-                      setCurrentComponent(<PageCategory idProps={element.id}/>)
+                      setCurrentComponent(<PageCategory 
+                        idProps={element.id}
+                        setCurrentComponent={setCurrentComponent}
+                currentComponent={currentComponent}
+                setLabelCurrentComponent={setLabelCurrentComponent}
+                labelCurrentComponent={labelCurrentComponent}
+                        />)
                       setLabelCurrentComponent('PageCategory')
                     }}
                   >

@@ -41,8 +41,11 @@ interface taskDAata {
   userId: string;
   priority:string
 }
-
-const Page = () => {
+interface propsInterface{
+  update?:boolean
+}
+const Page = (props:propsInterface) => {
+  const {update}=props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
@@ -66,7 +69,7 @@ const Page = () => {
     if (sessionStorage.getItem('user')) {
       getAllTaskByUser()
     }
-  }, [])
+  }, [update])
 
   useEffect(() => {
     if (idOpenTask && idOpenTask != '') {

@@ -134,6 +134,8 @@ const job = schedule.scheduleJob("* * * * *", async () => {
   }
 
 
+
+
  const eventReminders = await Event.find({
     reminder: {
       $exists: true,
@@ -175,8 +177,56 @@ const job = schedule.scheduleJob("* * * * *", async () => {
       io.emit("alert", reminder);
     });
   }
+});
 
+router.get("/getAllByUserId/:id", async (req, res) => {
+  try {
+    const tasks = (
+      await Task.find({ userId: req.params.id }, [
+        "title",
+        "_id"
+      ])
+    )
 
+    const notes = (
+      await Note.find({ userId: req.params.id }, [
+        "title",
+        "_id"
+      ])
+    )
+
+    const events = (
+      await Event.find({ userId: req.params.id }, [
+        "title",
+        "_id"
+      ])
+    )
+
+    const allReminders = 
+    tasks.map((task) => ({
+        type: "task",
+        id: task._id,
+        title: task.title,
+      }))
+      .concat(
+        notes.map((note) => ({
+          type: "note",
+          id: note._id,
+          title: note.title
+        }))
+      )
+      .concat(
+        events.map((event) => ({
+          type: event.type,
+          id: event._id,
+          title: event.title
+        }))
+      );
+
+    res.send(allReminders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 router.post("/sendEmail", async (req, res) => {

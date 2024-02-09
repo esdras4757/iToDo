@@ -26,6 +26,7 @@ const apiConstants = {
   // utils
   POST_SEND_EMAIL: BASE_URL + 'api/utils/sendEmail',
   GET_ALL_EVENTS_BY_USER_ID: BASE_URL + 'api/utils/getAllEventsByIdUser',
+  GET_ALL_BY_USER_ID: BASE_URL + 'api/utils/getAllByUserId',
 
   // Events
   POST_ADD_EVENT: BASE_URL + 'api/event/add',

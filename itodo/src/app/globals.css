@@ -158,7 +158,7 @@ nav a:last-child {
   padding: 10px 5px !important;
   text-align: center;
   margin: 0 !important;
-  background-color: #3c3d50cf !important;
+  /* background-color: #3c3d50cf !important; */
   width: max-content !important;
   /* height: 200px; */
 }
@@ -166,6 +166,31 @@ nav a:last-child {
 padding: 0;
 margin: 0;
 }
+
+.overflow-text {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+  .popover-IA .ant-popover-inner {
+    margin-bottom: 15px;
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+    box-shadow: 0px 0px 10px  rgb(76, 151, 205);
+  }
+
+  .popover-IA .ant-popover-inner-content{
+    
+    width: 500px;
+  }
+
+  .popover-IA{
+    position: absolute;
+    bottom: -9px;
+  }
 
 .listUser:hover .ocult{
   display: block !important;
@@ -259,11 +284,15 @@ margin: 0;
   display: none;
 }
 
-/* .dashboardClose{
-  transition: all 800ms;
-} */
+.dashboardClose{
+  color: white !important;
+}
 
-
+.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner{
+  
+    background-color: #1677ff !important;
+  color: #fff !important;
+}
 
 @keyframes lds-roller {
   0% {
