@@ -549,7 +549,7 @@ const Dashboard = (props: DashboarProps) => {
                   <span
                     key={element.id}
                     onClick={() => {
-                      setCurrentComponent(<PageCategory 
+                      setCurrentComponent(<PageCategory
                         idProps={element.id}
                         setCurrentComponent={setCurrentComponent}
                 currentComponent={currentComponent}

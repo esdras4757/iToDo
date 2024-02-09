@@ -2,7 +2,6 @@
 import Image from 'next/image'
 import React, { ReactNode, useEffect, useState } from 'react'
 import Home from '../Home/page'
-import { useRouter, useSearchParams } from 'next/navigation'
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -45,21 +44,20 @@ interface propsInterface{
   update?:boolean
 }
 const Page = (props:propsInterface) => {
-  const {update}=props
+  const { update } = props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
   const [errorAllTask, setErrorAllTask] = useState(false)
   const [fastSpin, setFastSpin] = useState(false)
   const [idOpenTask, setIdOpenTask] = useState('')
-  const searchParams = useSearchParams()
   const [isModalEditVisible, setIsModalEditVisible] = useState<boolean>(false)
   const [taskData, setTaskData] = useState<taskDAata | null>(null)
   const [taskLoader, setTaskLoader] = useState(false)
   const [taskError, settaskError] = useState(false)
 
   useEffect(() => {
-    const search = searchParams.get('id')
+    const search = null
     if (search) {
       setIdOpenTask(search)
     }

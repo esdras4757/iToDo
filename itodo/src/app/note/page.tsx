@@ -30,7 +30,6 @@ import {
 import dynamic from 'next/dynamic'
 import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
 import dayjs, { Dayjs } from 'dayjs'
-import { useSearchParams } from 'next/navigation'
 
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
@@ -76,7 +75,6 @@ const Page = () => {
   const [initAt, setInitAt] = useState<Dayjs | null>(null)
   const [endAt, setEndAt] = useState<Dayjs | null>(null)
   const [errorsAddEvent, setErrorsAddEvent] = useState(false)
-  const searchParams = useSearchParams()
   useEffect(() => {
     if (sessionStorage.getItem('user')) {
       getAllNoteByUser()
@@ -84,7 +82,7 @@ const Page = () => {
   }, [])
 
   useEffect(() => {
-    const search = searchParams.get('id')
+    const search = null
     if (search && allNoteData) {
       const noteToShow = allNoteData.find(notes => {
         return notes._id === search
@@ -188,7 +186,6 @@ const Page = () => {
     }
   }
 
-
   const saveNote = async (
     id: string,
     title: string,
@@ -218,7 +215,7 @@ const Page = () => {
     try {
       // Tu lógica para guardar la nota aquí, por ejemplo:
       const response = await updateNoteById(id, data)
-      
+
       if (response && response.data) {
         setAllNoteData((prev) => {
           if (isNil(prev)) {
@@ -497,7 +494,7 @@ const Page = () => {
 
                 <div className="card-container">
                   {allNoteData?.map((note: NoteData) => {
-                    let TextShort 
+                    let TextShort
                     try {
                       TextShort = note.content &&
                       JSON.parse(note.content) &&
@@ -507,9 +504,9 @@ const Page = () => {
                         160
                       )
                     } catch (error) {
-                      return
+                      return ''
                     }
-                    
+
                     return (
                       <div
                         key={note._id}
@@ -667,7 +664,6 @@ const Page = () => {
                     onBlur={() => {
                       setEditorFocused(false)
                       setShouldFocusEditor(false)
-                      
                     }}
                     placeholder="Ingresa el contenido de la nota"
                   />

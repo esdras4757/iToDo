@@ -27,8 +27,7 @@ import Page from '../myDay/page'
 import ChatBot from '../Components/ChatBot'
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-dayjs.locale('es');  // Configura dayjs para usar el idioma español
-
+dayjs.locale('es'); // Configura dayjs para usar el idioma español
 
 const AREmojiHello = '../images/AREmojiHello.png'
 interface User {

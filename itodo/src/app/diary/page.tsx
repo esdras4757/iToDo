@@ -3,7 +3,6 @@ import Calendar from 'react-calendar'
 import React, { ReactNode, ReactElement, useEffect, useRef, useState, KeyboardEvent } from 'react'
 import { isNil, isEmpty, debounce } from 'lodash'
 import Home from '../Home/page'
-
 import Loader from '../Components/Loader'
 import './styles.css'
 import { Col, Row } from 'react-bootstrap'
@@ -16,7 +15,6 @@ import { DatePicker, Input, Popover, TimePicker, ColorPicker } from 'antd'
 import draftToHtml from 'draftjs-to-html'
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
 import { addEvent, getAllEventsByIdUser, updateEventById } from '../utils/services/services'
-import 'dayjs/locale/es'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import {
@@ -28,7 +26,7 @@ import {
 } from 'draft-js'
 import dynamic from 'next/dynamic'
 import ErrorPlaceHolder from '../Components/ErrorPlaceHolder'
-import 'dayjs/locale/es';  // Importa la localización que instalaste // Configura dayjs para usar el idioma español
+import 'dayjs/locale/es'; // Importa la localización que instalaste // Configura dayjs para usar el idioma español
 import dayjs, { Dayjs } from 'dayjs'
 import 'react-calendar/dist/Calendar.css'
 import FullCalendar from '@fullcalendar/react'
@@ -37,11 +35,10 @@ import { useRouter } from 'next/navigation' // Notar cómo se importa el plugin 
 import PageTask from '../task/page'
 import PageNote from '../note/page'
 import moment from 'moment';
-import 'moment/locale/es';  // Importa la localización que deseas usar
+import 'moment/locale/es'; // Importa la localización que deseas usar
 
-moment.locale('es');  // Configura moment para usar el idioma español
-dayjs.locale('es'); 
-
+moment.locale('es'); // Configura moment para usar el idioma español
+dayjs.locale('es');
 
 const Editor = dynamic(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
@@ -183,7 +180,6 @@ const Page = (props: DashboarProps) => {
   useEffect(() => {
     console.log(allEventData)
   }, [allEventData])
-  
 
   const AddEvent = async () => {
     if (
@@ -220,7 +216,7 @@ const Page = (props: DashboarProps) => {
             return prev
           }
           if (response.data._id) {
-            response.data.id=response.data._id
+            response.data.id = response.data._id
           }
           return [...prev, response.data]
         })
@@ -310,7 +306,7 @@ const Page = (props: DashboarProps) => {
         color: values.color,
         reminder: values.reminder,
         note: values.note,
-        _id:values._id,
+        _id: values._id,
         type: 'event'
       }
 

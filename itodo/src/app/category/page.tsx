@@ -168,10 +168,10 @@ const Page = (props:Prop) => {
             <h1 className="col-6 px-3 text-left fs-4 title bold">Tareas</h1>
             <h1
              onClick={() => {
-              setCurrentComponent(
+               setCurrentComponent(
                 <PageTask
                 />)
-              setLabelCurrentComponent('PageTask')
+               setLabelCurrentComponent('PageTask')
              }}
             className="col-6 px-3 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
@@ -242,10 +242,10 @@ const Page = (props:Prop) => {
                   <h1 className="col-6 px-4 text-left fs-4 title bold">Notas</h1>
                   <h1
                    onClick={() => {
-                    setCurrentComponent(
+                     setCurrentComponent(
                       <PageNote
                       />)
-                    setLabelCurrentComponent('PageNote')
+                     setLabelCurrentComponent('PageNote')
                    }}
                    className="col-6 px-4 text-right cursor-pointer fs-6 title bold">Todas las Notas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 

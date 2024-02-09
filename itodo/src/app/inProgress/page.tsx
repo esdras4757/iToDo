@@ -70,9 +70,8 @@ interface NoteData {
   reminder: string;
 }
 
-
 const Page = (props:propsInterface) => {
-  const {setCurrentComponent,setLabelCurrentComponent}=props
+  const { setCurrentComponent, setLabelCurrentComponent } = props
   const [visible, setVisible] = useState<boolean>(false)
   const [allTaskData, setAllTaskData] = useState<taskDAata[] | null>(null)
   const [loaderAllTask, setLoaderAllTask] = useState(false)
@@ -153,7 +152,6 @@ const Page = (props:propsInterface) => {
       setLoaderAllTask(false)
     }
   }
-  
 
   return (
     <>
@@ -165,10 +163,10 @@ const Page = (props:propsInterface) => {
             <h1 className="col-6 px-3 text-left fs-4 title bold">Tareas en curso</h1>
             <h1
              onClick={() => {
-                setCurrentComponent(
+               setCurrentComponent(
                   <PageTask
                   />)
-                setLabelCurrentComponent('PageTask')
+               setLabelCurrentComponent('PageTask')
              }}
             className="col-6 px-3 text-right fs-6 title cursor-pointer bold">Todas las tareas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
@@ -235,10 +233,10 @@ const Page = (props:propsInterface) => {
                   <h1 className="col-6 px-4 text-left fs-4 title bold">Notas en curso</h1>
                   <h1
                    onClick={() => {
-                    setCurrentComponent(
+                     setCurrentComponent(
                       <PageNote
                       />)
-                    setLabelCurrentComponent('PageNote')
+                     setLabelCurrentComponent('PageNote')
                    }}
                    className="col-6 px-4 text-right cursor-pointer fs-6 title bold">Todas las Notas <i className="col-auto fas fa-chevron-right fs-6 text-primary"></i></h1>
 
