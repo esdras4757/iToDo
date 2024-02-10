@@ -106,3 +106,15 @@ export const getAllNotesByIdCategory = (id) => {
 export const getAllTAskMyDayByIdUser = (id) => {
   return axios.get(apiConstants.GET_ALL_TASK_MYDAY_BY_ID + '/' + id)
 }
+
+export const postSendMessage = (data) => {
+  return axios.post(apiConstants.POST_SEND_MESSAGE, data)
+}
+
+export const postSendFnResponse = (data) => {
+  return axios.post(apiConstants.POST_SEND_FN_RESPONSE, data)
+}
+
+export const postGetAllByName = (id, data) => {
+  return axios.post(apiConstants.POST_GET_BY_NAME + '/' + id, data)
+}

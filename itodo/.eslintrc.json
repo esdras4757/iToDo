@@ -7,6 +7,7 @@
     "quotes": "off",
     "semi": "off",
     "comma-dangle": "off",
-    "react-hooks/rules-of-hooks": "off"
+    "react-hooks/rules-of-hooks": "off",
+    "camelcase": "off"
   }
 }

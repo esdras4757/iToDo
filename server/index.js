@@ -12,7 +12,7 @@ const utilsRoutes = require("./routes/utils.js");
 const path = require('path');
 const eventRoutes = require("./routes/events.js");
 const reminderRoutes = require("./routes/reminders.js");
-
+const openIaRoutes = require("./routes/openIa.js")
 
 
 
@@ -26,6 +26,7 @@ app.use("/api/note", noteRoutes);
 app.use("/api/utils", utilsRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/reminder", reminderRoutes);
+app.use('/api/openIaConnection', openIaRoutes )
 
 
 

@@ -153,14 +153,12 @@ const ModalAddTask = (props: propsInterface) => {
 
   useEffect(() => {
     if (categories.categories) {
-      console.log(categories.categories)
       const catalog = categories.categories.map((item:any) => {
         return {
           value: item.id,
           label: item.name
         }
       })
-      console.log(catalog)
       setCatalogCategories(catalog)
     }
   }, [categories])
@@ -208,7 +206,6 @@ const ModalAddTask = (props: propsInterface) => {
             }
           })
         .then((res) => {
-          console.log(res)
           setLoading(false)
           setVisible(false)
           setAllTaskData((prev:taskDAata[]) => {

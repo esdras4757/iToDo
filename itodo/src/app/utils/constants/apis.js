@@ -43,7 +43,10 @@ const apiConstants = {
   GET_ALL_TASK_BY_CATEGORY_ID: BASE_URL + 'api/task/getByIdCategory',
   GET_ALL_NOTES_BY_CATEGORY_ID: BASE_URL + 'api/note/getByIdCategory',
 
-  GET_ALL_TASK_MYDAY_BY_ID: BASE_URL + 'api/task/getMyDayByIdUser'
+  GET_ALL_TASK_MYDAY_BY_ID: BASE_URL + 'api/task/getMyDayByIdUser',
+  POST_SEND_MESSAGE: BASE_URL + 'api/openIaConnection/sendMessage',
+  POST_SEND_FN_RESPONSE: BASE_URL + 'api/openIaConnection/responseFromFunction',
+  POST_GET_BY_NAME: BASE_URL + 'api/utils/getAllByName'
 
 }
 

@@ -211,14 +211,12 @@ const ModalEditTask = (props: propsInterface) => {
 
   useEffect(() => {
     if (categories.categories) {
-      console.log(categories.categories);
       const catalog = categories.categories.map((item: any) => {
         return {
           value: item.id,
           label: item.name,
         };
       });
-      console.log(catalog);
       setCatalogCategories(catalog);
     }
   }, [categories]);
@@ -230,8 +228,6 @@ const ModalEditTask = (props: propsInterface) => {
     if (data.title && data.title != "" && taskData && taskData._id) {
       setLoading(true);
       setIsMessageError(false);
-
-      console.log(data);
 
       const formData = new FormData();
 
@@ -259,8 +255,6 @@ const ModalEditTask = (props: propsInterface) => {
       formData.append("file", file); // Asegúrate de que 'file' contenga el archivo que deseas cargar
       formData.append("note", data.note ?? "");
       formData.append("userId", userId); // Suponiendo que userId es la variable que contiene el ID de usuario
-
-      console.log(formData);
 
       try {
         const response = await updateTaskById(taskData._id, formData);

@@ -229,6 +229,99 @@ router.get("/getAllByUserId/:id", async (req, res) => {
   }
 });
 
+
+router.post("/getAllByName/:id", async (req, res) => {
+  const {name}=req.body
+  try {
+    const notes = (
+      await Note.find({ title: req.params.id }, [
+        "reminder",
+        "_id",
+        "userId",
+        "content",
+        "title",
+      ])
+    ).filter((note) => note.title==name);
+
+    const tasks = (
+      await Task.find({ userId: req.params.id }, [
+        "reminder",
+        "_id",
+        "userId",
+        "description",
+        "title",
+      ])
+    ).filter((task) => task.title==name);
+
+    const events = (
+      await Event.find({ userId: req.params.id }, [
+        "reminder",
+        "_id",
+        "userId",
+        "description",
+        "title",
+      ])
+    ).filter((event) => event.reminder !== null && event.title==name);
+
+    const reminders = (
+      await Reminder.find({ userId: req.params.id }, [
+        "reminder",
+        "_id",
+        "userId",
+        "description",
+        "title",
+        "type",
+      ])
+    ).filter(
+      (reminder) => reminder.reminder !== null && reminder.title==name)
+    
+
+    const allReminders = tasks
+      .map((task) => ({
+        type: "task",
+        _id: task._id,
+        userId: task.userId,
+        title: task.title,
+        reminder: task.reminder,
+        description: task.description,
+      }))
+      .concat(
+        notes.map((note) => ({
+          type: "note",
+          _id: note._id,
+          userId: note.userId,
+          title: note.title,
+          reminder: note.reminder,
+          description: note.content,
+        }))
+      )
+      .concat(
+        reminders.map((reminder) => ({
+          type: reminder.type,
+          _id: reminder._id,
+          title: reminder.title,
+          userId: reminder.userId,
+          reminder: reminder.reminder,
+          description: reminder.description,
+        }))
+      )
+      .concat(
+        events.map((event) => ({
+          type: 'event',
+          _id: event._id,
+          title: event.title,
+          userId: event.userId,
+          reminder: event.reminder,
+          description: event.description,
+        }))
+      );
+
+    res.send(allReminders);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/sendEmail", async (req, res) => {
   const { to, title, userid, content } = req.body;
 
