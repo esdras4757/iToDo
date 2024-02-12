@@ -8,11 +8,8 @@ const Event = require("../models/event.js");
 const http = require("http");
 const Reminder = require("../models/reminder.js");
 const { error } = require("console");
-const { Server } = require("socket.io");
-const server = http.createServer(router);
 const schedule = require("node-schedule");
 const moment = require("moment-timezone");
-
 moment.tz.setDefault("America/Mexico_City");
 
 const getTaskSatus = (task)=>{
@@ -25,6 +22,7 @@ const getTaskSatus = (task)=>{
   'pendiente'
   :'No completada'
 }
+
 const getStyletSatus = (status)=>{
  switch (status) {
   case 'Completada':
@@ -43,31 +41,6 @@ const getStyletSatus = (status)=>{
     break;
  }
 }
-
-const PORT = 5500;
-server.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
-});
-
-const io = new Server(server, {
-  cors: {
-    origin: "https://i-to-do-esdras4757.vercel.app", // Dirección de tu aplicación Next.js
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("Un usuario se ha conectado");
-
-  // Evento personalizado (puedes agregar tantos como quieras)
-  socket.on("miEvento", (data) => {
-    console.log(data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("Un usuario se ha desconectado");
-  });
-});
 
 function convertToISODate(reminderString) {
   // Verificar que la cadena esté definida y no sea vacía

@@ -94,7 +94,6 @@ const Task = (props: propsInterface) => {
         // Código adicional que desees ejecutar
       }
       antPop.forEach((item) => {
-        console.log(item.parentElement)
         item.parentElement?.addEventListener('click', handleClick)
       })
 
@@ -110,7 +109,6 @@ const Task = (props: propsInterface) => {
     setFastSpin(true)
     try {
       const response = await deleteTaskById(idTask)
-      console.log(response.data)
       if (response && response.data) {
         setAllTaskData((prev: taskDAata[] | null) => {
           if (prev === null) return null
@@ -128,7 +126,6 @@ const Task = (props: propsInterface) => {
     setFastSpin(true)
     try {
       const response = await updateTaskStatusById(id, status)
-      console.log(response.data)
       if (response && response.data) {
         getAllTaskDataFn()
       }
@@ -143,7 +140,6 @@ const Task = (props: propsInterface) => {
     setFastSpin(true)
     try {
       const response = await updateTaskMyDayById(id, date)
-      console.log(response.data)
       if (response && response.data) {
         getAllTaskDataFn()
       }
@@ -156,7 +152,6 @@ const Task = (props: propsInterface) => {
 
   useEffect(() => {
     const handleResize = (e: any) => {
-      console.log(e)
       setwidth(window.innerWidth)
     }
 
@@ -296,7 +291,6 @@ const Task = (props: propsInterface) => {
                 <i
                   onClick={(e) => {
                     e.stopPropagation()
-                    console.log(item?.myDay == moment().format('DD/MM/YYYY'))
                     myDay(
                       item._id,
                       item?.myDay == moment().format('DD/MM/YYYY')

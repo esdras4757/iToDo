@@ -24,6 +24,7 @@ import { useGetByidMutation } from '@/redux/services/loginApi'
 import openNotification from '../utils/notify'
 import FastLoader from '../Components/FastLoader'
 import Page from '../myDay/page'
+import { io } from 'socket.io-client'
 import ChatBot from '../Components/ChatBot'
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';

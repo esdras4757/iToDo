@@ -13,6 +13,10 @@ const { Server } = require("socket.io");
 const server = http.createServer(router);
 const schedule = require("node-schedule");
 const moment = require("moment-timezone");
+let temporizador;
+let segundaSolicitudRecibida = false;
+let lastRunId
+let lastThreadId
 //   asst_Bl4GkbYfEeJa646wmSgxg1aX
 
 //   const createAsisstant = async () => {
@@ -27,7 +31,7 @@ const moment = require("moment-timezone");
 //           },
 //         }
 //       );
-//       console.log(response.data.id);
+//       console.log(response.data);
 //       return response.data.id;
 //     } catch (error) {
 //       console.error('Error starting thread:', error);
@@ -35,7 +39,44 @@ const moment = require("moment-timezone");
 //     }
 //   };
 
+//   createAsisstant()
 
+const cancelRun=async()=>{
+    try {
+        const response = await axios.post(
+            `https://api.openai.com/v1/threads/${lastThreadId}/runs/${lastRunId}/cancel`,{},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${CHATGPT_KEY}`,
+                    'OpenAI-Beta': 'assistants=v1',
+                },
+            }
+        );
+        console.log(response.data);
+    } catch (error) {
+        console.error('Error starting thread:', error);
+        throw error;
+    }
+}
+
+function reiniciarTemporizador() {
+    // Cancelar el temporizador actual, si existe
+    if (temporizador) {
+      clearTimeout(temporizador);
+    }
+  
+    // Establecer un nuevo temporizador (por ejemplo, 10 segundos)
+    const tiempoLimite = 10000; // 10 segundos
+    temporizador = setTimeout(() => {
+      // Verificar si la segunda solicitud se ha recibido dentro del tiempo límite
+      if (!segundaSolicitudRecibida) {
+        // Ejecutar algo cuando se alcance el tiempo límite y la segunda solicitud no se ha recibido
+        console.log('Tiempo límite alcanzado y segunda solicitud no recibida. Ejecutar algo aquí.');
+        cancelRun()
+      }
+    }, tiempoLimite);
+  }
 const startThread = async () => {
     try {
         const response = await axios.post(
@@ -74,6 +115,9 @@ const getMessage = async (thread_id) => {
             }
         );
         if (response.data) {
+            // response.data.data.map((element)=>{
+            //     console.log(element.content[0])
+            // })
             return response.data.data[0]
         }
     } catch (error) {
@@ -81,6 +125,108 @@ const getMessage = async (thread_id) => {
         throw error;
     }
 };
+
+const getAll= async (userId) => {
+    console.log('staaaart')
+    try {
+      const notes = (
+        await Note.find({ userId }, [
+          "reminder",
+          "_id",
+          "userId",
+          "content",
+          "title",
+          "reminder",
+          "isImportant"
+        ])
+      )
+  
+      const tasks = (
+        await Task.find({ userId }, [
+          "reminder",
+          "_id",
+          "userId",
+          "description",
+          "title",
+          "isCompleted",
+          "isImportant",
+          "isPendind",
+          "isInProgress",
+          "note",
+          "priority",
+          "myDay"
+        ])
+      )
+  
+      const events = (
+        await Event.find({ userId }, [
+          "reminder",
+          "_id",
+          "userId",
+          "description",
+          "title",
+          "reminder",
+          "note",
+          "type"
+        ])
+      )
+  
+      const reminders = (
+        await Reminder.find({ userId }, [
+          "reminder",
+          "_id",
+          "userId",
+          "description",
+          "title",
+          "type",
+        ])
+      )
+      
+      const allReminders = tasks
+        .map((task) => ({
+          type: "task",
+          _id: task._id,
+          userId: task.userId,
+          title: task.title,
+          reminder: task.reminder,
+          description: task.description,
+        }))
+        .concat(
+          notes.map((note) => ({
+            type: "note",
+            _id: note._id,
+            userId: note.userId,
+            title: note.title,
+            reminder: note.reminder,
+            description: note.content,
+          }))
+        )
+        .concat(
+          reminders.map((reminder) => ({
+            type: reminder.type,
+            _id: reminder._id,
+            title: reminder.title,
+            userId: reminder.userId,
+            reminder: reminder.reminder,
+            description: reminder.description,
+          }))
+        )
+        .concat(
+          events.map((event) => ({
+            type: 'event',
+            _id: event._id,
+            title: event.title,
+            userId: event.userId,
+            reminder: event.reminder,
+            description: event.description,
+          }))
+        );
+  
+      return allReminders
+    } catch (error) {
+      throw error
+    }
+  }
 
 const getIdTitleData = async (userId) => {
     try {
@@ -147,25 +293,25 @@ const getTools = async (userId) => {
         type: "function",
         function: {
             name: "addTask",
-            description: "agrega una tarea nueva para el usuario, si algun dato es requerido y no se proporsiona solicitalo y si se indico alguna fecha o hora se debe agregar en formato DD/MM/YYYY y h:mm",
+            description: "agrega una tarea nueva para el usuario, si se indico alguna fecha o hora se debe agregar en formato DD/MM/YYYY y h:mm",
             parameters: {
                 type: "object",
                 properties: {
                     title: { type: 'string', description: 'titulo de la tarea'},
                     isImportant: { type: 'boolean', description: 'indica si una tarea es importante' },
-                    isMyDay: { type: 'boolean', description: 'indica si una tarea corresponde a mi dia' },
+                    myDay: { type: 'string', description: 'indica una fecha para la tarea hoy es '+ moment().format('DD/MM/YYYY') },
                     description: { type: 'string', description: 'indica la descripcion de la tarea' },
                     isRemainder: { type: 'boolean', description: 'indica si la tarea cuenta con un recordatorio' },
                     priority: { type: 'string', enum: ["Alta", "Media", "Baja"], description: 'indica la prioridad de la tarea, por default es baja' },
-                    reminder: { type: 'string', description: 'indica la fecha del recordatorio' },
+                    reminder: { type: 'string', description: 'indica una fecha para el recordatorio la tarea.. hoy es '+ moment().format('DD/MM/YYYY') },
                     isAgend: { type: 'boolean', description: 'indica si se agregara a la agenda' },
-                    initDate: { type: 'string', description: 'indica la fecha inicial para agregarse a la agenda' }, // Asegúrate de tener moment.js instalado y configurado
-                    initHour: { type: 'string', description: 'indica la fecha final para agregarse a la agenda' },
-                    endDate: { type: 'string', description: 'indica la hora inicial para agregarse a la agenda' },
-                    endHour: { type: 'string', description: 'indica la hora final para agregarse a la agenda' },
+                    initDate: { type: 'string', description: 'indica la fecha inicial para agregarse a la agenda, hoy es '+ moment().format('DD/MM/YYYY') }, // Asegúrate de tener moment.js instalado y configurado
+                    initHour: { type: 'string', description: 'indica la fecha final para agregarse a la agenda, hoy es '+ moment().format('DD/MM/YYYY') },
+                    endDate: { type: 'string', description: 'indica la hora inicial para agregarse a la agenda, hoy es '+ moment().format('DD/MM/YYYY') },
+                    endHour: { type: 'string', description: 'indica la hora final para agregarse a la agenda, hoy es '+ moment().format('DD/MM/YYYY') },
                     note: { type: 'string', description: 'indica la nota que llevara la tarea' },
                 },
-                required: ["title", "priority"]
+                required: ["title"]
             }
         }
     },
@@ -184,7 +330,85 @@ const getTools = async (userId) => {
                     initAt: { type: 'string', description: 'indica la fecha inicial para agregarse a la agenda' }, // Asegúrate de tener moment.js instalado y configurado
                     endAt: { type: 'string', description: 'indica la fecha final para agregarse a la agenda' }
                 },
-                required: ["title", "content"]
+                required: ["title"]
+            }
+        }
+    },
+    {
+        type: "function",
+        function: {
+            name: "updateTask",
+            description: "actualiza una tarea o asigna a un dia la tarea, en la prop myDay, dame solo las propiedades a actualizar respetando sus propiedades el titulo anterior lo debes de mandar en oldTitle y el nuevo en title..si algun dato es requerido y no se proporsiona solicitalo y si se indico alguna fecha o hora se debe agregar en formato DD/MM/YYYY y h:mm",
+            parameters: {
+                type: "object",
+                properties: {
+                    title: { type: 'string', description: 'nuevo titulo de la tarea'},
+                    oldTitle: { type: 'string', description: 'titulo anterior de la tarea'},
+                    isImportant: { type: 'boolean', description: 'nuevo indicador si una tarea es importante' },
+                    myDay: { type: 'string', description: 'nueva fecha para la tarea, hoy es '+ moment().format('DD/MM/YYYY') },
+                    description: { type: 'string', description: 'indica la nueva descripcion de la tarea' },
+                    isRemainder: { type: 'boolean', description: 'indica nuevo recordatorio' },
+                    priority: { type: 'string', enum: ["Alta", "Media", "Baja"], description: 'indica la nuevo prioridad de la tarea, por default es baja' },
+                    reminder: { type: 'string', description: 'indica la nueva fecha del recordatorio hoy es '+ moment().format('DD/MM/YYYY') },
+                    isAgend: { type: 'boolean', description: 'nuevo indicador de si se agregara a la agenda hoy es '+ moment().format('DD/MM/YYYY') },
+                    initDate: { type: 'string', description: 'nuevo indicador de la fecha inicial para agregarse a la agenda hoy es '+ moment().format('DD/MM/YYYY') }, // Asegúrate de tener moment.js instalado y configurado
+                    initHour: { type: 'string', description: 'nuevo indicador de la fecha final para agregarse a la agenda hoy es '+ moment().format('DD/MM/YYYY') },
+                    endDate: { type: 'string', description: 'nuevo indicador de la hora inicial para agregarse a la agenda hoy es '+ moment().format('DD/MM/YYYY') },
+                    endHour: { type: 'string', description: 'nuevo indicador de la hora final para agregarse a la agenda hoy es '+ moment().format('DD/MM/YYYY') },
+                    note: { type: 'string', description: 'nuevo indicador de la nota que llevara la tarea' },
+                },
+                require:["oldTitle"]
+            }
+        }
+    },
+    {
+        type: "function",
+        function: {
+            name: "updateNote",
+            description: "actualiza una nota, si algun dato es requerido y no se proporsiona solicitalo y si se indico alguna fecha o hora se debe agregar en formato DD/MM/YYYY y h:mm",
+            parameters: {
+                type: "object",
+                properties: {
+                    title: { type: 'string', description: 'titulo de la Nota' },
+                    content: { type: "string", description: 'indica el contenido de la nota' },
+                    isImportant: { type: 'boolean', description: 'indica si una Nota es importante' },
+                    reminder: { type: 'string', description: 'indica la fecha del recordatorio' },
+                    initAt: { type: 'string', description: 'indica la fecha inicial para agregarse a la agenda' }, // Asegúrate de tener moment.js instalado y configurado
+                    endAt: { type: 'string', description: 'indica la fecha final para agregarse a la agenda' }
+                },
+                required: ["title"]
+            }
+        }
+    },
+    {
+        type: "function",
+        function: {
+            name: "changeStatusTask",
+            description: "actualiza el estado de una tarea, si algun dato es requerido y no se proporsiona solicitalo",
+            parameters: {
+                type: "object",
+                properties: {
+                    title: { type: 'string', description: 'titulo de la Nota' },
+                    isCompleted:{ type: 'boolean', description: 'indica si una tarea se marca como completada' },
+                    isImportant:{ type: 'boolean', description: 'indica si una tarea se marca como importante' },
+                    isPending:{ type: 'boolean', description: 'indica si una tarea se marca como pendiente' },
+                    isActive:{ type: 'boolean', description: 'indica si una tarea se marca como activa' },
+                },
+                required: ["title"]
+            }
+        }
+    },
+    {
+        type: "function",
+        function: {
+            name: "deleteTask",
+            description: "elimina una tarea, si algun dato es requerido y no se proporsiona solicitalo",
+            parameters: {
+                type: "object",
+                properties: {
+                    title: { type: 'string', description: 'titulo de la Nota' }
+                },
+                required: ["title"]
             }
         }
     },
@@ -207,7 +431,7 @@ const getTools = async (userId) => {
     return tools
 }
 
-const retriveRun = async (run_id, thread_id) => {
+const retriveRun = async (run_id, thread_id,userId=null) => {
     if (!run_id || !thread_id) {
         throw new Error()
     }
@@ -220,14 +444,15 @@ const retriveRun = async (run_id, thread_id) => {
                     Authorization: `Bearer ${CHATGPT_KEY}`,
                     'OpenAI-Beta': 'assistants=v1',
                 },
-            }
+            },
+            { timeout: 6000 }
         );
         // console.log(response.data);
         if (response && response.data) {
             const status = response.data.status
             console.log(status)
-            if (status == 'in_progress') {
-                return retriveRun(run_id, thread_id)
+            if (status == 'in_progress'|| status=='queued') {
+                    return retriveRun(run_id, thread_id,userId)
             }
             else if (status == 'completed') {
                 const messageToShow = await getMessage(thread_id)
@@ -236,6 +461,16 @@ const retriveRun = async (run_id, thread_id) => {
             }
             else if (status == 'requires_action') {
                 const functionToCall = {...response.data,type:'function'}
+                // const tool=functionToCall.required_action.submit_tool_outputs.tool_calls[0]
+                // const tool_id=tool.id
+                // if(tool.function.name=='getInfoByName')
+                // {
+                //     const all= await getAll(userId)
+                //     console.log(all)
+                //     submitToolOutputs(run_id,thread_id,userId,tool_id,all)
+                reiniciarTemporizador();
+                segundaSolicitudRecibida = false;
+                // }
                 return functionToCall
             }
             return null
@@ -296,7 +531,7 @@ const createRun = async (thread_id, userId) => {
             `https://api.openai.com/v1/threads/${thread_id}/runs`,
             {
                 assistant_id: "asst_Bl4GkbYfEeJa646wmSgxg1aX",
-                instructions:'If there is missing data or data that is not clear that is required, request it',
+                instructions:'If there is missing data or data that is not clear that is required, request it.. today is' + moment().format('DD/MM/YYY') + 'if there are a date use that date to calculate the final date',
                 additional_instructions: 'If there is missing data or data that is not clear that is required, request it, respond with short messages',
                 tools,
             },
@@ -309,8 +544,7 @@ const createRun = async (thread_id, userId) => {
             }
         );
         if (response && response.data) {
-            const responseRetriveRun = await retriveRun(response.data.id, response.data.thread_id)
-            console.log(responseRetriveRun, 'responseRetriveRun')
+            const responseRetriveRun = await retriveRun(response.data.id, response.data.thread_id,userId)
             return responseRetriveRun
         }
     } catch (error) {
@@ -320,6 +554,7 @@ const createRun = async (thread_id, userId) => {
 }
 
 router.post('/sendMessage', (async (req, res) => {
+    const metadata=await getAll()
     try {
         let thread_id
         const { inputValue, thread, userId } = req.body
@@ -337,7 +572,7 @@ router.post('/sendMessage', (async (req, res) => {
             `https://api.openai.com/v1/threads/${thread_id}/messages
             `,
             {
-                role: "user", content: inputValue
+                role: "user", content: inputValue, metadata
             },
 
             {
@@ -351,8 +586,10 @@ router.post('/sendMessage', (async (req, res) => {
         if (response.data) {
             const thread_id = response.data.thread_id
             const finalResponse = await createRun(thread_id, userId) // puede ser mensaje o call function
-            console.log(finalResponse)
+            console.log(finalResponse,'final responseeeeeeeeeeeee')
             if (finalResponse) {
+                lastRunId=finalResponse.id
+                lastThreadId=finalResponse.thread_id
                 res.send(finalResponse)
             }
             else {
@@ -363,8 +600,8 @@ router.post('/sendMessage', (async (req, res) => {
         }
 
     } catch (error) {
-        res.status(500).send('Ah ocurrido un error. Intentalo mas tarde')
-        console.log(error.response)
+        res.status(error.response.status).send(error)
+        console.log(error.response.status)
     }
 }))
 
@@ -380,7 +617,7 @@ router.post('/responseFromFunction', (async (req, res) => {
             {
                 tool_outputs:[
                     {tool_call_id:tool_id,
-                    output:resFunction??'completada'}
+                    output:resFunction?JSON.stringify(resFunction):'Ah ocurrido un error'}
                 ]
             },
             {
@@ -393,6 +630,9 @@ router.post('/responseFromFunction', (async (req, res) => {
         )
         if (response.data) {
             console.log(response.data)
+            const messageAfterComplete= await retriveRun(run_Id,thread_id,userId)
+            res.send(messageAfterComplete)
+            segundaSolicitudRecibida = true;
         }
 
     } catch (error) {

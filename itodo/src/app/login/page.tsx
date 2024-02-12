@@ -154,7 +154,7 @@ const SignIn: React.FC = () => {
                   'Iniciar sesión'
                 )}
           </button>
-          <p className="text-center">
+          {/* <p className="text-center">
             o <br />{' '}
             <span className="cursor-pointer text-primary">
               Registrate aqui.
@@ -167,7 +167,7 @@ const SignIn: React.FC = () => {
                 Restablece tu contraseña.
               </span>
             </p>
-          </div>
+          </div> */}
         </Row>
       </form>
     </main>

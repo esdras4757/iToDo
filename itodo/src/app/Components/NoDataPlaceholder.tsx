@@ -14,13 +14,13 @@ const NoDataPlaceholder = (props: noDataPlaceholderProps) => {
   const { width, height, text, title, img, fs } = props
 
   return (
-    <Row className="justify-center align-content-center">
+    <Row className="justify-center align-content-cente text-whiter">
       <div className="col-12 row justify-content-center text-center">
         {' '}
         <img src={img ?? '/images/folderEmpty.png'} style={{ width: width ?? '180px', height: height ?? 'auto' }} alt="" />
       </div>
       <div
-        className="text-center w-auto"
+        className="text-center text-white w-auto"
         style={{
           padding: 8,
           borderRadius: 7,
@@ -29,7 +29,7 @@ const NoDataPlaceholder = (props: noDataPlaceholderProps) => {
         }}
       >
 
-       <div style={{ fontWeight: 'bold', fontSize: fs ? fs + 2 : 17 }}>¡{title ?? 'Vaya'}! </div>
+       <div className='text-white' style={{ fontWeight: 'bold', fontSize: fs ? fs + 2 : 17 }}>¡{title ?? 'Vaya'}! </div>
         {text ?? 'No se han encontrado datos para mostrar aquí.'}
       </div>
     </Row>

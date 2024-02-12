@@ -46,19 +46,19 @@ const Header = (props: Required<HomeProps>) => {
   }, [userInfo])
 
   const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="/myAccount"
-        >
-          Cuenta
-        </a>
-      ),
-      icon: <i className="fas fa-user text-dark" />
-    },
+    // {
+    //   key: '1',
+    //   label: (
+    //     <a
+    //       target="_blank"
+    //       rel="noopener noreferrer"
+    //       href="/myAccount"
+    //     >
+    //       Cuenta
+    //     </a>
+    //   ),
+    //   icon: <i className="fas fa-user text-dark" />
+    // },
     {
       key: '2',
       label: (

@@ -108,7 +108,8 @@ export const getAllTAskMyDayByIdUser = (id) => {
 }
 
 export const postSendMessage = (data) => {
-  return axios.post(apiConstants.POST_SEND_MESSAGE, data)
+  const timeoutConfig = { timeout: 6000 };
+  return axios.post(apiConstants.POST_SEND_MESSAGE, data, timeoutConfig)
 }
 
 export const postSendFnResponse = (data) => {

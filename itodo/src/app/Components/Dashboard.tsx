@@ -155,8 +155,6 @@ const Dashboard = (props: DashboarProps) => {
       setCategoryData(response.data ?? null);
       categoryLoading = response.isLoading;
       categoryError = response.error;
-
-      console.log("allll", response.data);
     }
   }, [response]);
 
@@ -191,7 +189,6 @@ const Dashboard = (props: DashboarProps) => {
     })
       .unwrap()
       .then((value) => {
-        console.log(value);
         setNameCategory("");
         setIsEditcustomList(false);
         setCategoryData((CatDat) => {

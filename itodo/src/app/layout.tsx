@@ -10,8 +10,9 @@ import io from 'socket.io-client'
 import openNotification from './utils/notify'
 import React, { useEffect } from 'react'
 import LayoutClient from './Components/LayoutClient'
-const socket = io('https://todoserver-8410.onrender.com/:5500')
 const inter = Inter({ subsets: ['latin'] })
+const baseUrl = process.env.NEXT_PUBLIC_API_URL
+const socket = io('http://localhost:500')
 
 export const metadata = {
   title: 'INotes',

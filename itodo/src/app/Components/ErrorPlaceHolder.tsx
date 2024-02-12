@@ -14,13 +14,13 @@ const ErrorPlaceHolder = (props: ErrorPlaceHolderProps) => {
   const { width, height, text, title, img, fs } = props
 
   return (
-    <Row className="justify-center align-content-center">
+    <Row className="justify-center align-content-cente text-whiter">
       <div className="col-12 row justify-content-center text-center">
         {' '}
         <img src={img ?? 'images/sunkenShip.png'} style={{ width: width ?? '110px', height: height ?? 'auto' }} alt="" />
       </div>
       <div
-        className="text-center w-auto"
+        className="text-center w-auto text-white"
         style={{
           padding: 8,
           borderRadius: 7,
@@ -29,7 +29,7 @@ const ErrorPlaceHolder = (props: ErrorPlaceHolderProps) => {
         }}
       >
 
-       <div style={{ fontWeight: 'bold', fontSize: fs ? fs + 2 : 17 }}>¡{title ?? 'Oh no'}! </div>
+       <div className='text-white' style={{ fontWeight: 'bold', fontSize: fs ? fs + 2 : 17 }}>¡{title ?? 'Oh no'}! </div>
         {text ?? 'Algo salio mal, intentalo de nuevo.'}
       </div>
     </Row>

@@ -177,16 +177,18 @@ margin: 0;
 
 
   .popover-IA .ant-popover-inner {
-  
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 500px);
     overflow: auto;
-    box-shadow: 0px 0px 10px  rgb(76, 151, 205);
+    box-shadow: 0px 0px 5px  rgb(76, 151, 205);
+    background-color: #2d2d2d !important;
+    border-radius: 35px !important;
+
   }
 
   .popover-IA .ant-popover-inner-content{
     margin: auto;
     width: 560px;
-    padding: 20px 10px;
+    padding: 25px 20px;
   }
 
   .popover-IA{
@@ -447,4 +449,8 @@ cursor: pointer;
 /* Estilos para pantallas de escritorio grandes */
 @media (min-width: 1025px) {
   /* tus estilos aquí */
+}
+
+div,p,h1,h2,h3,h4,h5,span,a{
+font-family: sans-serif,Arial, Helvetica !important;
 }

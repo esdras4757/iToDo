@@ -702,7 +702,6 @@ const Page = () => {
                               }}
                               onChange={(e) => {
                                 setReminder(e)
-                                console.log(e)
                                 saveNote(
                                   noteSelected._id,
                                   title ?? '',

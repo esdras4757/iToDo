@@ -1,12 +1,12 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
-import { Avatar, TextField } from '@mui/material'
+import { Avatar, LinearProgress, TextField } from '@mui/material'
 import { isEmpty, isNil } from 'lodash'
 import axios from 'axios'
 import openNotification from '../utils/notify'
 import { Drawer, Popover, Spin } from 'antd'
 import PageTask from '../task/page'
 import PageNote from '../note/page'
-import { addNote, getAllByIdUser, getTaskById, postGetAllByName, postSendFnResponse, postSendMessage } from '../utils/services/services'
+import { addNote, deleteTaskById, getAllByIdUser, getTaskById, postGetAllByName, postSendFnResponse, postSendMessage, updateTaskById, updateTaskStatusById } from '../utils/services/services'
 import { ContentState, convertToRaw } from 'draft-js'
 import dayjs from 'dayjs'
 import styled from 'styled-components'
@@ -134,7 +134,7 @@ const ChatBot = (props: propsInterface) => {
   const messagesContent = (
         <div className='d-flex' style={{ flexDirection: 'column' }}>
             {messages?.map(message => {
-              return <Message style={{ width: '45%', alignSelf: message.isOwner == true ? 'end' : 'start', backgroundColor: message.isOwner == true ? '#9f9f9f' : message.type == 'error' ? 'red' : '#3b93ad' }} key={message.idMessage}>
+              return <Message style={{ alignSelf: message.isOwner == true ? 'end' : 'start', backgroundColor: message.isOwner == true ? '#747272' : message.type == 'error' ? '#891515' : '#186b85' }} key={message.idMessage}>
                     {message.content}
                 </Message>
             })}
@@ -154,7 +154,9 @@ const ChatBot = (props: propsInterface) => {
     setIsLoading(true)
     const userId = sessionStorage.getItem('user') ?? ''
     const data = JSON.parse(dataFromCGPT)
+    console.log(dataFromCGPT)
     if (data?.title && data?.title != '' && userId && userId != '') {
+      console.log(data)
       const dataToApi = {
         ...data,
         ...{
@@ -169,18 +171,13 @@ const ChatBot = (props: propsInterface) => {
             }
           })
         .then(async (res) => {
-          const listItems = Object.entries(dataToApi)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join("\n");
-
-          addMessage(`Eh agregado una nota con los siguientes datos: \n${listItems}`, false)
           setCurrentComponent(
                         <PageTask
                             update={updateTask}
                         />)
           setLabelCurrentComponent('PageTask')
           setUpdateTask(!updateTask)
-          return res.data
+          return 'agregada correctamente'
         })
         .catch((error) => {
           //   setLoading(false)
@@ -223,7 +220,9 @@ const ChatBot = (props: propsInterface) => {
       });
     }
     sessionStorage.setItem('messages', JSON.stringify(messages))
-    scrollToBottom();
+    if (isEmpty(messages) == false) {
+      scrollToBottom();
+    }
   }, [messages])
 
   const addMessage = (content: string, isOwner: boolean, type?:string) => {
@@ -255,7 +254,6 @@ const ChatBot = (props: propsInterface) => {
         }
         const response = await addNote(id, dataToApi)
         if (response) {
-          addMessage(`Eh agregado una nota con los siguientes datos: ${KeysList(dataToApi)}`, false)
           setCurrentComponent(
                         <PageNote
                         />)
@@ -266,6 +264,141 @@ const ChatBot = (props: propsInterface) => {
     } catch (error: any) {
       openNotification('error', error.message)
       addMessage(`!Ups algo salio mal, intentalo de nuevo`, false, 'error')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateTaskFn = async (data:any) => {
+    const userId = sessionStorage.getItem("user") ?? "";
+    setIsLoading(true);
+    const dataFromCGPT = JSON.parse(data)
+    console.log(dataFromCGPT, 'response chaaat')
+    if (dataFromCGPT) {
+      console.log(dataFromCGPT, 'si entro')
+
+      const response = await postGetAllByName(userId, { name: dataFromCGPT.oldTitle ?? dataFromCGPT.title })
+      if (!response || !response.data) {
+        throw new Error()
+      }
+
+      const elemento = response.data[0]
+
+      const formData = new FormData();
+
+      formData.append("title", dataFromCGPT.title);
+      formData.append("description", dataFromCGPT.description ?? "");
+      formData.append("reminder", dataFromCGPT.isRemainder ? dataFromCGPT.reminder ?? "" : "");
+      formData.append(
+        "initAt",
+        dataFromCGPT.isAgend
+          ? dataFromCGPT.initDate.format("DD/MM/YYYY") +
+              " " +
+              dataFromCGPT.initHour.format("h:mm")
+          : ""
+      );
+      formData.append(
+        "endAt",
+        dataFromCGPT.isAgend
+          ? dataFromCGPT.endDate.format("DD/MM/YYYY") +
+              " " +
+              dataFromCGPT.endHour.format("h:mm")
+          : ""
+      );
+      formData.append("priority", dataFromCGPT.priority ?? "");
+      formData.append("categoryId", dataFromCGPT.categoryId ?? "");
+      formData.append("note", dataFromCGPT.note ?? "");
+      formData.append("userId", userId); // Suponiendo que userId es la variable que contiene el ID de usuario
+
+      try {
+        const response = await updateTaskById(elemento._id, formData);
+        if (response && response.data) {
+          setCurrentComponent(
+            <PageTask
+                update={updateTask}
+            />)
+          setLabelCurrentComponent('PageTask')
+          setUpdateTask(!updateTask)
+          return response.data
+        }
+      } catch (error: any) {
+        openNotification(
+          "error",
+          error.message || "ah ocurrido un error intentalo de nuevo"
+        );
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  };
+
+  const updateStatus = async (dataFromCGPT: any) => {
+    const userId = sessionStorage.getItem("user") ?? "";
+    const data = JSON.parse(dataFromCGPT)
+    setIsLoading(true)
+    if (!data) {
+      return
+    }
+
+    const response = await postGetAllByName(userId, { name: data.title })
+    if (!response || !response.data) {
+      throw new Error()
+    }
+
+    const elemento = response.data[0]
+
+    try {
+      const response = await updateTaskStatusById(elemento._id,
+        {
+          isCompleted: data.isCompleted,
+          isImportant: data.isImportant,
+          isPending: data.isPending,
+          isActive: data.isActive
+        })
+      if (response && response.data) {
+        setCurrentComponent(
+          <PageTask
+              update={updateTask}
+          />)
+        setLabelCurrentComponent('PageTask')
+        setUpdateTask(!updateTask)
+        return response.data
+      }
+    } catch (error: any) {
+      openNotification('error', error.message)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const deleteTaskFn = async (dataFromCGPT: any) => {
+    setIsLoading(true)
+    const userId = sessionStorage.getItem("user") ?? "";
+    const data = JSON.parse(dataFromCGPT)
+    setIsLoading(true)
+    if (!data) {
+      return
+    }
+
+    const response = await postGetAllByName(userId, { name: data.title })
+    if (!response || !response.data) {
+      throw new Error()
+    }
+
+    const elemento = response.data[0]
+    try {
+      const response = await deleteTaskById(elemento._id)
+      if (response && response.data) {
+        setCurrentComponent(
+          <PageTask
+              update={updateTask}
+          />)
+        setLabelCurrentComponent('PageTask')
+        setUpdateTask(!updateTask)
+        return response.data
+      }
+    } catch (error: any) {
+      openNotification('error', error.message)
     } finally {
       setIsLoading(false)
     }
@@ -284,10 +417,8 @@ const ChatBot = (props: propsInterface) => {
         console.log(response.data[0])
         const elemento = response.data[0]
         if (elemento) {
-          addMessage(`Eh encontrado un elemento con los siguientes datos: ${KeysList(dataFromCGPT)}`, false)
+          return elemento
         }
-      } else {
-        addMessage(`!Ups. no eh encontrado ningun elemento, verifica que sea correcto`, false)
       }
     } catch (error: any) {
       addMessage(`!Ups algo salio mal, intentalo de nuevo`, false, 'error')
@@ -296,6 +427,7 @@ const ChatBot = (props: propsInterface) => {
       setIsLoading(false)
     }
   }
+
   // tslint:disable-next-line: variable-name
   const setFunctonResponse = async <T, >(run_Id: string, thread_id: string, tool_id: string, resFunction: T) => {
     setIsLoading(true)
@@ -309,6 +441,38 @@ const ChatBot = (props: propsInterface) => {
     }
     try {
       const response = await postSendFnResponse(data)
+
+      if (isNil(response) == false && isNil(response.data) === false) {
+        const type = response.data.type
+        // tslint:disable-next-line: variable-name
+        const thrad_id = response.data.thread_id
+        // tslint:disable-next-line: variable-name
+        const run_id = response.data.id
+        if (type == 'function') {
+          const functionToCall = response.data.required_action.submit_tool_outputs.tool_calls[0]
+          const functionDetails = functionToCall.function
+          switch (functionDetails.name) {
+            case 'addTask':{
+              const res = await addTaskFn(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, res)
+              break; }
+            case 'addNote':{
+              const resN = await addNoteFn(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, resN)
+              break; }
+            case 'getInfoByName':{
+              const resF = await getInfoByNameFn(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, JSON.stringify(resF))
+              break; }
+            default:
+              break;
+          }
+        } else if (type == 'message') {
+          sessionStorage.setItem('tread_id', thrad_id)
+          const messageContent = response.data.content[0].text.value ?? ''
+          addMessage(messageContent, false)
+        }
+      }
     } catch (error: any) {
       openNotification('error', error.message)
       addMessage(`!Ups algo salio mal, intentalo de nuevo`, false, 'error')
@@ -355,6 +519,19 @@ const ChatBot = (props: propsInterface) => {
               const resF = await getInfoByNameFn(functionDetails.arguments)
               setFunctonResponse(run_id, thrad_id, functionToCall.id, resF)
               break; }
+            case 'updateTask':{
+              const resUT = await updateTaskFn(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, resUT)
+              break; }
+            case 'changeStatusTask':{
+              const resUTS = await updateStatus(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, resUTS)
+              break; }
+            case 'deleteTask':{
+              const resTD = await deleteTaskFn(functionDetails.arguments)
+              setFunctonResponse(run_id, thrad_id, functionToCall.id, resTD)
+              break; }
+
             default:
               break;
           }
@@ -366,6 +543,10 @@ const ChatBot = (props: propsInterface) => {
       }
     } catch (error: any) {
       openNotification('error', error.message)
+      console.log(error)
+      if (error.response.status === 400) {
+        sessionStorage.removeItem('tread_id')
+      }
       addMessage(`!Ups algo salio mal, intentalo de nuevo`, false, 'error')
     } finally {
       setIsLoading(false)
@@ -381,7 +562,7 @@ const ChatBot = (props: propsInterface) => {
   }, [])
 
   return (
-        <Spin spinning={isLoading}>
+        <Spin spinning={false}>
             <div className=''>
                 <Popover ref={popoverRef} rootClassName='popover-IA' content={messages && messages.length > 0 ? messagesContent : content} open={chatting} trigger="click">
                     <TextField
@@ -410,17 +591,16 @@ const ChatBot = (props: propsInterface) => {
                       if (!isLoading) {
                         postChatGptFn()
                       }
-                    }} style={{ borderRadius: 100, top: '20%', right: '0%', fontSize: 20, width: 37, height: 35, cursor: 'pointer' }} className='text-white m-auto popover-IA fas fa-paper-plane ursor-pointer absolute p-2 bg-primary'></i>
+                    }} style={{ borderRadius: 100, top: '20%', right: '7%', fontSize: 20, height: 35, cursor: !isLoading ? 'pointer' : 'not-allowed' }} className='text-white m-auto popover-IA fas fa-paper-plane ursor-pointer absolute p-2 bg-success'></i>
+                    {isLoading && <LinearProgress className='col-3' style={{ position: 'absolute', left: '30%', top: '2px', height: 3 }} />}
                     <i onClick={e => {
                       e.stopPropagation()
-                      if (!isLoading) {
-                        postChatGptFn()
-                      }
-                    }} style={{ borderRadius: 100, top: '20%', right: '7%', fontSize: 20, width: 37, height: 35, cursor: 'pointer' }} className='text-white m-auto popover-IA fas fa-broom ursor-pointer absolute p-2 bg-secondary'></i>
-                    {chatting == false && <i onClick={e => {
+                      setMessages([])
+                    }} style={{ borderRadius: 100, top: '20%', right: '-7%', fontSize: 20, height: 35, cursor: !isLoading ? 'pointer' : 'not-allowed' }} className='text-white m-auto popover-IA fas fa-broom ursor-pointer absolute p-2 bg-secondary'></i>
+                    <i onClick={e => {
                       setChatting(!chatting)
-                    }} style={{ borderRadius: 5, top: '-47%', right: '55%', fontSize: 20, width: 37, cursor: 'pointer' }} className='text-white  m-auto pb-0 pt-1 fas fa-chevron-up ursor-pointer absolute p-2 bg-primary'></i>
-                    }
+                    }} style={{ borderRadius: 100, top: '20%', right: '0%', fontSize: 20, height: 35, cursor: !isLoading ? 'pointer' : 'not-allowed' }} className={`text-white  m-auto popover-IA fas ${!chatting ? 'fa-eye' : 'fa-eye-slash'} ursor-pointer absolute p-2 bg-primary`}></i>
+
                 </Popover>
             </div>
         </Spin>
@@ -431,11 +611,14 @@ const Message = styled.div`
 word-wrap: break-word !important;
 color: white;
     background-color: red;
-    font-size: 14px;
+    font-size: 13px;
+    text-align: left;
     margin-bottom: 10px;
-    width: 55%;
+    font-family: sans-serif;
+    width: fit-content;
     border-radius: 10px;
-    padding: 4px 8px;
+    padding: 5px 7px;
+    max-width: 47%;
 `
 
 export default ChatBot
