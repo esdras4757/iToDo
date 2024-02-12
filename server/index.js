@@ -34,7 +34,13 @@ app.use('/api/openIaConnection', openIaRoutes);
 
 // servidor ws
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server,{
+  cors: {
+    origins: ['http://localhost:3000', 'https://i-to-do-esdras4757.vercel.app'],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
 
 io.on('connection', (socket) => {
     console.log('a user has been connected');
