@@ -12,7 +12,7 @@ import React, { useEffect } from 'react'
 import LayoutClient from './Components/LayoutClient'
 const inter = Inter({ subsets: ['latin'] })
 const baseUrl = process.env.NEXT_PUBLIC_API_URL
-const socket = io(baseUrl??'')
+const socket = io(baseUrl ?? '')
 
 export const metadata = {
   title: 'INotes',
