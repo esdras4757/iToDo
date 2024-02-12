@@ -289,7 +289,7 @@ const ChatBot = (props: propsInterface) => {
 
       formData.append("title", dataFromCGPT.title);
       formData.append("description", dataFromCGPT.description ?? "");
-      formData.append("reminder",dataFromCGPT.reminder ?? "")
+      formData.append("reminder", dataFromCGPT.reminder ?? "")
       formData.append(
         "initAt",
         dataFromCGPT.isAgend
