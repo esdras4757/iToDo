@@ -36,7 +36,7 @@ app.use('/api/openIaConnection', openIaRoutes);
 const server = createServer(app);
 const io = new Server(server,{
   cors: {
-    origins: ['http://localhost:3000', 'https://i-to-do-esdras4757.vercel.app'],
+    origins: ['http://localhost:3000', 'https://i-to-do-esdras4757.vercel.app', 'http://clientitodo.s3-website.us-east-2.amazonaws.com'],
     methods: ['GET', 'POST'],
     credentials: true
   }
