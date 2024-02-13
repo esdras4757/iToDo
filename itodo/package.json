@@ -11,19 +11,6 @@
     "electron-start": "electron main.js",
     "build-installer": "electron-builder"
   },
-  "build": {
-    "asar": true,
-    "mac": {
-      "target": "dmg",
-      "icon": "dist/logoWhite.png"
-    },
-    "files": [
-      "dist/**/*",
-      "package.json",
-      "public",
-      "main.js"
-    ]
-  },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
