@@ -18,7 +18,7 @@ const { Server } = require("socket.io");
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://i-to-do-esdras4757.vercel.app'], // Reemplaza con la URL de tu frontend
+    origin: ['http://localhost:3000', 'https://i-to-do-esdras4757.vercel.app', 'http://clientitodo.s3-website.us-east-2.amazonaws.com'], // Reemplaza con la URL de tu frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
